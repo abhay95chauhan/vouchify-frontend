@@ -1,0 +1,96 @@
+import { Building, Landmark, University } from 'lucide-react';
+import moment from 'moment-timezone';
+export const industryTypes = [
+  {
+    value: 'private',
+    label: 'Private',
+    description: 'A Private Industry',
+    icon: Building,
+  },
+  {
+    value: 'government',
+    label: 'Government',
+    description: 'A Government Industry',
+    icon: Landmark,
+  },
+  {
+    value: 'semi-Government',
+    label: 'Semi Government',
+    description: 'A Semi Government Industry',
+    icon: University,
+  },
+];
+
+export const industries = [
+  { label: 'Technology', value: 'technology' },
+  { label: 'Healthcare', value: 'healthcare' },
+  { label: 'Finance', value: 'finance' },
+  { label: 'Retail', value: 'retail' },
+  { label: 'Education', value: 'education' },
+  { label: 'Hospitality', value: 'hospitality' },
+  { label: 'Manufacturing', value: 'manufacturing' },
+  { label: 'Transportation & Logistics', value: 'transportation_logistics' },
+  { label: 'Construction', value: 'construction' },
+  { label: 'Entertainment & Media', value: 'entertainment_media' },
+  { label: 'Government', value: 'government' },
+  { label: 'Energy & Utilities', value: 'energy_utilities' },
+  { label: 'Telecommunications', value: 'telecommunications' },
+];
+
+export const currencies = [
+  { label: 'US Dollar (USD)', value: 'USD' },
+  { label: 'Euro (EUR)', value: 'EUR' },
+  { label: 'British Pound (GBP)', value: 'GBP' },
+  { label: 'Japanese Yen (JPY)', value: 'JPY' },
+  { label: 'Swiss Franc (CHF)', value: 'CHF' },
+  { label: 'Canadian Dollar (CAD)', value: 'CAD' },
+  { label: 'Australian Dollar (AUD)', value: 'AUD' },
+  { label: 'New Zealand Dollar (NZD)', value: 'NZD' },
+  { label: 'Chinese Yuan Renminbi (CNY)', value: 'CNY' },
+  { label: 'Indian Rupee (INR)', value: 'INR' },
+  { label: 'Russian Ruble (RUB)', value: 'RUB' },
+  { label: 'Brazilian Real (BRL)', value: 'BRL' },
+  { label: 'Mexican Peso (MXN)', value: 'MXN' },
+  { label: 'South African Rand (ZAR)', value: 'ZAR' },
+  { label: 'Singapore Dollar (SGD)', value: 'SGD' },
+  { label: 'Hong Kong Dollar (HKD)', value: 'HKD' },
+  { label: 'Norwegian Krone (NOK)', value: 'NOK' },
+  { label: 'Swedish Krona (SEK)', value: 'SEK' },
+  { label: 'Danish Krone (DKK)', value: 'DKK' },
+  { label: 'Polish Zloty (PLN)', value: 'PLN' },
+  { label: 'Turkish Lira (TRY)', value: 'TRY' },
+  { label: 'Thai Baht (THB)', value: 'THB' },
+  { label: 'Malaysian Ringgit (MYR)', value: 'MYR' },
+  { label: 'Philippine Peso (PHP)', value: 'PHP' },
+  { label: 'Indonesian Rupiah (IDR)', value: 'IDR' },
+  { label: 'Vietnamese Dong (VND)', value: 'VND' },
+  { label: 'United Arab Emirates Dirham (AED)', value: 'AED' },
+  { label: 'Saudi Riyal (SAR)', value: 'SAR' },
+  { label: 'Qatari Riyal (QAR)', value: 'QAR' },
+  { label: 'Kuwaiti Dinar (KWD)', value: 'KWD' },
+  { label: 'Bahraini Dinar (BHD)', value: 'BHD' },
+  { label: 'Omani Rial (OMR)', value: 'OMR' },
+  { label: 'Egyptian Pound (EGP)', value: 'EGP' },
+  { label: 'Nigerian Naira (NGN)', value: 'NGN' },
+  { label: 'Kenyan Shilling (KES)', value: 'KES' },
+  { label: 'Ghanaian Cedi (GHS)', value: 'GHS' },
+  { label: 'Bangladeshi Taka (BDT)', value: 'BDT' },
+  { label: 'Pakistani Rupee (PKR)', value: 'PKR' },
+  { label: 'Sri Lankan Rupee (LKR)', value: 'LKR' },
+  { label: 'Nepalese Rupee (NPR)', value: 'NPR' },
+  { label: 'Icelandic Krona (ISK)', value: 'ISK' },
+  { label: 'Czech Koruna (CZK)', value: 'CZK' },
+  { label: 'Hungarian Forint (HUF)', value: 'HUF' },
+  { label: 'Romanian Leu (RON)', value: 'RON' },
+  { label: 'Israeli New Shekel (ILS)', value: 'ILS' },
+  { label: 'Chilean Peso (CLP)', value: 'CLP' },
+  { label: 'Colombian Peso (COP)', value: 'COP' },
+  { label: 'Argentine Peso (ARS)', value: 'ARS' },
+  { label: 'Peruvian Sol (PEN)', value: 'PEN' },
+  { label: 'Venezuelan Bolívar (VES)', value: 'VES' },
+];
+
+export const timezonesWithOffset = moment.tz.names().map((tz) => {
+  const offset = moment.tz(tz).format('Z'); // e.g., "+05:30"
+  return { label: `(UTC${offset}) ${tz}`, value: tz };
+});
