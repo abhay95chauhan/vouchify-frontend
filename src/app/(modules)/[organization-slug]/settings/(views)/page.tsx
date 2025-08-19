@@ -5,6 +5,7 @@ import UpdateOraganization from '../../components/update-oraganization';
 import BillingOrganization from '../../components/billing-organization';
 import { getMyOrganizationAction } from '../../actions/actions';
 import { cookies } from 'next/headers';
+import ApiKey from '../../components/api-key';
 
 const OrganizationSettings = async () => {
   const jwt = (await cookies()).get('jwt')?.value;
@@ -12,7 +13,7 @@ const OrganizationSettings = async () => {
 
   return (
     <div className='space-y-8 w-full'>
-      <div>
+      <div className='space-y-2'>
         <h1 className='text-3xl font-bold tracking-tight'>{orgRes?.name}</h1>
         <p className='text-muted-foreground'>{orgRes?.description}</p>
       </div>
@@ -25,7 +26,9 @@ const OrganizationSettings = async () => {
           <TabsTrigger className='cursor-pointer' value='billing'>
             Billing
           </TabsTrigger>
-
+          <TabsTrigger className='cursor-pointer' value='api-key'>
+            Api Key
+          </TabsTrigger>
           <TabsTrigger className='cursor-pointer' value='danger'>
             Danger Zone
           </TabsTrigger>
@@ -33,6 +36,9 @@ const OrganizationSettings = async () => {
 
         <TabsContent value='general' className='space-y-4 w-full'>
           <UpdateOraganization orgData={orgRes} />
+        </TabsContent>
+        <TabsContent value='api-key' className='space-y-4 w-full'>
+          <ApiKey orgData={orgRes} />
         </TabsContent>
         <TabsContent value='billing' className='space-y-4 w-full'>
           <BillingOrganization orgData={orgRes} />

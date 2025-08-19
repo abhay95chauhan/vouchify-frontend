@@ -316,7 +316,7 @@ const UpdateOraganization = ({ orgData }: IProps) => {
                               <Textarea
                                 key='textarea-0'
                                 id='description'
-                                placeholder='Tell me About Your Company...'
+                                placeholder='Tell us About Your Company...'
                                 rows={8}
                                 className='resize-none'
                                 {...field}

@@ -13,7 +13,11 @@ export default async function Home() {
   const res = await getMeUserAction(jwt);
 
   if (res?.code === 200 && res?.data?.organization_id) {
-    redirect('/dashboard');
+    if (!res?.data?.is_email_varified) {
+      redirect(`/verify-email?token=${jwt}`);
+    } else {
+      redirect('/dashboard');
+    }
   } else {
     if (res?.code !== 200) {
       redirect('/auth/login');

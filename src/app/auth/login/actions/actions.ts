@@ -1,5 +1,5 @@
 import { vouchifyApi } from '@/global/utils/api';
-import { ILogin } from '../model-interfaces/interfaces';
+import { ILogin, IUser } from '../model-interfaces/interfaces';
 import { toast } from 'sonner';
 import { handleError } from '@/global/utils/error-handler';
 
@@ -29,7 +29,7 @@ export const loginAction = async (loginData: ILogin) => {
 
 export const getMeUserAction = async (token: string) => {
   try {
-    const res = await vouchifyApi.request('/user/me', {
+    const res = await vouchifyApi.request<IUser>('/user/me', {
       method: 'GET',
       jwt: token,
     });

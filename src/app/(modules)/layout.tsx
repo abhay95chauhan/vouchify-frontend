@@ -6,14 +6,6 @@ import {
 } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/global/components/sidebar/app-sidebar';
 import { Separator } from '@/components/ui/separator';
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { Roboto } from 'next/font/google';
@@ -21,6 +13,7 @@ import { Suspense } from 'react';
 import { Providers } from '@/redux/provider';
 import { getMeUserAction } from '../auth/login/actions/actions';
 import Loading from './loading';
+import UrlPathname from '@/global/components/url-pathname/url-pathname';
 
 const roboto = Roboto({
   weight: ['100', '200', '300', '400', '500', '600', '700'], // Add weights as needed
@@ -48,6 +41,8 @@ export default async function RootLayout({
   } else {
     if (res?.code !== 200) {
       redirect('/auth/login');
+    } else if (!res?.data?.is_email_varified) {
+      redirect(`/verify-email?token=${jwt}`);
     }
   }
 
@@ -62,26 +57,19 @@ export default async function RootLayout({
             <SidebarProvider>
               <AppSidebar />
               <SidebarInset>
-                <header className='flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12'>
+                <header
+                  className='sticky top-0 z-50 flex h-16 shrink-0 items-center gap-2 
+             transition-[width,height] ease-linear 
+             group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 
+             bg-white dark:bg-gray-950 border-b'
+                >
                   <div className='flex items-center gap-2 px-4'>
                     <SidebarTrigger className='-ml-1' />
                     <Separator
                       orientation='vertical'
                       className='mr-2 data-[orientation=vertical]:h-4'
                     />
-                    <Breadcrumb>
-                      <BreadcrumbList>
-                        <BreadcrumbItem className='hidden md:block'>
-                          <BreadcrumbLink href='#'>
-                            Building Your Application
-                          </BreadcrumbLink>
-                        </BreadcrumbItem>
-                        <BreadcrumbSeparator className='hidden md:block' />
-                        <BreadcrumbItem>
-                          <BreadcrumbPage>Data Fetching</BreadcrumbPage>
-                        </BreadcrumbItem>
-                      </BreadcrumbList>
-                    </Breadcrumb>
+                    <UrlPathname />
                   </div>
                 </header>
 

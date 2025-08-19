@@ -343,7 +343,7 @@ export default function OrganizationCreate() {
                                 <Textarea
                                   key='textarea-0'
                                   id='description'
-                                  placeholder='A Software Development Company....'
+                                  placeholder='Tell us About Your Company...'
                                   className=''
                                   {...field}
                                 />
