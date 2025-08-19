@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Bot, Settings2, SquareTerminal } from 'lucide-react';
+import { LayoutDashboard, Settings2, Ticket } from 'lucide-react';
 
 import {
   Sidebar,
@@ -15,36 +15,29 @@ import { NavUser } from './nav-user';
 import LogoSidebar from '../logo/logo-sidebar';
 import { useAppSelector } from '@/redux/hook';
 
-// This is sample data.
-const data = {
-  user: {
-    name: 'shadcn',
-    email: 'm@example.com',
-    avatar: '',
-  },
-
-  navMain: [
-    {
-      title: 'Dashboard',
-      url: '#',
-      icon: SquareTerminal,
-      isActive: true,
-    },
-    {
-      title: 'Vouchers',
-      url: '#',
-      icon: Bot,
-    },
-    {
-      title: 'Settings',
-      url: '#',
-      icon: Settings2,
-    },
-  ],
-};
-
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user } = useAppSelector((state) => state.user);
+
+  const data = {
+    navMain: [
+      {
+        title: 'Dashboard',
+        url: '/dashboard',
+        icon: LayoutDashboard,
+      },
+      {
+        title: 'Vouchers',
+        url: '/vouchers',
+        icon: Ticket,
+      },
+      {
+        title: 'Settings',
+        url: `/${user.organization?.slug}/settings`,
+        icon: Settings2,
+      },
+    ],
+  };
+
   return (
     <Sidebar collapsible='icon' {...props}>
       <SidebarHeader>

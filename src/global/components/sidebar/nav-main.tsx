@@ -1,3 +1,4 @@
+'use client';
 import { type LucideIcon } from 'lucide-react';
 import {
   SidebarGroup,
@@ -7,6 +8,8 @@ import {
 } from '@/components/ui/sidebar';
 import { Typography } from '../typography/typography';
 import Link from 'next/link';
+import { cn } from '@/lib/utils';
+import { usePathname } from 'next/navigation';
 
 export function NavMain({
   items,
@@ -15,15 +18,26 @@ export function NavMain({
     title: string;
     url: string;
     icon?: LucideIcon;
-    isActive?: boolean;
   }[];
 }) {
+  const pathname = usePathname();
+
   return (
     <SidebarGroup>
-      <SidebarMenu>
+      <SidebarMenu className='space-y-1.5'>
         {items.map((item) => (
-          <SidebarMenuItem key={item.title}>
-            <SidebarMenuButton tooltip={item.title} asChild>
+          <SidebarMenuItem
+            key={item.title}
+            className={cn(
+              pathname === item.url ? 'bg-slate-200' : '',
+              'rounded-md'
+            )}
+          >
+            <SidebarMenuButton
+              className='hover:bg-slate-200'
+              tooltip={item.title}
+              asChild
+            >
               <Link href={item.url}>
                 {item.icon && <item.icon className='mr-3 h-8 w-8' />}
                 <Typography.H5>{item.title}</Typography.H5>

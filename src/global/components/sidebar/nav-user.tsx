@@ -5,7 +5,7 @@ import {
   Bell,
   ChevronsUpDown,
   LogOut,
-  Sparkles,
+  Settings2,
 } from 'lucide-react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -79,7 +79,7 @@ export function NavUser({ user }: { user: IUser }) {
             <DropdownMenuGroup>
               <Link href={`/${user.organization?.slug}/settings`}>
                 <DropdownMenuItem>
-                  <Sparkles />
+                  <Settings2 />
                   Organization&apos;s Settings
                 </DropdownMenuItem>
               </Link>
