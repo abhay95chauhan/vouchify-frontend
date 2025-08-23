@@ -5,6 +5,7 @@ export interface IOrganizationPost {
   organization_type: string;
   email?: string;
   currency: string;
+  currency_symbol: string;
   timezone: string;
   description?: string;
   website?: string;
@@ -26,6 +27,7 @@ export interface IOrganizationGet {
   industry: string;
   organization_type: string;
   currency: string;
+  currency_symbol: string;
   timezone: string;
   description?: string;
   website?: string;

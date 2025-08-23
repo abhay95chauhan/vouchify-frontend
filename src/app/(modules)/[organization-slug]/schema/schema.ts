@@ -6,6 +6,7 @@ export const organizationSchema = z.object({
   industry: z.string({ message: fieldValidation('Industry') }),
   organization_type: z.string({ message: fieldValidation('Type') }),
   currency: z.string({ message: fieldValidation('Currency') }),
+  currency_symbol: z.string().optional(),
   timezone: z.string({ message: fieldValidation('Timezone') }),
   website: z.url().optional(),
   description: z.string().optional(),

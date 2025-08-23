@@ -14,6 +14,7 @@ export class OrganizationModelGet implements IOrganizationGet {
   industry: string;
   organization_type: string;
   currency: string;
+  currency_symbol: string;
   timezone: string;
   description?: string;
   website?: string;
@@ -32,6 +33,7 @@ export class OrganizationModelGet implements IOrganizationGet {
     this.industry = data?.industry ?? '';
     this.organization_type = data?.organization_type ?? '';
     this.currency = data?.currency ?? ''; // ISO date string
+    this.currency_symbol = data?.currency_symbol ?? ''; // ISO date string
     this.created_at = data?.created_at ?? ''; // ISO date string
     this.updated_at = data?.updated_at ?? ''; // ISO date string
     this.timezone = data?.timezone ?? '';

@@ -5,6 +5,7 @@
 
 :root {
   --background: oklch(1 0 0);
+  --success: oklch(0.632 0.186 147.37);
   --foreground: oklch(0.2050 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.1450 0 0);
@@ -54,6 +55,7 @@
 
 .dark {
   --background: oklch(0.1450 0 0);
+  --success: oklch(0.632 0.186 147.37);
   --foreground: oklch(0.9850 0 0);
   --card: oklch(0.2050 0 0);
   --card-foreground: oklch(0.9850 0 0);
@@ -107,6 +109,7 @@
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
+  --color-success: var(--success);
   --color-primary-foreground: var(--primary-foreground);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);

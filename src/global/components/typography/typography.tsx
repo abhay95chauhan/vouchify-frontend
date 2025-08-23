@@ -20,7 +20,7 @@ const H1: React.FC<TypographyProps> = ({ children, className }) => {
 const H2: React.FC<TypographyProps> = ({ children, className }) => {
   return (
     <h2
-      className={`scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0 ${className}`} // 30px
+      className={`scroll-m-20 text-3xl font-semibold tracking-tight first:mt-0 ${className}`} // 30px
     >
       {children}
     </h2>

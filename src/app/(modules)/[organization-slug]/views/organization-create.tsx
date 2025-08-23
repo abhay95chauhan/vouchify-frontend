@@ -64,6 +64,7 @@ export default function OrganizationCreate() {
     setState((prev) => ({ ...prev, isLoading: true }));
     const res = await createOrganizationAction({
       ...values,
+      currency_symbol: values.currency_symbol as string,
       subcription_expire: moment()
         ?.tz(values?.timezone)
         .add(1, 'months')
@@ -244,7 +245,16 @@ export default function OrganizationCreate() {
                                 <Select
                                   key='select-0'
                                   {...field}
-                                  onValueChange={field.onChange}
+                                  onValueChange={(val) => {
+                                    const findSymbol = currencies.find(
+                                      (cur) => cur.value === val
+                                    );
+                                    field.onChange(val);
+                                    form.setValue(
+                                      'currency_symbol',
+                                      findSymbol?.symbol
+                                    );
+                                  }}
                                 >
                                   <SelectTrigger className='w-full '>
                                     <SelectValue placeholder='Indian Rupee (INR)' />

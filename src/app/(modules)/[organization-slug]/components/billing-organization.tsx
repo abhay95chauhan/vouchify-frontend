@@ -35,7 +35,7 @@ const BillingOrganization = ({ orgData }: IProps) => {
                 {orgData?.subcription} Plan ({orgData?.subcription_status})
               </h3>
               <Typography.Muted className='text-sm'>
-                {orgData?.currency} {orgData?.subcription_cost} / month •
+                {orgData?.currency_symbol} {orgData?.subcription_cost} / month •
                 Unlimited vouchers
               </Typography.Muted>
             </div>
