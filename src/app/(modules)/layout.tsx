@@ -11,7 +11,7 @@ import { redirect } from 'next/navigation';
 import { Roboto } from 'next/font/google';
 import { Suspense } from 'react';
 import { Providers } from '@/redux/provider';
-import { getMeUserAction } from '../auth/login/actions/actions';
+import { getMeUserService } from '../auth/login/actions-services/services';
 import Loading from './loading';
 import UrlPathname from '@/global/components/url-pathname/url-pathname';
 
@@ -32,7 +32,7 @@ export default async function RootLayout({
   if (!jwt) {
     redirect('/auth/login');
   }
-  const res = await await getMeUserAction(jwt);
+  const res = await await getMeUserService(jwt);
   if (!res) {
     return <Loading />;
   }

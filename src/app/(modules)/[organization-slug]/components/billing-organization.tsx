@@ -51,7 +51,7 @@ const BillingOrganization = ({ orgData }: IProps) => {
             <div className='space-y-2'>
               <Label>Billing Email</Label>
               <Typography.Muted className='text-sm'>
-                {orgData.email}
+                {orgData?.email}
               </Typography.Muted>
             </div>
             <div className='space-y-2'>

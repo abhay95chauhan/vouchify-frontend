@@ -28,7 +28,7 @@ import { redirect } from 'next/navigation';
 import { IUser } from '@/app/auth/login/model-interfaces/interfaces';
 import { getInitials } from '@/global/utils/helper-fn';
 import Link from 'next/link';
-import { logout } from '@/app/auth/login/actions/actions';
+import { logoutService } from '@/app/auth/login/actions-services/services';
 
 export function NavUser({ user }: { user: IUser }) {
   const { isMobile } = useSidebar();
@@ -50,7 +50,7 @@ export function NavUser({ user }: { user: IUser }) {
               </Avatar>
               <div className='grid flex-1 text-left text-sm leading-tight'>
                 <span className='truncate font-medium'>{user.full_name}</span>
-                <span className='truncate text-xs'>{user.email}</span>
+                <span className='truncate text-xs'>{user?.email}</span>
               </div>
               <ChevronsUpDown className='ml-auto size-4' />
             </SidebarMenuButton>
@@ -71,7 +71,7 @@ export function NavUser({ user }: { user: IUser }) {
                 </Avatar>
                 <div className='grid flex-1 text-left text-sm leading-tight'>
                   <span className='truncate font-medium'>{user.full_name}</span>
-                  <span className='truncate text-xs'>{user.email}</span>
+                  <span className='truncate text-xs'>{user?.email}</span>
                 </div>
               </div>
             </DropdownMenuLabel>
@@ -97,7 +97,7 @@ export function NavUser({ user }: { user: IUser }) {
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={async () => {
-                await logout();
+                await logoutService();
                 redirect('/auth/login');
               }}
             >

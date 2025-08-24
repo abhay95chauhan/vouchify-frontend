@@ -4,7 +4,7 @@ import CardComponent from '@/global/components/card/card-component';
 import ListViewComponent from '@/global/components/list-view/list-view';
 import { Typography } from '@/global/components/typography/typography';
 import { ColumnDef } from '@tanstack/react-table';
-import { Plus, Search } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import React, { Suspense } from 'react';
 import { IVoucherGet } from '../interface-model/interfaces';
 import { TableSkeleton } from '@/global/components/list-view/list-view-skeleton-loader';

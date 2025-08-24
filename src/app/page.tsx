@@ -1,6 +1,6 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { getMeUserAction } from './auth/login/actions/actions';
+import { getMeUserService } from './auth/login/actions-services/services';
 import OrganizationCreate from './(modules)/[organization-slug]/views/organization-create';
 
 export default async function Home() {
@@ -10,7 +10,7 @@ export default async function Home() {
     redirect('/auth/login');
   }
 
-  const res = await getMeUserAction(jwt);
+  const res = await getMeUserService(jwt);
 
   if (res?.code === 200 && res?.data?.organization_id) {
     if (!res?.data?.is_email_varified) {

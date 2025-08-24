@@ -22,7 +22,7 @@ import { errorMessages } from '@/global/utils/error-messages';
 import Logo from '@/global/components/logo/logo';
 import { redirect } from 'next/navigation';
 import { loginSchema } from '../schema/schema';
-import { loginAction } from '../actions/actions';
+import { loginService } from '../actions-services/services';
 import { useState } from 'react';
 import { Loader } from 'lucide-react';
 
@@ -41,7 +41,7 @@ export default function LoginForm() {
 
   async function onSubmit(values: z.infer<typeof loginSchema>) {
     setState((prev) => ({ ...prev, isLoading: true }));
-    const res = await loginAction(values);
+    const res = await loginService(values);
 
     if (res) {
       if (res?.error) {

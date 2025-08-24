@@ -7,7 +7,7 @@ import {
 import { handleError } from '@/global/utils/error-handler';
 import { toast } from 'sonner';
 
-export const createOrganizationAction = async (orgData: IOrganizationPost) => {
+export const createOrganizationService = async (orgData: IOrganizationPost) => {
   try {
     const res = await vouchifyApi.request<IOrganizationPost>('/organization', {
       method: 'POST',
@@ -20,7 +20,7 @@ export const createOrganizationAction = async (orgData: IOrganizationPost) => {
   }
 };
 
-export const updateMyOrganizationAction = async (
+export const updateMyOrganizationService = async (
   orgData: Partial<IOrganizationPost>
 ): Promise<IGenericRes<IOrganizationGet>> => {
   try {
@@ -39,7 +39,7 @@ export const updateMyOrganizationAction = async (
   }
 };
 
-export const getMyOrganizationAction = async (
+export const getMyOrganizationService = async (
   jwt?: string
 ): Promise<IGenericRes<IOrganizationGet>> => {
   try {

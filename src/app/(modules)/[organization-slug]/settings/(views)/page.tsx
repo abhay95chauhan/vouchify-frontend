@@ -3,13 +3,13 @@ import React from 'react';
 import DeleteOrganization from '../../components/delete-organization';
 import UpdateOraganization from '../../components/update-oraganization';
 import BillingOrganization from '../../components/billing-organization';
-import { getMyOrganizationAction } from '../../actions/actions';
+import { getMyOrganizationService } from '../../actions-services/services';
 import { cookies } from 'next/headers';
 import ApiKey from '../../components/api-key';
 
 const OrganizationSettings = async () => {
   const jwt = (await cookies()).get('jwt')?.value;
-  const { data: orgRes } = await getMyOrganizationAction(jwt);
+  const { data: orgRes } = await getMyOrganizationService(jwt);
 
   return (
     <div className='space-y-8 w-full'>

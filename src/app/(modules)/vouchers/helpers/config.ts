@@ -2,7 +2,6 @@ import moment from 'moment-timezone';
 
 export const discountType = ['Fixed', 'Percentage'];
 export const redeemPerUser = ['Once', 'Unlimited'];
-export const redeemType = ['Limited', 'Unlimited'];
 
 export const discountSymbol = {
   Fixed: (currency: string) => currency,

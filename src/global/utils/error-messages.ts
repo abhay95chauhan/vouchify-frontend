@@ -10,5 +10,11 @@ export const errorMessages = {
       update: 'Organization Updated Successfully',
     },
   },
+  voucher: {
+    success: {
+      create: 'Voucher Created Successfully',
+      update: 'Voucher Updated Successfully',
+    },
+  },
   somethingWrong: 'Something went wrong',
 };

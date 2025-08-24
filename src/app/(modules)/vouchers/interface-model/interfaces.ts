@@ -1,6 +1,5 @@
 export type DiscountType = 'Fixed' | 'Percentage';
 export type RedeemPerUserType = 'Once' | 'Unlimited';
-export type RedeemType = 'Limited' | 'Unlimited';
 
 export interface IVoucherGet {
   id: string;
@@ -20,5 +19,20 @@ export interface IVoucherGet {
   prefix: string;
   postfix?: string;
   redeem_limit_per_user?: RedeemPerUserType;
-  redeem_type: RedeemType;
+}
+
+export interface IVoucherPost {
+  name: string;
+  description?: string;
+  code: string;
+  discount_type: DiscountType;
+  discount_value: number;
+  max_redemptions?: number | null;
+  min_order_amount: number;
+  start_date: string;
+  end_date: string;
+  organization_id: string;
+  prefix: string;
+  postfix?: string;
+  redeem_limit_per_user?: RedeemPerUserType;
 }

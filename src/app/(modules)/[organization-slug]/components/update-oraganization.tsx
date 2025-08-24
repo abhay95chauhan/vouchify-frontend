@@ -34,7 +34,7 @@ import z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { revalidateOrganizationPage } from './revalidate-path';
 import { organizationSchema } from '../schema/schema';
-import { updateMyOrganizationAction } from '../actions/actions';
+import { updateMyOrganizationService } from '../actions-services/services';
 import {
   currencies,
   industries,
@@ -63,7 +63,7 @@ const UpdateOraganization = ({ orgData }: IProps) => {
 
   async function onSubmit(values: z.infer<typeof organizationSchema>) {
     setState((prev) => ({ ...prev, isLoading: true }));
-    const res = await updateMyOrganizationAction(values);
+    const res = await updateMyOrganizationService(values);
     await revalidateOrganizationPage();
     if (res?.code === 200) {
       toast.success(errorMessages?.organization.success.update);

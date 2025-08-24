@@ -15,7 +15,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { useState, useEffect, useCallback } from 'react';
 import { Plus, Search } from 'lucide-react';
 import { vouchifyApi } from '@/global/utils/api';
@@ -121,6 +120,8 @@ export default function VouchersTable<T>({
       setTotalPages(result?.pagination?.totalPages);
       setTotalItems(result?.pagination?.total);
     } catch (err) {
+      setData([]);
+      console.log(err);
     } finally {
       setLoading(false);
     }
@@ -190,7 +191,7 @@ export default function VouchersTable<T>({
 
   const EmptyState = () => {
     return (
-      <div className='flex flex-col items-center justify-center text-center space-y-4'>
+      <div className='flex flex-col items-center justify-center text-center space-y-4 mb-4 mt-2'>
         <div className='bg-muted/30 rounded-full p-6 mb-6'>
           <Search className='h-8 w-8 text-muted-foreground' />
         </div>
@@ -236,16 +237,13 @@ export default function VouchersTable<T>({
         </div>
       </div>
 
-      <div className='w-full border'>
-        <Table className='w-full table-fixed bg-primary/10'>
-          <TableHeader>
+      <div className='overflow-hidden border'>
+        <Table>
+          <TableHeader className='bg-primary/10'>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} className='w-full'>
+              <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <TableHead
-                    key={header.id}
-                    className='text-left px-4 border-b'
-                  >
+                  <TableHead key={header.id} className='text-left'>
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -257,39 +255,36 @@ export default function VouchersTable<T>({
               </TableRow>
             ))}
           </TableHeader>
-        </Table>
-        <ScrollArea className='h-80 w-full'>
-          <Table className='w-full table-fixed'>
-            <TableBody>
-              {data?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow key={row.id}>
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id} className='px-4'>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow className='w-full hover:bg-red'>
-                  <TableCell colSpan={columns.length} className=' text-center'>
-                    {EmptyState()}
-                  </TableCell>
+
+          <TableBody>
+            {data?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow key={row.id}>
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </TableCell>
+                  ))}
                 </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </ScrollArea>
+              ))
+            ) : (
+              <TableRow className='w-full hover:bg-red'>
+                <TableCell colSpan={columns.length} className='text-center'>
+                  {EmptyState()}
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
       </div>
 
       {data.length ? (
         <div className='flex flex-col lg:flex-row items-center justify-between space-x-2 gap-2 py-4'>
           <div className='flex items-center space-x-2'>
-            <p className='text-sm font-medium'>Rows per page</p>
+            <p className='text-sm font-medium'>Rows</p>
             <Select
               onValueChange={(e) => {
                 setPageSize(Number(e));
@@ -301,8 +296,11 @@ export default function VouchersTable<T>({
                 <SelectValue placeholder='Page' />
               </SelectTrigger>
               <SelectContent>
-                {[10, 20, 30, 40, 50].map((size) => (
-                  <SelectItem value={String(size)}> {size}</SelectItem>
+                {[10, 20, 30, 40, 50].map((size, index) => (
+                  <SelectItem key={index} value={String(size)}>
+                    {' '}
+                    {size}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>

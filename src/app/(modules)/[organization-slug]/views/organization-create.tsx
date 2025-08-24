@@ -40,7 +40,7 @@ import {
   industryTypes,
   timezonesWithOffset,
 } from '../helpers/config';
-import { createOrganizationAction } from '../actions/actions';
+import { createOrganizationService } from '../actions-services/services';
 import { redirect } from 'next/navigation';
 import { toast } from 'sonner';
 import { errorMessages } from '@/global/utils/error-messages';
@@ -62,7 +62,7 @@ export default function OrganizationCreate() {
 
   async function onSubmit(values: z.infer<typeof organizationSchema>) {
     setState((prev) => ({ ...prev, isLoading: true }));
-    const res = await createOrganizationAction({
+    const res = await createOrganizationService({
       ...values,
       currency_symbol: values.currency_symbol as string,
       subcription_expire: moment()

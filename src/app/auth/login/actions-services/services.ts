@@ -1,9 +1,9 @@
 import { vouchifyApi } from '@/global/utils/api';
 import { ILogin, IUser } from '../model-interfaces/interfaces';
-import { toast } from 'sonner';
 import { handleError } from '@/global/utils/error-handler';
+import { toast } from 'sonner';
 
-export const logout = async () => {
+export const logoutService = async () => {
   try {
     await vouchifyApi.request('/user/logout', {
       method: 'POST',
@@ -14,7 +14,7 @@ export const logout = async () => {
   }
 };
 
-export const loginAction = async (loginData: ILogin) => {
+export const loginService = async (loginData: ILogin) => {
   try {
     const res = await vouchifyApi.request<ILogin>('/user/login', {
       method: 'POST',
@@ -27,7 +27,7 @@ export const loginAction = async (loginData: ILogin) => {
   }
 };
 
-export const getMeUserAction = async (token: string) => {
+export const getMeUserService = async (token: string) => {
   try {
     const res = await vouchifyApi.request<IUser>('/user/me', {
       method: 'GET',

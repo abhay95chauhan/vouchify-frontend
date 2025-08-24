@@ -10,7 +10,7 @@ import { CheckCircle, Mail, RefreshCw, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { getMeUserAction } from '../auth/login/actions/actions';
+import { getMeUserService } from '../auth/login/actions-services/services';
 import { Typography } from '@/global/components/typography/typography';
 
 export default async function VerifyEmailPage() {
@@ -20,7 +20,7 @@ export default async function VerifyEmailPage() {
     redirect('/auth/login');
   }
 
-  const res = await getMeUserAction(jwt);
+  const res = await getMeUserService(jwt);
 
   if (
     res?.code === 200 &&
@@ -68,7 +68,7 @@ export default async function VerifyEmailPage() {
               Check Your Email
             </CardTitle>
             <CardDescription className='text-muted-foreground text-base leading-relaxed px-2'>
-              We've sent a secure verification link to your email address.
+              We&apos;ve sent a secure verification link to your email address.
               Please check your inbox to continue.
             </CardDescription>
           </CardHeader>
@@ -95,8 +95,8 @@ export default async function VerifyEmailPage() {
 
             <div className='text-center space-y-5'>
               <Typography.P className='text-sm text-muted-foreground leading-relaxed'>
-                Didn't receive the email? Check your spam folder or request a
-                new one below.
+                Didn&apos;t receive the email? Check your spam folder or request
+                a new one below.
               </Typography.P>
 
               <Button className='w-full'>
