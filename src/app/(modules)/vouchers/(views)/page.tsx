@@ -6,14 +6,19 @@ import { Typography } from '@/global/components/typography/typography';
 import { ColumnDef } from '@tanstack/react-table';
 import { Plus } from 'lucide-react';
 import React, { Suspense } from 'react';
-import { IVoucherGet } from '../interface-model/interfaces';
+import { DiscountType, IVoucherGet } from '../interface-model/interfaces';
 import { TableSkeleton } from '@/global/components/list-view/list-view-skeleton-loader';
-import { checkVoucherStatus, discountSymbol } from '../helpers/config';
+import {
+  checkVoucherStatus,
+  discountSymbol,
+  discountType,
+} from '../helpers/config';
 import { Badge } from '@/components/ui/badge';
 import moment from 'moment';
 import { useAppSelector } from '@/redux/hook';
 import { CopyButton } from '@/components/ui/shadcn-io/copy-button';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 
 const VouchersList = () => {
   const { user } = useAppSelector((state) => state.user);
@@ -36,7 +41,7 @@ const VouchersList = () => {
           </Typography.H5>
           <CopyButton
             content={row.getValue('code')}
-            className='bg-success hover:bg-green-500 '
+            className='bg-success hover:bg-success/70 no-row-click'
             // variant='outline'
             size='sm'
           />
@@ -64,10 +69,10 @@ const VouchersList = () => {
 
     {
       accessorKey: 'min_order_amount',
-      header: 'Minimum Amount',
+      header: 'Minimum Order Amount',
       cell: ({ row }) => (
         <div className='capitalize'>
-          {discountSymbol[row.original.discount_type](
+          {discountSymbol[discountType[0] as DiscountType](
             user.organization.currency_symbol
           )}
           &nbsp; {row.getValue('min_order_amount')}
@@ -104,9 +109,9 @@ const VouchersList = () => {
         return (
           <div className='capitalize'>
             <Badge
-              variant={status.status ? 'default' : 'destructive'}
+              variant={status?.status ? 'default' : 'destructive'}
               className='text-sm'
-            >{`${status.isActive}`}</Badge>
+            >{`${status?.isActive}`}</Badge>
           </div>
         );
       },
@@ -131,12 +136,27 @@ const VouchersList = () => {
       <CardComponent>
         <Suspense fallback={<TableSkeleton />}>
           <ListViewComponent
+            onRowClick={(row, event) => {
+              const targetElement = event.target as HTMLElement;
+              if (
+                targetElement.closest('.no-row-click') ||
+                targetElement.closest('.connectToZeniot') ||
+                targetElement.role === 'checkbox' ||
+                targetElement.role === 'menuitem'
+              ) {
+                return;
+              }
+              redirect(`/vouchers/${row.original.code}`);
+            }}
             url='/voucher/list'
             columns={columns}
             emptyStateMsg={{
               createButtonLabel: 'Create Voucher',
               heading: 'No vouchers found',
               desc: 'There are no vouchers available at the moment. Check back later or create a new voucher to get started.',
+              createButtonFn: () => {
+                redirect(`/vouchers/create`);
+              },
             }}
           />
         </Suspense>

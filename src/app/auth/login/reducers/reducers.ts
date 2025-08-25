@@ -15,7 +15,13 @@ const userSlice = createSlice({
   initialState,
   reducers: {
     setUser(state, action: PayloadAction<IUser>) {
-      state.user = action.payload;
+      const safeData = {
+        ...action.payload,
+        organization: {
+          ...action.payload.organization,
+        },
+      };
+      state.user = safeData;
     },
   },
 });

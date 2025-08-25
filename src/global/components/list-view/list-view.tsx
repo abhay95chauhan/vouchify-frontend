@@ -3,6 +3,7 @@ import {
   type ColumnDef,
   flexRender,
   getCoreRowModel,
+  Row,
   useReactTable,
 } from '@tanstack/react-table';
 import { Button } from '@/components/ui/button';
@@ -15,7 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, MouseEvent } from 'react';
 import { Plus, Search } from 'lucide-react';
 import { vouchifyApi } from '@/global/utils/api';
 import {
@@ -37,13 +38,15 @@ import {
 import { TableSkeleton } from './list-view-skeleton-loader';
 import { Typography } from '../typography/typography';
 
-interface VouchersTableProps<T> {
+interface TableProps<T> {
+  onRowClick?: (row: Row<T>, e: MouseEvent<HTMLTableRowElement>) => void;
   url: string;
   columns: ColumnDef<T>[];
   emptyStateMsg: {
     heading: string;
     desc: string;
     createButtonLabel: string;
+    createButtonFn: () => void;
   };
 }
 
@@ -61,7 +64,8 @@ export default function VouchersTable<T>({
   url,
   columns,
   emptyStateMsg,
-}: VouchersTableProps<T>) {
+  onRowClick,
+}: TableProps<T>) {
   const [data, setData] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -206,7 +210,7 @@ export default function VouchersTable<T>({
             <Search className='h-4 w-4' />
             Refresh
           </Button>
-          <Button className='gap-2'>
+          <Button className='gap-2' onClick={emptyStateMsg.createButtonFn}>
             <Plus className='h-4 w-4' />
             {emptyStateMsg.createButtonLabel}
           </Button>
@@ -259,7 +263,11 @@ export default function VouchersTable<T>({
           <TableBody>
             {data?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
+                <TableRow
+                  onClick={(e) => onRowClick && onRowClick(row, e)}
+                  key={row.id}
+                  className='cursor-pointer'
+                >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
                       {flexRender(

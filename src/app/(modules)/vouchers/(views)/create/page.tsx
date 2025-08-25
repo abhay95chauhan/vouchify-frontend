@@ -1,7 +1,7 @@
 'use client';
 import CardComponent from '@/global/components/card/card-component';
 import { Typography } from '@/global/components/typography/typography';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { VoucherPostSchema } from '../../schema/schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import z from 'zod';
@@ -17,11 +17,14 @@ import {
 import { Input } from '@/components/ui/input';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
-import { Infinity, Loader } from 'lucide-react';
+import { AlertCircleIcon, Infinity, Loader } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import {
+  buildVoucherCode,
+  checkVoucherStatus,
   discountSymbol,
   discountType,
+  generateVoucher,
   redeemPerUser,
 } from '../../helpers/config';
 import {
@@ -39,38 +42,77 @@ import { PageHeader } from '@/global/components/page-header/page-header';
 import { DateSelector } from '@/global/components/date-selector/date-selector';
 import moment from 'moment';
 import { fieldValidation } from '@/global/utils/validation';
-import { createVoucherAction } from '../../actions/actions';
+import { createVoucherService } from '../../actions/services';
 import { toast } from 'sonner';
 import { errorMessages } from '@/global/utils/error-messages';
 import { redirect } from 'next/navigation';
 import { CopyButton } from '@/components/ui/shadcn-io/copy-button';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
-const VoucherCreate = () => {
+const VoucherCreate = ({ voucherData }: { voucherData: IVoucherPost }) => {
   const { user } = useAppSelector((state) => state.user);
   const timezone = user.organization.timezone;
 
   const [state, setState] = useState({
-    formStep: 1,
+    codeLength: 4,
     isLoading: false,
+    isAutoGenerate: false,
+    isVoucherActive: true,
+    voucherStatus: '',
   });
 
   const form = useForm<z.input<typeof VoucherPostSchema>>({
     resolver: zodResolver(VoucherPostSchema),
     mode: 'all',
     defaultValues: {
-      discount_type: discountType[1],
+      discount_type: voucherData?.discount_type ?? discountType[1],
       min_order_amount: 0,
-      redeem_limit_per_user: redeemPerUser[0],
+      redeem_limit_per_user:
+        voucherData?.redeem_limit_per_user ?? redeemPerUser[0],
       start_date: moment().tz(timezone)?.format('YYYY-MM-DD'),
       end_date: moment().tz(timezone)?.add(1, 'years')?.format('YYYY-MM-DD'),
     },
   });
 
+  useEffect(() => {
+    if (voucherData?.code) {
+      form.reset({
+        ...voucherData,
+        code: voucherData.code.includes('-')
+          ? voucherData.code.split('-')[1]
+          : voucherData.code,
+        max_redemptions: Number(voucherData?.max_redemptions) ?? null,
+      });
+      const status = checkVoucherStatus(
+        voucherData.start_date,
+        voucherData.end_date,
+        user.organization.timezone
+      );
+      setState((prev) => ({
+        ...prev,
+        isVoucherActive: status?.status || false,
+        voucherStatus: status?.isActive ?? '',
+      }));
+    } else {
+      form.reset({
+        ...form.getValues(),
+        code: state.isAutoGenerate ? generateVoucher(state.codeLength) : '',
+        prefix: state.isAutoGenerate ? generateVoucher(4) : '',
+        postfix: state.isAutoGenerate ? generateVoucher(4) : '',
+        discount_type: discountType[1],
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form, state.isAutoGenerate, state.codeLength, voucherData?.code]);
+
   async function onSubmit(values: z.infer<typeof VoucherPostSchema>) {
     setState((prev) => ({ ...prev, isLoading: true }));
     const vData = new VoucherModelPost(values as IVoucherPost);
-    const res = await createVoucherAction({
+    const res = await createVoucherService({
       ...vData,
+      code: buildVoucherCode(values.prefix, values.code, values.postfix),
       organization_id: user.organization_id,
     });
 
@@ -92,17 +134,31 @@ const VoucherCreate = () => {
     form.clearErrors();
   }
 
+  const voucherCode = buildVoucherCode(
+    form?.watch('prefix'),
+    form?.watch('code'),
+    form?.watch('postfix')
+  );
   return (
     <div className='space-y-6'>
       <PageHeader
         showBackButton
         onBack={() => redirect('/vouchers')}
-        title='Create New Voucher'
+        title={voucherData?.code ? 'Update Voucher' : 'Create New Voucher'}
         description='Design and configure your new promotional voucher.'
       />
-
+      {voucherData?.code && !state.isVoucherActive ? (
+        <Alert variant='destructive'>
+          <AlertCircleIcon className='h-4 w-4' />
+          <AlertTitle>Voucher Inactive</AlertTitle>
+          <AlertDescription className='flex'>
+            This voucher has <strong>{state.voucherStatus}</strong>. You can
+            update its end date to make it active again, or you can delete it
+          </AlertDescription>
+        </Alert>
+      ) : null}
       <div className='grid grid-cols-12 gap-4'>
-        <div className='col-span-8 '>
+        <div className='lg:col-span-8 col-span-12'>
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit((values) =>
@@ -113,12 +169,50 @@ const VoucherCreate = () => {
             >
               <CardComponent
                 title={
-                  <div className='space-y-2'>
-                    <Typography.H4>Voucher Details</Typography.H4>
-                    <Typography.Muted className='font-normal'>
-                      Basic information about your voucher.
-                    </Typography.Muted>
-                  </div>
+                  <>
+                    <div className='flex sm:flex-row flex-col gap-4 items-start justify-between'>
+                      <div className='space-y-2'>
+                        <Typography.H4>Voucher Details</Typography.H4>
+                        <Typography.Muted className='font-normal'>
+                          Basic information about your voucher.
+                        </Typography.Muted>
+                      </div>
+                      {!voucherData?.code ? (
+                        <div className='flex gap-2 items-center'>
+                          <Label>Auto Generate</Label>
+                          <Switch
+                            onCheckedChange={(e) =>
+                              setState((prev) => ({
+                                ...prev,
+                                isAutoGenerate: e,
+                              }))
+                            }
+                          />
+                          <Select
+                            disabled={!state.isAutoGenerate}
+                            onValueChange={(e) => {
+                              setState((prev) => ({
+                                ...prev,
+                                codeLength: parseInt(e),
+                              }));
+                            }}
+                            defaultValue={state.codeLength?.toString()}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder='Page' />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {[4, 8, 12].map((size, index) => (
+                                <SelectItem key={index} value={String(size)}>
+                                  {size}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      ) : null}
+                    </div>
+                  </>
                 }
                 cardContentClass='space-y-4'
               >
@@ -174,6 +268,7 @@ const VoucherCreate = () => {
                           <Input
                             {...field}
                             placeholder='e.g., SUMMER20, FREESHIP'
+                            disabled={state.isAutoGenerate}
                             type='text'
                             ref={field.ref}
                           />
@@ -214,13 +309,9 @@ const VoucherCreate = () => {
                             <span className='text-destructive'> *</span>
                           </FormLabel>
                           <FormControl>
-                            <Select
-                              {...field}
-                              defaultValue={discountType[1]}
-                              onValueChange={field.onChange}
-                            >
+                            <Select {...field} onValueChange={field.onChange}>
                               <SelectTrigger className='w-full'>
-                                <SelectValue placeholder='Indian Rupee (INR)' />
+                                <SelectValue placeholder='e.g., Percentage' />
                               </SelectTrigger>
                               <SelectContent>
                                 {discountType?.map((item) => (
@@ -244,9 +335,11 @@ const VoucherCreate = () => {
                         <FormItem>
                           <FormLabel>
                             {form.watch('discount_type')} (
-                            {discountSymbol[
-                              form.watch('discount_type') as DiscountType
-                            ](user.organization.currency_symbol)}
+                            {form.watch('discount_type')
+                              ? discountSymbol[
+                                  form.watch('discount_type') as DiscountType
+                                ](user.organization.currency_symbol)
+                              : null}
                             )<span className='text-destructive'> *</span>
                           </FormLabel>
                           <FormControl>
@@ -401,13 +494,9 @@ const VoucherCreate = () => {
                             <span className='text-destructive'> *</span>
                           </FormLabel>
                           <FormControl>
-                            <Select
-                              {...field}
-                              defaultValue={redeemPerUser[0]}
-                              onValueChange={field.onChange}
-                            >
+                            <Select {...field} onValueChange={field.onChange}>
                               <SelectTrigger className='w-full'>
-                                <SelectValue placeholder='Indian Rupee (INR)' />
+                                <SelectValue placeholder='e.g., Once' />
                               </SelectTrigger>
                               <SelectContent>
                                 {redeemPerUser?.map((item) => (
@@ -495,13 +584,13 @@ const VoucherCreate = () => {
                 type='submit'
               >
                 {state.isLoading && <Loader className='animate-spin' />}
-                Create
+                {voucherData?.code ? 'Update' : 'Create'}
               </Button>
             </form>
           </Form>
         </div>
-        <div className='col-span-4'>
-          <Card className='shadow-2xl rounded-2xl border border-vpro-gray-200 dark:border-vpro-gray-700 overflow-hidden max-w-sm w-full'>
+        <div className='lg:col-span-4 col-span-12'>
+          <Card className='shadow-2xl rounded-2xl border  overflow-hidden w-full'>
             {/* Logo */}
             <CardHeader>
               <Typography.H1 className='text-center'>
@@ -517,26 +606,20 @@ const VoucherCreate = () => {
               {/* Coupon Code */}
               <div className='border-2 border-dashed border-vpro-purple-300 dark:border-vpro-purple-700 bg-vpro-purple-50/60 dark:bg-vpro-purple-950/40 rounded-xl p-6 text-center space-y-3 shadow-inner'>
                 <div className='w-full flex items-center justify-center gap-2'>
-                  <Typography.H3>
-                    {form.watch('prefix')}-{form.watch('code')}-
-                    {form.watch('postfix')}
-                  </Typography.H3>
-                  <CopyButton
-                    content={`${form.watch('prefix')}-${form.watch(
-                      'code'
-                    )}-${form.watch('postfix')}`}
-                    size='sm'
-                  />
+                  <Typography.H3>{voucherCode}</Typography.H3>
+                  <CopyButton content={voucherCode} size='sm' />
                 </div>
                 <Typography.H2 className='font-black'>
                   {form.watch('discount_value')}{' '}
-                  {discountSymbol[form.watch('discount_type') as DiscountType](
-                    user.organization.currency_symbol
-                  )}{' '}
+                  {form.watch('discount_type')
+                    ? discountSymbol[
+                        form.watch('discount_type') as DiscountType
+                      ](user.organization.currency_symbol)
+                    : null}{' '}
                   OFF
                 </Typography.H2>
                 <div className='text-sm text-vpro-purple-500 dark:text-vpro-purple-400 italic'>
-                  {form.watch('min_order_amount')}{' '}
+                  Minimun Amount of Purchase {form.watch('min_order_amount')}{' '}
                   {user.organization.currency_symbol}
                 </div>
                 <Typography.H6 className='text-xs text-muted-foreground'>
