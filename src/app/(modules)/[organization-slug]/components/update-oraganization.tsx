@@ -43,7 +43,6 @@ import {
 } from '../helpers/config';
 import { IOrganizationGet } from '../model-interface/interfaces';
 import { toast } from 'sonner';
-import { errorMessages } from '@/global/utils/error-messages';
 
 interface IProps {
   orgData: IOrganizationGet;
@@ -66,9 +65,9 @@ const UpdateOraganization = ({ orgData }: IProps) => {
     const res = await updateMyOrganizationService(values);
     await revalidateOrganizationPage();
     if (res?.code === 200) {
-      toast.success(errorMessages?.organization.success.update);
+      toast.success(res?.message);
     } else {
-      toast.error(errorMessages.somethingWrong);
+      toast.error(res?.error?.message);
     }
     setState((prev) => ({ ...prev, isLoading: false }));
   }

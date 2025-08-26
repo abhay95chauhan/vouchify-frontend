@@ -18,7 +18,6 @@ import Image from 'next/image';
 import { useForm } from 'react-hook-form';
 import z from 'zod';
 import { toast } from 'sonner';
-import { errorMessages } from '@/global/utils/error-messages';
 import Logo from '@/global/components/logo/logo';
 import { redirect } from 'next/navigation';
 import { loginSchema } from '../schema/schema';
@@ -47,7 +46,7 @@ export default function LoginForm() {
       if (res?.error) {
         toast.error(res.error.message);
       } else {
-        toast.success(errorMessages.auth.success.login);
+        toast.success(res.message);
         if (res?.data?.organization_id) {
           redirect('/dashboard');
         } else {

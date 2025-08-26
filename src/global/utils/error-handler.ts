@@ -1,5 +1,3 @@
-import { errorMessages } from './error-messages';
-
 export interface ApiError extends Error {
   status?: number;
   data?: unknown;
@@ -14,5 +12,5 @@ export function handleError(error: unknown): ApiError {
     return { name: 'Error', message: error } as ApiError;
   }
 
-  return { name: 'Error', message: errorMessages.somethingWrong } as ApiError;
+  return { name: 'Error', message: 'Something went wrong' } as ApiError;
 }

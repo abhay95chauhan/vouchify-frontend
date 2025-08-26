@@ -43,7 +43,6 @@ import {
 import { createOrganizationService } from '../actions-services/services';
 import { redirect } from 'next/navigation';
 import { toast } from 'sonner';
-import { errorMessages } from '@/global/utils/error-messages';
 import moment from 'moment';
 
 export default function OrganizationCreate() {
@@ -74,7 +73,7 @@ export default function OrganizationCreate() {
       if (res?.error) {
         toast.error(res.error.message);
       } else {
-        toast.success(errorMessages.organization.success.create);
+        toast.success(res?.message);
         redirect('/dashboard');
       }
     }

@@ -16,12 +16,31 @@ export const createVoucherService = async (voucherData: IVoucherPost) => {
   }
 };
 
-export const getVoucherByCodeService = async (code: string, jwt: string) => {
+export const getVoucherByCodeService = async (code: string, jwt?: string) => {
   try {
     const res = await vouchifyApi.request(`/voucher/${code}`, {
       method: 'GET',
       jwt,
     });
+    return res;
+  } catch (error) {
+    const { message } = handleError(error);
+    toast.error(message);
+  }
+};
+
+export const updateVoucherService = async (
+  voucherData: Partial<IVoucherPost>,
+  code: string
+) => {
+  try {
+    const res = await vouchifyApi.request<Partial<IVoucherPost>>(
+      `/voucher/${code}`,
+      {
+        method: 'PATCH',
+        data: voucherData,
+      }
+    );
     return res;
   } catch (error) {
     const { message } = handleError(error);

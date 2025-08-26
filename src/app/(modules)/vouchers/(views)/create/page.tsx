@@ -42,9 +42,11 @@ import { PageHeader } from '@/global/components/page-header/page-header';
 import { DateSelector } from '@/global/components/date-selector/date-selector';
 import moment from 'moment';
 import { fieldValidation } from '@/global/utils/validation';
-import { createVoucherService } from '../../actions/services';
+import {
+  createVoucherService,
+  updateVoucherService,
+} from '../../actions/services';
 import { toast } from 'sonner';
-import { errorMessages } from '@/global/utils/error-messages';
 import { redirect } from 'next/navigation';
 import { CopyButton } from '@/components/ui/shadcn-io/copy-button';
 import { Switch } from '@/components/ui/switch';
@@ -60,6 +62,7 @@ const VoucherCreate = ({ voucherData }: { voucherData: IVoucherPost }) => {
     isLoading: false,
     isAutoGenerate: false,
     isVoucherActive: true,
+    voucherFindLoading: false,
     voucherStatus: '',
   });
 
@@ -110,23 +113,48 @@ const VoucherCreate = ({ voucherData }: { voucherData: IVoucherPost }) => {
   async function onSubmit(values: z.infer<typeof VoucherPostSchema>) {
     setState((prev) => ({ ...prev, isLoading: true }));
     const vData = new VoucherModelPost(values as IVoucherPost);
-    const res = await createVoucherService({
-      ...vData,
-      code: buildVoucherCode(values.prefix, values.code, values.postfix),
-      organization_id: user.organization_id,
-    });
+
+    const fullCode = buildVoucherCode(
+      values.prefix,
+      values.code,
+      values.postfix
+    );
+
+    let res;
+    if (voucherData?.code) {
+      res = await updateVoucherService(
+        {
+          ...vData,
+          code: fullCode,
+          organization_id: user.organization_id,
+        },
+        voucherData?.code
+      );
+    } else {
+      res = await createVoucherService({
+        ...vData,
+        code: fullCode,
+        organization_id: user.organization_id,
+      });
+    }
 
     if (res) {
       if (res?.error) {
-        toast.error(res.error.message);
+        if (res?.error?.code === 409) {
+          form.setError('code', {
+            message: 'Code Already Exist, Change Prefix or Postfix',
+            type: 'required',
+          });
+        } else {
+          toast.error(res.error.message);
+        }
       } else {
-        toast.success(errorMessages.voucher.success.create);
+        toast.success(res?.message);
         redirect('/vouchers');
       }
     }
 
     setState((prev) => ({ ...prev, isLoading: false }));
-    console.log(res, 'res');
   }
 
   function onReset() {
@@ -139,6 +167,7 @@ const VoucherCreate = ({ voucherData }: { voucherData: IVoucherPost }) => {
     form?.watch('code'),
     form?.watch('postfix')
   );
+
   return (
     <div className='space-y-6'>
       <PageHeader
@@ -150,10 +179,11 @@ const VoucherCreate = ({ voucherData }: { voucherData: IVoucherPost }) => {
       {voucherData?.code && !state.isVoucherActive ? (
         <Alert variant='destructive'>
           <AlertCircleIcon className='h-4 w-4' />
-          <AlertTitle>Voucher Inactive</AlertTitle>
+          <AlertTitle>Voucher {state.voucherStatus}</AlertTitle>
           <AlertDescription className='flex'>
             This voucher has <strong>{state.voucherStatus}</strong>. You can
-            update its end date to make it active again, or you can delete it
+            update its start and end date to make it active again, or you can
+            delete it.
           </AlertDescription>
         </Alert>
       ) : null}
