@@ -29,6 +29,18 @@ export const getVoucherByCodeService = async (code: string, jwt?: string) => {
   }
 };
 
+export const deleteVoucherByCodeService = async (code: string) => {
+  try {
+    const res = await vouchifyApi.request(`/voucher/${code}`, {
+      method: 'DELETE',
+    });
+    return res;
+  } catch (error) {
+    const { message } = handleError(error);
+    toast.error(message);
+  }
+};
+
 export const updateVoucherService = async (
   voucherData: Partial<IVoucherPost>,
   code: string

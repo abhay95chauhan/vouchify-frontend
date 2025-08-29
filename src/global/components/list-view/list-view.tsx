@@ -37,6 +37,7 @@ import {
 } from '@/components/ui/pagination';
 import { TableSkeleton } from './list-view-skeleton-loader';
 import { Typography } from '../typography/typography';
+import { useAppSelector } from '@/redux/hook';
 
 interface TableProps<T> {
   onRowClick?: (row: Row<T>, e: MouseEvent<HTMLTableRowElement>) => void;
@@ -66,6 +67,8 @@ export default function VouchersTable<T>({
   emptyStateMsg,
   onRowClick,
 }: TableProps<T>) {
+  const { hardRefresh } = useAppSelector((state) => state.common);
+
   const [data, setData] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -133,7 +136,7 @@ export default function VouchersTable<T>({
 
   useEffect(() => {
     fetchData();
-  }, [fetchData]);
+  }, [fetchData, hardRefresh]);
 
   const table = useReactTable({
     data,

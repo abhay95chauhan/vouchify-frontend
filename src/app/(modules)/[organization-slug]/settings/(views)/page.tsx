@@ -6,10 +6,13 @@ import BillingOrganization from '../../components/billing-organization';
 import { getMyOrganizationService } from '../../actions-services/services';
 import { cookies } from 'next/headers';
 import ApiKey from '../../components/api-key';
+import SMTPSettings from '@/app/(modules)/smtp/views/smtp-settings';
+import { getMySmtpService } from '@/app/(modules)/smtp/actions/services';
 
 const OrganizationSettings = async () => {
   const jwt = (await cookies()).get('jwt')?.value;
   const { data: orgRes } = await getMyOrganizationService(jwt);
+  const { data: smtpData } = await getMySmtpService(jwt);
 
   return (
     <div className='space-y-8 w-full'>
@@ -29,6 +32,9 @@ const OrganizationSettings = async () => {
           <TabsTrigger className='cursor-pointer' value='api-key'>
             Api Key
           </TabsTrigger>
+          <TabsTrigger className='cursor-pointer' value='smtp'>
+            SMTP
+          </TabsTrigger>
           <TabsTrigger className='cursor-pointer' value='danger'>
             Danger Zone
           </TabsTrigger>
@@ -42,6 +48,9 @@ const OrganizationSettings = async () => {
         </TabsContent>
         <TabsContent value='billing' className='space-y-4 w-full'>
           <BillingOrganization orgData={orgRes} />
+        </TabsContent>
+        <TabsContent value='smtp' className='space-y-4 w-full'>
+          <SMTPSettings smtpData={smtpData} />
         </TabsContent>
         <TabsContent value='danger' className='space-y-4'>
           <DeleteOrganization />

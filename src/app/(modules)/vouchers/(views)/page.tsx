@@ -4,8 +4,8 @@ import CardComponent from '@/global/components/card/card-component';
 import ListViewComponent from '@/global/components/list-view/list-view';
 import { Typography } from '@/global/components/typography/typography';
 import { ColumnDef } from '@tanstack/react-table';
-import { Plus } from 'lucide-react';
-import React, { Suspense } from 'react';
+import { MoreHorizontal, Plus } from 'lucide-react';
+import React, { Suspense, useState } from 'react';
 import { DiscountType, IVoucherGet } from '../interface-model/interfaces';
 import { TableSkeleton } from '@/global/components/list-view/list-view-skeleton-loader';
 import {
@@ -15,13 +15,41 @@ import {
 } from '../helpers/config';
 import { Badge } from '@/components/ui/badge';
 import moment from 'moment';
-import { useAppSelector } from '@/redux/hook';
+import { useAppDispatch, useAppSelector } from '@/redux/hook';
 import { CopyButton } from '@/components/ui/shadcn-io/copy-button';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
+import CustomDropdown from '@/global/components/drop-down/custom-dropdown';
+import AlertModal from '@/global/components/modal/alert-modal';
+import { errorMessages } from '@/global/utils/error-message';
+import { deleteVoucherByCodeService } from '../actions/services';
+import { toast } from 'sonner';
+import { setHardRefresh } from '@/redux/common-reducers';
 
 const VouchersList = () => {
+  const dispatch = useAppDispatch();
+
   const { user } = useAppSelector((state) => state.user);
+  const { hardRefresh } = useAppSelector((state) => state.common);
+
+  const [state, setState] = useState({
+    showVoucherDeleteModal: false,
+    voucherCode: '',
+  });
+
+  const threeDotMenu = [
+    {
+      label: 'Delete',
+      fn: async (row: IVoucherGet) => {
+        setState((prev) => ({
+          ...prev,
+          showVoucherDeleteModal: true,
+          voucherCode: row.code,
+        }));
+      },
+      labelClass: 'text-destructive font-medium',
+    },
+  ];
 
   const columns: ColumnDef<IVoucherGet>[] = [
     {
@@ -116,7 +144,47 @@ const VouchersList = () => {
         );
       },
     },
+
+    {
+      id: 'actions',
+      enableHiding: false,
+      cell: ({ row }) => {
+        return (
+          <CustomDropdown
+            data={row.original}
+            menu={threeDotMenu}
+            label='Actions'
+          >
+            <div className=' no-row-click'>
+              <Button variant='ghost' className='h-8 w-8 p-0'>
+                <span className='sr-only'>Open menu</span>
+                <MoreHorizontal className='h-4 w-4' />
+              </Button>
+            </div>
+          </CustomDropdown>
+        );
+      },
+    },
   ];
+
+  const deleteVoucherHandler = async () => {
+    const res = await deleteVoucherByCodeService(state.voucherCode);
+    if (res?.error) {
+      toast.error(res?.error.message);
+    } else {
+      toast.success(res?.message);
+    }
+    await dispatch(setHardRefresh(!hardRefresh));
+    onCloseModal();
+  };
+
+  const onCloseModal = () => {
+    setState((prev) => ({
+      ...prev,
+      showVoucherDeleteModal: false,
+      voucherCode: '',
+    }));
+  };
 
   return (
     <div className='space-y-6'>
@@ -140,7 +208,6 @@ const VouchersList = () => {
               const targetElement = event.target as HTMLElement;
               if (
                 targetElement.closest('.no-row-click') ||
-                targetElement.closest('.connectToZeniot') ||
                 targetElement.role === 'checkbox' ||
                 targetElement.role === 'menuitem'
               ) {
@@ -161,6 +228,15 @@ const VouchersList = () => {
           />
         </Suspense>
       </CardComponent>
+
+      {/* Delete Voucher */}
+      <AlertModal
+        deleteFn={deleteVoucherHandler}
+        showModal={state.showVoucherDeleteModal}
+        onClose={onCloseModal}
+        btnTitle='Delete'
+        subTitle={errorMessages.voucher.delete}
+      />
     </div>
   );
 };

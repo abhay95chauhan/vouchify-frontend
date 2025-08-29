@@ -24,7 +24,7 @@ const SelectComponent = ({
   return (
     <Select onValueChange={onChange} defaultValue={value} value={value}>
       <FormControl>
-        <SelectTrigger className='text-left'>
+        <SelectTrigger className='text-left w-full'>
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
       </FormControl>
