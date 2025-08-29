@@ -36,10 +36,10 @@ const ApiKey = ({ orgData }: IProps) => {
               <Typography.H5 className='font-semibold'>Api Key</Typography.H5>
               <div className='flex items-center justify-between gap-4 p-4 border border-primary rounded-lg'>
                 <Typography.Muted className='text-sm'>
-                  {orgData?.api_key}
+                  {orgData?.api_keys?.api_key}
                 </Typography.Muted>
                 <CopyButton
-                  content={orgData?.api_key}
+                  content={orgData?.api_keys?.api_key}
                   variant='outline'
                   size='sm'
                 />
@@ -52,7 +52,7 @@ const ApiKey = ({ orgData }: IProps) => {
               <div className='flex items-center justify-between gap-4 p-4 border border-primary rounded-lg'>
                 <Typography.Muted className='text-sm'>
                   {showSecret ? (
-                    orgData?.api_secret
+                    orgData?.api_keys?.api_secret
                   ) : (
                     <p className='-mb-1'>********************</p>
                   )}
@@ -73,7 +73,7 @@ const ApiKey = ({ orgData }: IProps) => {
                   )}
 
                   <CopyButton
-                    content={orgData?.api_secret}
+                    content={orgData?.api_keys?.api_secret}
                     variant='outline'
                     size='sm'
                   />

@@ -1,11 +1,32 @@
-import { IOrganizationGet } from './interfaces';
+import { IApiKeysGet, IOrganizationGet } from './interfaces';
+
+export class ApiKeyModel implements IApiKeysGet {
+  id: string;
+  api_key: string;
+  api_secret: string;
+  organization_id: string;
+  user_id: string;
+  created_at: string;
+  updated_at: string;
+
+  constructor(partial?: Partial<IApiKeysGet>) {
+    // Object.assign(this, partial);
+    this.id = partial?.id ?? '';
+    this.api_key = partial?.api_key ?? '';
+    this.api_secret = partial?.api_secret ?? '';
+    this.organization_id = partial?.organization_id ?? '';
+    this.user_id = partial?.user_id ?? '';
+    this.created_at = partial?.created_at ?? '';
+    this.updated_at = partial?.updated_at ?? '';
+  }
+}
 
 export class OrganizationModelGet implements IOrganizationGet {
   id: string;
   name: string;
   email: string;
-  api_secret: string;
-  api_key: string;
+  api_key_id: string;
+  api_keys: IApiKeysGet;
   slug: string;
   subcription_status: string;
   subcription: string;
@@ -25,8 +46,8 @@ export class OrganizationModelGet implements IOrganizationGet {
     this.id = data?.id ?? '';
     this.name = data?.name ?? '';
     this.email = data?.email ?? '';
-    this.api_secret = data?.api_secret ?? '';
-    this.api_key = data?.api_key ?? '';
+    this.api_key_id = data?.api_key_id ?? '';
+    this.api_keys = data?.api_keys ?? new ApiKeyModel();
     this.slug = data?.slug ?? '';
     this.subcription_status = data?.subcription_status ?? '';
     this.subcription = data?.subcription ?? '';

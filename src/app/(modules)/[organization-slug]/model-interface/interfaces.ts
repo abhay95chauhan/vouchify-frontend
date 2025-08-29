@@ -1,4 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
+export interface IApiKeysGet {
+  id: string;
+  api_key: string;
+  api_secret: string;
+  organization_id: string;
+  user_id: string;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface IOrganizationPost {
   name: string;
   industry: string;
@@ -17,8 +28,8 @@ export interface IOrganizationGet {
   id: string;
   name: string;
   email?: string;
-  api_secret: string;
-  api_key: string;
+  api_key_id: string;
+  api_keys: IApiKeysGet;
   slug: string;
   subcription_status: string;
   subcription: string;
