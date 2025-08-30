@@ -28,59 +28,42 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const jwt = (await cookies()).get('jwt')?.value;
+  if (!jwt) redirect('/auth/login');
 
-  if (!jwt) {
-    redirect('/auth/login');
-  }
-  const res = await await getMeUserService(jwt);
-  if (!res) {
-    return <Loading />;
-  }
-  if (res?.code === 200 && !res?.data?.organization_id) {
-    redirect('/');
-  } else {
-    if (res?.code !== 200) {
-      redirect('/auth/login');
-    } else if (!res?.data?.is_email_varified) {
-      redirect(`/verify-email?token=${jwt}`);
-    }
-  }
+  const res = await getMeUserService(jwt);
+  if (!res) return <Loading />;
+
+  if (res?.error?.code === 401) redirect('/auth/login');
+  if (!res?.data?.organization_id) redirect('/');
+  if (!res?.data?.is_email_varified) redirect(`/verify-email?token=${jwt}`);
 
   return (
     <html lang='en'>
       <body className={`${roboto.variable}`} cz-shortcut-listen='true'>
         <Providers userData={res?.data}>
           <Toaster richColors />
-          {!jwt ? (
-            redirect('/auth/login')
-          ) : (
-            <SidebarProvider>
-              <AppSidebar />
-              <SidebarInset>
-                <header
-                  className='sticky top-0 z-50 flex h-16 shrink-0 items-center gap-2 
-             transition-[width,height] ease-linear 
-             group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 
-             bg-white dark:bg-gray-950 border-b'
-                >
-                  <div className='flex items-center gap-2 px-4'>
-                    <SidebarTrigger className='-ml-1' />
-                    <Separator
-                      orientation='vertical'
-                      className='mr-2 data-[orientation=vertical]:h-4'
-                    />
-                    <UrlPathname />
-                  </div>
-                </header>
 
-                <Suspense fallback={<Loading />}>
-                  <div className='flex flex-1 flex-col gap-4 p-6  pt-6'>
-                    {children}
-                  </div>
-                </Suspense>
-              </SidebarInset>
-            </SidebarProvider>
-          )}
+          <SidebarProvider>
+            <AppSidebar />
+            <SidebarInset>
+              <header className='sticky top-0 z-50 flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 bg-white dark:bg-gray-950 border-b'>
+                <div className='flex items-center gap-2 px-4'>
+                  <SidebarTrigger className='-ml-1' />
+                  <Separator
+                    orientation='vertical'
+                    className='mr-2 data-[orientation=vertical]:h-4'
+                  />
+                  <UrlPathname />
+                </div>
+              </header>
+
+              <Suspense fallback={<Loading />}>
+                <div className='flex flex-1 flex-col gap-4 p-6  pt-6'>
+                  {children}
+                </div>
+              </Suspense>
+            </SidebarInset>
+          </SidebarProvider>
         </Providers>
       </body>
     </html>

@@ -51,11 +51,9 @@ const ApiKey = ({ orgData }: IProps) => {
               </Typography.H5>
               <div className='flex items-center justify-between gap-4 p-4 border border-primary rounded-lg'>
                 <Typography.Muted className='text-sm'>
-                  {showSecret ? (
-                    orgData?.api_keys?.api_secret
-                  ) : (
-                    <p className='-mb-1'>********************</p>
-                  )}
+                  {showSecret
+                    ? orgData?.api_keys?.api_secret
+                    : '********************'}
                 </Typography.Muted>
                 <div className='flex items-center gap-2'>
                   {showSecret ? (

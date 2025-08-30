@@ -29,7 +29,7 @@ export default async function VerifyEmailPage() {
   ) {
     redirect('/dashboard');
   } else {
-    if (res?.code !== 200) {
+    if (res?.error?.code === 401) {
       redirect('/auth/login');
     }
   }

@@ -5,28 +5,20 @@ import OrganizationCreate from './(modules)/[organization-slug]/views/organizati
 
 export default async function Home() {
   const jwt = (await cookies()).get('jwt')?.value;
-
-  if (!jwt) {
-    redirect('/auth/login');
-  }
+  if (!jwt) redirect('/auth/login');
 
   const res = await getMeUserService(jwt);
 
   if (res?.code === 200 && res?.data?.organization_id) {
     if (!res?.data?.is_email_varified) {
       redirect(`/verify-email?token=${jwt}`);
-    } else {
-      redirect('/dashboard');
     }
+    redirect('/dashboard');
   } else {
-    if (res?.code !== 200) {
+    if (res?.error?.code === 401) {
       redirect('/auth/login');
     }
   }
 
-  return (
-    <>
-      <OrganizationCreate />
-    </>
-  );
+  return <OrganizationCreate />;
 }
