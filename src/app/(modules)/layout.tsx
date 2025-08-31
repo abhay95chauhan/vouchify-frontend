@@ -34,8 +34,9 @@ export default async function RootLayout({
   if (!res) return <Loading />;
 
   if (res?.error?.code === 401) redirect('/auth/login');
+  if (!res?.data?.is_email_varified)
+    return redirect(`/verify-email?token=${jwt}`);
   if (!res?.data?.organization_id) redirect('/');
-  if (!res?.data?.is_email_varified) redirect(`/verify-email?token=${jwt}`);
 
   return (
     <html lang='en'>

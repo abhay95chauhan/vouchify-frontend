@@ -8,16 +8,21 @@ export default async function Home() {
   if (!jwt) redirect('/auth/login');
 
   const res = await getMeUserService(jwt);
+  const user = res?.data;
 
-  if (res?.code === 200 && res?.data?.organization_id) {
-    if (!res?.data?.is_email_varified) {
-      redirect(`/verify-email?token=${jwt}`);
-    }
-    redirect('/dashboard');
-  } else {
-    if (res?.error?.code === 401) {
-      redirect('/auth/login');
-    }
+  // Invalid or expired token → login
+  if (res?.error?.code === 401) {
+    return redirect('/auth/login');
+  }
+
+  // Email not verified → verify email page
+  if (!user?.is_email_varified) {
+    return redirect(`/verify-email?token=${jwt}`);
+  }
+
+  // User already has org → dashboard
+  if (user?.organization_id) {
+    return redirect('/dashboard');
   }
 
   return <OrganizationCreate />;

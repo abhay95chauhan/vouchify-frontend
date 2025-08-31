@@ -134,32 +134,17 @@ export default function OrganizationCreate() {
                               Organizations Name
                             </FormLabel>
 
-                            <div className='w-full space-y-2'>
-                              <FormControl>
-                                <div className='relative w-full'>
-                                  <Input
-                                    key='text-input-0'
-                                    placeholder='Acme Solution'
-                                    type='text'
-                                    id='name'
-                                    className=' ps-9'
-                                    {...field}
-                                  />
-                                  <div
-                                    className={
-                                      'text-muted-foreground pointer-events-none absolute inset-y-0 flex items-center justify-center  peer-disabled:opacity-50 start-0 ps-3'
-                                    }
-                                  >
-                                    <Building2
-                                      className='size-4'
-                                      strokeWidth={2}
-                                    />
-                                  </div>
-                                </div>
-                              </FormControl>
+                            <FormControl>
+                              <Input
+                                key='text-input-0'
+                                placeholder='Acme Solution'
+                                type='text'
+                                id='name'
+                                {...field}
+                              />
+                            </FormControl>
 
-                              <FormMessage />
-                            </div>
+                            <FormMessage />
                           </FormItem>
                         )}
                       />
