@@ -27,7 +27,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import Logo from '@/global/components/logo/logo';
 import { cn } from '@/lib/utils';
-import { Building2, Loader } from 'lucide-react';
+import { Loader } from 'lucide-react';
 import { useState } from 'react';
 import { organizationSchema } from '../schema/schema';
 import { zodResolver } from '@hookform/resolvers/zod';

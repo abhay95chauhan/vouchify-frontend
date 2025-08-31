@@ -92,5 +92,5 @@ export const currencies = [
 
 export const timezonesWithOffset = moment.tz.names().map((tz) => {
   const offset = moment.tz(tz).format('Z'); // e.g., "+05:30"
-  return { label: `(UTC${offset}) ${tz}`, value: tz };
+  return { label: `${tz} (UTC${offset})`, value: tz };
 });
