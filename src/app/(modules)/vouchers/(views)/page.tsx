@@ -25,6 +25,7 @@ import { errorMessages } from '@/global/utils/error-message';
 import { deleteVoucherByCodeService } from '../actions/services';
 import { toast } from 'sonner';
 import { setHardRefresh } from '@/redux/common-reducers';
+import { PageHeader } from '@/global/components/page-header/page-header';
 
 const VouchersList = () => {
   const dispatch = useAppDispatch();
@@ -189,12 +190,11 @@ const VouchersList = () => {
   return (
     <div className='space-y-6'>
       <div className='flex justify-between items-start'>
-        <div className='space-y-4'>
-          <Typography.H2>Vouchers</Typography.H2>
-          <Typography.Muted>
-            Create, Manage and Track your Discount Vouchers and Coupons
-          </Typography.Muted>
-        </div>
+        <PageHeader
+          title={'Vouchers'}
+          description='Create, Manage and Track your Discount Vouchers and Coupons'
+        />
+
         <Button asChild>
           <Link href={'/vouchers/create'}>
             <Plus /> Create Voucher
