@@ -292,7 +292,7 @@ export default function VouchersTable<T>({
         </Table>
       </div>
 
-      {data.length ? (
+      {data?.length ? (
         <div className='flex flex-col lg:flex-row items-center justify-between space-x-2 gap-2 py-4'>
           <div className='flex items-center space-x-2'>
             <p className='text-sm font-medium'>Rows</p>

@@ -8,6 +8,7 @@ import { cookies } from 'next/headers';
 import ApiKey from '../../components/api-key';
 import SMTPSettings from '@/app/(modules)/smtp/views/smtp-settings';
 import { getMySmtpService } from '@/app/(modules)/smtp/actions/services';
+import EmailTemplates from '../../components/email-editor/email-templates';
 
 const OrganizationSettings = async () => {
   const jwt = (await cookies()).get('jwt')?.value;
@@ -35,11 +36,13 @@ const OrganizationSettings = async () => {
           <TabsTrigger className='cursor-pointer' value='smtp'>
             SMTP
           </TabsTrigger>
+          <TabsTrigger className='cursor-pointer' value='email-templates'>
+            Email Templates
+          </TabsTrigger>
           <TabsTrigger className='cursor-pointer' value='danger'>
             Danger Zone
           </TabsTrigger>
         </TabsList>
-
         <TabsContent value='general' className='space-y-4 w-full'>
           <UpdateOraganization orgData={orgRes} />
         </TabsContent>
@@ -51,6 +54,9 @@ const OrganizationSettings = async () => {
         </TabsContent>
         <TabsContent value='smtp' className='space-y-4 w-full'>
           <SMTPSettings smtpData={smtpData} />
+        </TabsContent>
+        <TabsContent value='email-templates' className='space-y-4 w-full'>
+          <EmailTemplates />
         </TabsContent>
         <TabsContent value='danger' className='space-y-4'>
           <DeleteOrganization />

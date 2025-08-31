@@ -18,7 +18,10 @@ class Api {
       credentials: 'include', // important for cookies
     };
 
-    const res = await fetch(`http://localhost:8080/api/v1${url}`, fetchOptions);
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}${url}`,
+      fetchOptions
+    );
 
     // If request is successful, return JSON
     if (res.ok) {

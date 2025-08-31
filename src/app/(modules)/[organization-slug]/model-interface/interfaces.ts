@@ -1,5 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+// Types
+export interface EmailTemplate {
+  id: string;
+  name: string; // internal name
+  subject: string;
+  category?: string;
+  updatedAt?: string | Date;
+  html: string; // full HTML template
+}
+
 export interface IApiKeysGet {
   id: string;
   api_key: string;

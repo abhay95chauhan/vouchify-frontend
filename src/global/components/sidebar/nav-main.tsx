@@ -29,7 +29,7 @@ export function NavMain({
           <SidebarMenuItem
             key={item.title}
             className={cn(
-              pathname === item.url ? 'bg-slate-200' : '',
+              pathname.startsWith(item.url) ? 'bg-slate-200' : '',
               'rounded-md'
             )}
           >
