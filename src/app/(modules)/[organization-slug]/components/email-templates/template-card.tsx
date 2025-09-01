@@ -34,9 +34,7 @@ export default function TemplateCard({
         </div>
         <div className='flex items-center gap-2'>
           <Clock className='h-3.5 w-3.5 text-muted-foreground' />
-          <Typography.Muted>
-            {moment(t.updated_at).format('lll')}
-          </Typography.Muted>
+          <Typography.Muted>{moment(t.updated_at).fromNow()}</Typography.Muted>
         </div>
 
         <div className='relative h-40 w-full overflow-hidden rounded-xl border bg-background'>
@@ -58,7 +56,7 @@ export default function TemplateCard({
             className='w-full'
             onClick={() => onPreview(t)}
           >
-            <Eye className='h-4 w-4' /> Preview
+            <Eye className='h-4 w-4' /> Edit Or Preview HTML
           </Button>
         </div>
       </div>

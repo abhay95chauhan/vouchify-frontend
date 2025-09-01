@@ -1,9 +1,13 @@
+'use client';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { CodeIcon, AppWindowIcon } from 'lucide-react';
 import { CustomModal } from '@/global/components/modal/custom-modal';
 import { EmailTemplate } from '../../model-interface/interfaces';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useState } from 'react';
+import { updateEmailTemplatesService } from '../../actions-services/services';
+import { toast } from 'sonner';
 
 export default function EmailTemplateEditor({
   template,
@@ -14,18 +18,37 @@ export default function EmailTemplateEditor({
   showModal: boolean;
   onCloseModal: () => void;
 }) {
+  // Local editable state
+  const [html, setHtml] = useState(template?.html || '');
+  const [state, setState] = useState({
+    isLoading: false,
+  });
+
   const closeModal = () => {
+    setState((prev) => ({ ...prev, isLoading: false }));
     onCloseModal();
   };
+
+  const saveTemplate = async () => {
+    setState((prev) => ({ ...prev, isLoading: true }));
+    const res = await updateEmailTemplatesService(template.id, { html });
+    if (res?.error) {
+      toast.error(res?.error?.message);
+    } else {
+      toast.success(res?.message);
+    }
+    onCloseModal();
+  };
+
   return (
     <CustomModal
       title={template.name}
-      loading={false}
+      loading={state.isLoading}
       showModal={showModal}
       className='w-full sm:max-w-4xl md:max-w-5xl lg:max-w-6xl xl:max-w-7xl'
       buttonLabel='Save Template'
       close={closeModal}
-      save={closeModal}
+      save={saveTemplate}
     >
       <div className='rounded-2xl shadow-xl border bg-gradient-to-br from-indigo-50 via-white to-purple-50 overflow-hidden'>
         <Tabs defaultValue='code' className='w-full'>
@@ -33,13 +56,13 @@ export default function EmailTemplateEditor({
           <TabsList className='flex flex-col sm:grid sm:grid-cols-2 w-full bg-white/70 backdrop-blur-md border-b'>
             <TabsTrigger
               value='code'
-              className='flex gap-2 items-center text-sm font-medium data-[state=active]:text-indigo-600'
+              className='flex gap-2 items-center text-sm font-medium data-[state=active]:text-primary'
             >
               <CodeIcon size={16} /> Code Editor
             </TabsTrigger>
             <TabsTrigger
               value='preview'
-              className='flex gap-2 items-center text-sm font-medium data-[state=active]:text-indigo-600'
+              className='flex gap-2 items-center text-sm font-medium data-[state=active]:text-primary'
             >
               <AppWindowIcon size={16} /> Live Preview
             </TabsTrigger>
@@ -55,9 +78,9 @@ export default function EmailTemplateEditor({
               </div>
               <ScrollArea className='h-[60vh] md:h-[70vh] w-full overflow-auto'>
                 <Textarea
-                  value={template.html as string}
-                  readOnly={false}
-                  className='h-full w-full font-mono text-2xl border-none bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 resize-none'
+                  value={html}
+                  onChange={(e) => setHtml(e.target.value)}
+                  className='h-full w-full font-mono text-sm md:text-base border-none bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 resize-none'
                 />
               </ScrollArea>
             </div>
@@ -68,8 +91,8 @@ export default function EmailTemplateEditor({
             <div className='rounded-xl border bg-white shadow-lg overflow-hidden'>
               <ScrollArea className='h-[60vh] md:h-[70vh] w-full overflow-auto'>
                 <div
-                  className='h-[600px] bg-white text-black'
-                  dangerouslySetInnerHTML={{ __html: template.html }}
+                  className='min-h-[600px] bg-white text-black p-4'
+                  dangerouslySetInnerHTML={{ __html: html }}
                 />
               </ScrollArea>
             </div>
