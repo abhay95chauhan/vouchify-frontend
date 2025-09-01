@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { Typography } from '@/global/components/typography/typography';
+import { errorMessages } from '@/global/utils/error-message';
 import { Plus, Search, Ticket } from 'lucide-react';
 import { redirect } from 'next/navigation';
 import React from 'react';
@@ -11,10 +12,9 @@ export default function VoucherNotFound() {
     <div className='container m-auto w-full'>
       <div className='flex flex-col items-center justify-center text-center space-y-4 mb-4 mt-2'>
         <Ticket className='text-primary' size={150} />
-        <Typography.H3>No voucher found</Typography.H3>
+        <Typography.H3>{errorMessages.voucher.notFound.title}</Typography.H3>
         <Typography.Muted>
-          There are no vouchers available at the moment. Check back later or
-          create a new voucher to get started.
+          {errorMessages.voucher.notFound.desc}
         </Typography.Muted>
         <div className='flex gap-3'>
           <Button
@@ -30,7 +30,7 @@ export default function VoucherNotFound() {
             onClick={() => redirect('/vouchers/create')}
           >
             <Plus className='h-4 w-4' />
-            Create
+            {errorMessages.voucher.notFound.btnLabel}
           </Button>
         </div>
       </div>

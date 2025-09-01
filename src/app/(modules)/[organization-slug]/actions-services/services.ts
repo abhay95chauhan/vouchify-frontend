@@ -58,10 +58,10 @@ export const getMyOrganizationService = async (
 
 // email templates
 
-export const getAllEmailTemplatesService = async () => {
+export const getAllEmailTemplatesService = async (queryString?: string) => {
   try {
     const res = await vouchifyApi.request<EmailTemplate>(
-      '/email-templates/list',
+      `/email-templates/list?${queryString}`,
       {
         method: 'GET',
       }

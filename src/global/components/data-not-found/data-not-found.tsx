@@ -2,20 +2,32 @@
 
 import { Button } from '@/components/ui/button';
 import { Typography } from '@/global/components/typography/typography';
-import { Plus, Search, Ticket } from 'lucide-react';
-import { redirect } from 'next/navigation';
+import { Plus, Search } from 'lucide-react';
 import React from 'react';
 
-export default function TemplateNotFound() {
+interface EmptyStateProps {
+  MainIcon?: React.ReactNode;
+  title: string;
+  description?: string;
+  primaryAction?: {
+    label: string;
+    icon?: React.ReactNode;
+    btnClick: () => void;
+  };
+}
+
+export default function DataNotFound({
+  MainIcon,
+  title,
+  description,
+  primaryAction,
+}: EmptyStateProps) {
   return (
     <div className='container m-auto w-full'>
       <div className='flex flex-col items-center justify-center text-center space-y-4 mb-4 mt-2'>
-        <Ticket className='text-primary' size={150} />
-        <Typography.H3>No voucher found</Typography.H3>
-        <Typography.Muted>
-          There are no vouchers available at the moment. Check back later or
-          create a new voucher to get started.
-        </Typography.Muted>
+        {MainIcon}
+        <Typography.H3>{title}</Typography.H3>
+        <Typography.Muted>{description}</Typography.Muted>
         <div className='flex gap-3'>
           <Button
             variant='outline'
@@ -25,12 +37,10 @@ export default function TemplateNotFound() {
             <Search className='h-4 w-4' />
             Refresh
           </Button>
-          <Button
-            className='gap-2'
-            onClick={() => redirect('/vouchers/create')}
-          >
+          <Button className='gap-2' onClick={primaryAction?.btnClick}>
             <Plus className='h-4 w-4' />
-            Create
+
+            {primaryAction?.label}
           </Button>
         </div>
       </div>
