@@ -6,7 +6,8 @@ export interface EmailTemplate {
   name: string; // internal name
   subject: string;
   category?: string;
-  updatedAt?: string | Date;
+  created_at?: string | Date;
+  updated_at: string | Date;
   html: string; // full HTML template
 }
 

@@ -90,9 +90,10 @@ const VouchersList = () => {
       cell: ({ row }) => (
         <div className='capitalize'>{`${discountSymbol[
           row.original.discount_type
-        ](user.organization.currency_symbol)} ${row.getValue(
-          'discount_value'
-        )}`}</div>
+        ]({
+          currency: user.organization.currency_symbol,
+          amount: row.getValue('discount_value'),
+        })}`}</div>
       ),
     },
 
@@ -101,10 +102,10 @@ const VouchersList = () => {
       header: 'Minimum Order Amount',
       cell: ({ row }) => (
         <div className='capitalize'>
-          {discountSymbol[discountType[0] as DiscountType](
-            user.organization.currency_symbol
-          )}
-          &nbsp; {row.getValue('min_order_amount')}
+          {discountSymbol[discountType[0] as DiscountType]({
+            currency: user.organization.currency_symbol,
+            amount: row.getValue('min_order_amount'),
+          })}
         </div>
       ),
     },

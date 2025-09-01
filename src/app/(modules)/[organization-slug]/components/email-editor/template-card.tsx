@@ -35,7 +35,7 @@ export default function TemplateCard({
         <div className='flex items-center gap-2'>
           <Clock className='h-3.5 w-3.5 text-muted-foreground' />
           <Typography.Muted>
-            {moment(t.updatedAt).format('lll')}
+            {moment(t.updated_at).format('lll')}
           </Typography.Muted>
         </div>
 

@@ -36,3 +36,9 @@ export interface IVoucherPost {
   postfix?: string;
   redeem_limit_per_user?: RedeemPerUserType;
 }
+
+export interface IValidateVoucherPost {
+  code: string;
+  orderAmount: number;
+  currencySymbol?: string;
+}

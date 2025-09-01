@@ -5,6 +5,8 @@ import { Separator } from '@/components/ui/separator';
 import { EmailTemplate } from '../../model-interface/interfaces';
 import TemplateCard from './template-card';
 import EmailTemplateEditor from './email-editor';
+import { Button } from '@/components/ui/button';
+import { Plus } from 'lucide-react';
 
 const sampleTemplates: EmailTemplate[] = [
   {
@@ -12,7 +14,7 @@ const sampleTemplates: EmailTemplate[] = [
     name: 'Welcome Onboard',
     subject: 'Welcome to ZenSpace ✨',
     category: 'Onboarding',
-    updatedAt: new Date(),
+    updated_at: new Date(),
     html: `
       <!DOCTYPE html>
 <html>
@@ -111,7 +113,7 @@ const sampleTemplates: EmailTemplate[] = [
     name: 'Password Reset',
     subject: 'Reset your password',
     category: 'Security',
-    updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24),
+    updated_at: new Date(Date.now() - 1000 * 60 * 60 * 24),
     html: `
       <div style="font-family: Inter, Arial, sans-serif; padding: 24px;">
         <h2 style="margin:0 0 8px;font-size:24px;">Reset your password</h2>
@@ -125,7 +127,7 @@ const sampleTemplates: EmailTemplate[] = [
     name: 'Invoice Ready',
     subject: 'Your invoice for August is ready',
     category: 'Billing',
-    updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 30),
+    updated_at: new Date(Date.now() - 1000 * 60 * 60 * 30),
     html: `
       <div style="font-family: Inter, Arial, sans-serif; padding: 24px;">
         <h2 style="margin:0 0 8px;font-size:24px;">Invoice #INV-2048</h2>
@@ -186,8 +188,13 @@ export default function EmailTemplateGallery({
             className='w-72'
           />
         </div>
-        <div className='text-sm text-muted-foreground'>
-          {filtered.length} / {templates.length} shown
+        <div className='flex items-center gap-3'>
+          <div className='text-sm text-muted-foreground'>
+            {filtered.length} / {templates.length} shown
+          </div>
+          <Button>
+            <Plus /> New Template
+          </Button>
         </div>
       </div>
 

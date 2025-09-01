@@ -50,7 +50,7 @@ export function CustomModal(props: Readonly<IProps>) {
                     props.close();
                   }
                 }}
-                className='rounded-full p-1 hover:bg-gray-100'
+                className='rounded-full p-1 hover:bg-gray-100 cursor-pointer'
               >
                 <X className='h-5 w-5' />
               </DialogClose>
@@ -67,7 +67,7 @@ export function CustomModal(props: Readonly<IProps>) {
         <div className='my-2'>{props.children}</div>
 
         <DialogFooter
-          className={`mt-4 ${
+          className={`${
             props.showCloseBtn !== false
               ? `grid grid-cols-${props.loading ? '1' : '2'} gap-2`
               : ''

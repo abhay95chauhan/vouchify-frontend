@@ -1,12 +1,14 @@
 import moment from 'moment-timezone';
+import { DiscountType, RedeemPerUserType } from '../interface-model/interfaces';
 
-export const discountType = ['Fixed', 'Percentage'];
-export const redeemPerUser = ['Once', 'Unlimited'];
+export const discountType: DiscountType[] = ['Fixed', 'Percentage'];
+export const redeemPerUser: RedeemPerUserType[] = ['Once', 'Unlimited'];
 
 export const discountSymbol = {
-  Fixed: (currency: string) => currency,
-  Percentage: () => '%',
-  'Gift Card': () => '%',
+  Fixed: ({ amount, currency }: { amount?: number; currency?: string }) =>
+    `${currency} ${amount}`,
+  Percentage: ({ amount }: { amount?: number }) => `${amount} %`,
+  'Gift Card': ({ amount }: { amount?: number }) => `${amount} %`,
 };
 
 export function checkVoucherStatus(

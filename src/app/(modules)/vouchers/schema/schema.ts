@@ -61,3 +61,14 @@ export const VoucherPostSchema = z
       });
     }
   });
+
+export const validateVoucherPostSchema = z.object({
+  code: z
+    .string(fieldValidation('Voucher Code'))
+    .trim()
+    .min(1, fieldValidation('Voucher Code')),
+
+  orderAmount: z
+    .number(fieldValidation('Amount'))
+    .min(1, fieldValidation('Amount')),
+});

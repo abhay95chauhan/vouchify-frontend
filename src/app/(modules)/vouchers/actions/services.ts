@@ -1,5 +1,8 @@
 import { vouchifyApi } from '@/global/utils/api';
-import { IVoucherPost } from '../interface-model/interfaces';
+import {
+  IValidateVoucherPost,
+  IVoucherPost,
+} from '../interface-model/interfaces';
 import { handleError } from '@/global/utils/error-handler';
 import { toast } from 'sonner';
 
@@ -51,6 +54,24 @@ export const updateVoucherService = async (
       {
         method: 'PATCH',
         data: voucherData,
+      }
+    );
+    return res;
+  } catch (error) {
+    const { message } = handleError(error);
+    toast.error(message);
+  }
+};
+
+export const validateVoucherService = async (
+  voucherValidateData: IValidateVoucherPost
+) => {
+  try {
+    const res = await vouchifyApi.request<IValidateVoucherPost>(
+      '/voucher/validate',
+      {
+        method: 'POST',
+        data: voucherValidateData,
       }
     );
     return res;

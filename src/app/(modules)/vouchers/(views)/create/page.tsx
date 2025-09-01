@@ -17,7 +17,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
-import { AlertCircleIcon, Infinity, Loader } from 'lucide-react';
+import { AlertCircleIcon, BadgeCheck, Infinity, Loader } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import {
   buildVoucherCode,
@@ -52,6 +52,7 @@ import { CopyButton } from '@/components/ui/shadcn-io/copy-button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import ValidateVoucher from '../../components/validate-voucher';
 
 const VoucherCreate = ({ voucherData }: { voucherData: IVoucherPost }) => {
   const { user } = useAppSelector((state) => state.user);
@@ -60,6 +61,7 @@ const VoucherCreate = ({ voucherData }: { voucherData: IVoucherPost }) => {
   const [state, setState] = useState({
     codeLength: 4,
     isLoading: false,
+    showValidateVoucherModal: false,
     isAutoGenerate: false,
     isVoucherActive: true,
     voucherFindLoading: false,
@@ -168,14 +170,33 @@ const VoucherCreate = ({ voucherData }: { voucherData: IVoucherPost }) => {
     form?.watch('postfix')
   );
 
+  const onCloseModal = () => {
+    setState((prev) => ({ ...prev, showValidateVoucherModal: false }));
+  };
+
   return (
     <div className='space-y-6'>
-      <PageHeader
-        showBackButton
-        onBack={() => redirect('/vouchers')}
-        title={voucherData?.code ? 'Update Voucher' : 'Create New Voucher'}
-        description='Design and configure your new promotional voucher.'
-      />
+      <div className='flex justify-between items-start'>
+        <PageHeader
+          showBackButton
+          onBack={() => redirect('/vouchers')}
+          title={voucherData?.code ? 'Update Voucher' : 'Create New Voucher'}
+          description='Design and configure your new promotional voucher.'
+        />
+        {voucherData?.code ? (
+          <Button
+            onClick={() => {
+              setState((prev) => ({
+                ...prev,
+                showValidateVoucherModal: true,
+              }));
+            }}
+          >
+            <BadgeCheck /> Validate
+          </Button>
+        ) : null}
+      </div>
+
       {voucherData?.code && !state.isVoucherActive ? (
         <Alert variant='destructive'>
           <AlertCircleIcon className='h-4 w-4' />
@@ -368,7 +389,9 @@ const VoucherCreate = ({ voucherData }: { voucherData: IVoucherPost }) => {
                             {form.watch('discount_type')
                               ? discountSymbol[
                                   form.watch('discount_type') as DiscountType
-                                ](user.organization.currency_symbol)
+                                ]({
+                                  currency: user.organization.currency_symbol,
+                                })
                               : null}
                             )<span className='text-destructive'> *</span>
                           </FormLabel>
@@ -640,17 +663,20 @@ const VoucherCreate = ({ voucherData }: { voucherData: IVoucherPost }) => {
                   <CopyButton content={voucherCode} size='sm' />
                 </div>
                 <Typography.H2 className='font-black'>
-                  {form.watch('discount_value')}{' '}
                   {form.watch('discount_type')
                     ? discountSymbol[
                         form.watch('discount_type') as DiscountType
-                      ](user.organization.currency_symbol)
-                    : null}{' '}
-                  OFF
+                      ]({
+                        amount: form.watch('discount_value'),
+                        currency: user.organization.currency_symbol,
+                      })
+                    : null}
+                  &nbsp; OFF
                 </Typography.H2>
                 <div className='text-sm text-vpro-purple-500 dark:text-vpro-purple-400 italic'>
-                  Minimun Amount of Purchase {form.watch('min_order_amount')}{' '}
-                  {user.organization.currency_symbol}
+                  Minimun Amount of Purchase {user.organization.currency_symbol}
+                  &nbsp;
+                  {form.watch('min_order_amount')}{' '}
                 </div>
                 <Typography.H6 className='text-xs text-muted-foreground'>
                   Valid From &nbsp;
@@ -699,6 +725,15 @@ const VoucherCreate = ({ voucherData }: { voucherData: IVoucherPost }) => {
           </Card>
         </div>
       </div>
+
+      {voucherData.code ? (
+        <ValidateVoucher
+          vCode={voucherData.code}
+          discountType={voucherData.discount_type}
+          showModal={state.showValidateVoucherModal}
+          closeModal={onCloseModal}
+        />
+      ) : null}
     </div>
   );
 };
