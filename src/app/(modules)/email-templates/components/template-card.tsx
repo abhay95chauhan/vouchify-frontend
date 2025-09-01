@@ -1,17 +1,17 @@
 import CardComponent from '@/global/components/card/card-component';
-import { EmailTemplate } from '../../model-interface/interfaces';
 import { Typography } from '@/global/components/typography/typography';
 import { Clock, Eye, Mail, Tag } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import moment from 'moment';
 import { Button } from '@/components/ui/button';
+import { IEmailTemplate } from '../model-interfaces/interfaces';
 
 export default function TemplateCard({
   t,
   onPreview,
 }: {
-  t: EmailTemplate;
-  onPreview: (t: EmailTemplate) => void;
+  t: IEmailTemplate;
+  onPreview: (t: IEmailTemplate) => void;
 }) {
   return (
     <CardComponent>

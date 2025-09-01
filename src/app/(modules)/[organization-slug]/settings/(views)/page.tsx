@@ -8,7 +8,7 @@ import { cookies } from 'next/headers';
 import ApiKey from '../../components/api-key';
 import SMTPSettings from '@/app/(modules)/smtp/views/smtp-settings';
 import { getMySmtpService } from '@/app/(modules)/smtp/actions/services';
-import EmailTemplates from '../../components/email-templates/email-templates';
+import EmailTemplates from '../../../email-templates/components/email-templates';
 
 const OrganizationSettings = async () => {
   const jwt = (await cookies()).get('jwt')?.value;

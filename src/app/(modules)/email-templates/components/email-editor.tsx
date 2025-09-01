@@ -3,18 +3,18 @@ import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { CodeIcon, AppWindowIcon } from 'lucide-react';
 import { CustomModal } from '@/global/components/modal/custom-modal';
-import { EmailTemplate } from '../../model-interface/interfaces';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useState } from 'react';
-import { updateEmailTemplatesService } from '../../actions-services/services';
 import { toast } from 'sonner';
+import { updateEmailTemplatesService } from '../actions/services';
+import { IEmailTemplate } from '../model-interfaces/interfaces';
 
 export default function EmailTemplateEditor({
   template,
   showModal,
   onCloseModal,
 }: {
-  template: EmailTemplate;
+  template: IEmailTemplate;
   showModal: boolean;
   onCloseModal: () => void;
 }) {
