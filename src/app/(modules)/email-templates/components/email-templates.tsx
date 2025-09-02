@@ -10,7 +10,7 @@ import { getAllEmailTemplatesAction } from '../actions/actions';
 import EmailTemplateCardSkeleton from './template-card-skeleton';
 import DataNotFound from '@/global/components/data-not-found/data-not-found';
 import { errorMessages } from '@/global/utils/error-message';
-import { useQuery } from '@/hooks/use-query';
+import { useQuery } from '@/global/hooks/use-query';
 import { IEmailTemplate } from '../model-interfaces/interfaces';
 import CreateEmailTemplate from '../views/create-email-template';
 

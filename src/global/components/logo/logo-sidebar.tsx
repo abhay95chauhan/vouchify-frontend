@@ -3,7 +3,7 @@
 import { Ticket } from 'lucide-react';
 import React from 'react';
 import { Typography } from '../typography/typography';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useIsMobile } from '@/global/hooks/use-mobile';
 
 const LogoSidebar = () => {
   const isMobile = useIsMobile();
