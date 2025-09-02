@@ -6,9 +6,9 @@ export const redeemPerUser: RedeemPerUserType[] = ['Once', 'Unlimited'];
 
 export const discountSymbol = {
   Fixed: ({ amount, currency }: { amount?: number; currency?: string }) =>
-    `${currency} ${amount}`,
-  Percentage: ({ amount }: { amount?: number }) => `${amount} %`,
-  'Gift Card': ({ amount }: { amount?: number }) => `${amount} %`,
+    `${currency ?? ''} ${amount ?? ''}`,
+  Percentage: ({ amount }: { amount?: number }) => `${amount ?? ''} %`,
+  'Gift Card': ({ amount }: { amount?: number }) => `${amount ?? ''} %`,
 };
 
 export function checkVoucherStatus(
