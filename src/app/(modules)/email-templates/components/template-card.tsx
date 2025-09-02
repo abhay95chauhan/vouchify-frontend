@@ -1,10 +1,18 @@
+'use client';
 import CardComponent from '@/global/components/card/card-component';
 import { Typography } from '@/global/components/typography/typography';
-import { Clock, Eye, Mail, Tag } from 'lucide-react';
+import { Clock, Eye, Mail, Pen, Tag, Trash } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import moment from 'moment';
 import { Button } from '@/components/ui/button';
 import { IEmailTemplate } from '../model-interfaces/interfaces';
+import { useState } from 'react';
+import AlertModal from '@/global/components/modal/alert-modal';
+import { errorMessages } from '@/global/utils/error-message';
+import { deleteEmailTemplatesService } from '../actions/services';
+import { useAppDispatch } from '@/redux/hook';
+import { getAllEmailTemplatesAction } from '../actions/actions';
+import CreateEmailTemplate from '../views/create-email-template';
 
 export default function TemplateCard({
   t,
@@ -13,20 +21,55 @@ export default function TemplateCard({
   t: IEmailTemplate;
   onPreview: (t: IEmailTemplate) => void;
 }) {
+  const dispatch = useAppDispatch();
+
+  const [state, setState] = useState({
+    showEmailTemplateDeleteModal: false,
+    showEmailTemplateEditModal: false,
+  });
+
+  const onCloseModal = () => {
+    setState((prev) => ({
+      ...prev,
+      showEmailTemplateDeleteModal: false,
+      showEmailTemplateEditModal: false,
+    }));
+  };
+
+  const deleteEmailTempalte = async () => {
+    await deleteEmailTemplatesService(t.id);
+    dispatch(getAllEmailTemplatesAction());
+    onCloseModal();
+  };
+
   return (
     <CardComponent>
       <div className='space-y-4'>
-        <div className='flex items-start justify-between gap-2'>
+        <div className='flex items-center justify-between gap-2'>
           <div className='min-w-0 space-y-4'>
             <Typography.H3 className='truncate text-base font-semibold'>
               {t.name}
             </Typography.H3>
           </div>
-          {t.category && (
-            <Badge variant='secondary' className='gap-1'>
-              <Tag className='h-3.5 w-3.5' /> {t.category}
-            </Badge>
-          )}
+          <div className='flex items-center gap-2'>
+            {t.category && (
+              <Badge variant='secondary' className='gap-1'>
+                <Tag className='h-3.5 w-3.5' /> {t.category}
+              </Badge>
+            )}
+            <Button
+              size={'icon'}
+              variant={'outline'}
+              onClick={() =>
+                setState((prev) => ({
+                  ...prev,
+                  showEmailTemplateEditModal: true,
+                }))
+              }
+            >
+              <Pen />
+            </Button>
+          </div>
         </div>
         <div className='mt-1 flex items-center gap-2 text-xs text-muted-foreground'>
           <Mail className='h-3.5 w-3.5' />
@@ -43,23 +86,52 @@ export default function TemplateCard({
             style={{ width: 850, height: 600 }}
           >
             <div
-              className='w-[850px] h-[600px] bg-white text-black'
+              className='bg-white text-black'
               dangerouslySetInnerHTML={{ __html: t.html }}
             />
           </div>
           {/* subtle gradient fade */}
           <div className='pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/60' />
         </div>
-        <div className='mt-3 flex items-center justify-between'>
+        <div className='mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2'>
+          <Button
+            variant='destructive'
+            className='w-full'
+            onClick={() =>
+              setState((prev) => ({
+                ...prev,
+                showEmailTemplateDeleteModal: true,
+              }))
+            }
+          >
+            <Trash className='h-4 w-4' /> Delete
+          </Button>
           <Button
             variant='outline'
             className='w-full'
             onClick={() => onPreview(t)}
           >
-            <Eye className='h-4 w-4' /> Edit Or Preview HTML
+            <Eye className='h-4 w-4' /> Edit HTML
           </Button>
         </div>
       </div>
+
+      {/* Delete */}
+      {state.showEmailTemplateDeleteModal && (
+        <AlertModal
+          deleteFn={deleteEmailTempalte}
+          showModal={state.showEmailTemplateDeleteModal}
+          onClose={onCloseModal}
+          btnTitle='Delete'
+          subTitle={errorMessages.email.delete}
+        />
+      )}
+
+      <CreateEmailTemplate
+        template={t}
+        showModal={state.showEmailTemplateEditModal}
+        closeModal={onCloseModal}
+      />
     </CardComponent>
   );
 }

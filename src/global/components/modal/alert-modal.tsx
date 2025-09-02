@@ -52,11 +52,12 @@ const AlertModal = (props: Readonly<IProps>) => {
           </div>
         </DialogTitle>
 
-        <DialogFooter>
-          {props.showCloseBtn !== false && !state.isLoading && (
+        <DialogFooter className='grid grid-cols-1 sm:grid-cols-2 gap-2'>
+          {props.showCloseBtn !== false && (
             <Button
               className='w-full rounded-[0.25rem]'
               onClick={props.onClose}
+              disabled={state.isLoading}
               variant='outline'
             >
               Close

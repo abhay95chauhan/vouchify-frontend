@@ -1,3 +1,4 @@
+'use client';
 import { CustomModal } from '@/global/components/modal/custom-modal';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -11,19 +12,28 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { emailTemplateSchema } from '../schema/schema';
-import { createEmailTemplatesService } from '../actions/services';
+import {
+  createEmailTemplatesService,
+  updateEmailTemplatesService,
+} from '../actions/services';
 import { toast } from 'sonner';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { fakeHtml } from '../helpers/config';
+import { IEmailTemplate } from '../model-interfaces/interfaces';
+import { getAllEmailTemplatesAction } from '../actions/actions';
+import { useAppDispatch } from '@/redux/hook';
 
 export interface IProps {
   showModal: boolean;
+  template?: IEmailTemplate;
   closeModal: () => void;
 }
 
 export default function CreateEmailTemplate(props: IProps) {
+  const dispatch = useAppDispatch();
   const [state, setState] = useState({
     isLoading: false,
   });
@@ -32,14 +42,27 @@ export default function CreateEmailTemplate(props: IProps) {
     resolver: zodResolver(emailTemplateSchema),
     mode: 'all',
     defaultValues: {
-      html: "<h1>Welcome!</h1><p>Thanks for joining us. Let's get started 🚀</p>",
+      html: fakeHtml,
     },
   });
 
+  useEffect(() => {
+    if (props?.template?.id) {
+      form.reset(props?.template);
+    }
+  }, [form, props?.template]);
+
   async function onSubmit(values: z.infer<typeof emailTemplateSchema>) {
-    const res = await createEmailTemplatesService({
-      ...values,
-    });
+    let res;
+    if (props?.template?.id) {
+      res = await updateEmailTemplatesService(props?.template?.id, values);
+      dispatch(getAllEmailTemplatesAction());
+    } else {
+      res = await createEmailTemplatesService({
+        ...values,
+      });
+    }
+
     if (res?.error) {
       toast.success(res?.error?.message);
     } else {
@@ -56,10 +79,10 @@ export default function CreateEmailTemplate(props: IProps) {
   };
   return (
     <CustomModal
-      title={'Create Template'}
+      title={props?.template?.id ? 'Edit Template' : 'Create Template'}
       loading={state.isLoading}
       showModal={props.showModal}
-      buttonLabel='Create'
+      buttonLabel={props?.template?.id ? 'Edit' : 'Create'}
       close={onClose}
       save={form.handleSubmit(onSubmit)}
     >
@@ -115,7 +138,7 @@ export default function CreateEmailTemplate(props: IProps) {
                   <FormControl>
                     <Input
                       {...field}
-                      placeholder='e.g., Welcome to Our Platform'
+                      placeholder='e.g., Greeting'
                       type='text'
                     />
                   </FormControl>

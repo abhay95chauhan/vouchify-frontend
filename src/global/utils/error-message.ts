@@ -8,6 +8,8 @@ export const errorMessages = {
     },
   },
   email: {
+    htmlUpdate: 'HTML Updated',
+    delete: 'Deleting this Email Template cannot be undone. Continue?',
     notFound: {
       title: 'No Email Template Found',
       btnLabel: 'New Template',

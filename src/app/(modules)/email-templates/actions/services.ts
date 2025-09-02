@@ -6,7 +6,7 @@ import { IEmailTemplatePost } from '../model-interfaces/interfaces';
 export const getAllEmailTemplatesService = async (queryString?: string) => {
   try {
     const res = await vouchifyApi.request(
-      `/email-templates/list?${queryString}`,
+      `/email-templates/list?${queryString ?? ''}`,
       {
         method: 'GET',
       }
@@ -48,6 +48,18 @@ export const createEmailTemplatesService = async (
         data: tempData,
       }
     );
+    return res;
+  } catch (error) {
+    const { message } = handleError(error);
+    toast.error(message);
+  }
+};
+
+export const deleteEmailTemplatesService = async (tempId: string) => {
+  try {
+    const res = await vouchifyApi.request(`/email-templates/${tempId}`, {
+      method: 'DELETE',
+    });
     return res;
   } catch (error) {
     const { message } = handleError(error);

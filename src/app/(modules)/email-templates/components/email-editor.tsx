@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import { updateEmailTemplatesService } from '../actions/services';
 import { IEmailTemplate } from '../model-interfaces/interfaces';
+import { errorMessages } from '@/global/utils/error-message';
 
 export default function EmailTemplateEditor({
   template,
@@ -19,7 +20,7 @@ export default function EmailTemplateEditor({
   onCloseModal: () => void;
 }) {
   // Local editable state
-  const [html, setHtml] = useState(template?.html || '');
+  const [html, setHtml] = useState(template?.html);
   const [state, setState] = useState({
     isLoading: false,
   });
@@ -35,7 +36,7 @@ export default function EmailTemplateEditor({
     if (res?.error) {
       toast.error(res?.error?.message);
     } else {
-      toast.success(res?.message);
+      toast.success(errorMessages.email.htmlUpdate);
     }
     onCloseModal();
   };

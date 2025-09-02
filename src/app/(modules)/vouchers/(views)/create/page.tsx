@@ -726,9 +726,9 @@ const VoucherCreate = ({ voucherData }: { voucherData: IVoucherPost }) => {
         </div>
       </div>
 
-      {voucherData.code ? (
+      {voucherData?.code ? (
         <ValidateVoucher
-          vCode={voucherData.code}
+          vCode={voucherData?.code}
           discountType={voucherData.discount_type}
           showModal={state.showValidateVoucherModal}
           closeModal={onCloseModal}
