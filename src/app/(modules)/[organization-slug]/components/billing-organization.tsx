@@ -32,11 +32,13 @@ const BillingOrganization = ({ orgData }: IProps) => {
           <div className='flex items-center justify-between p-4 border rounded-lg'>
             <div>
               <h3 className='font-semibold'>
-                {orgData?.subcription} Plan ({orgData?.subcription_status})
+                {orgData?.subcription.name} Plan ({orgData?.subcription_status})
               </h3>
-              <Typography.Muted className='text-sm'>
-                {orgData?.currency_symbol} {orgData?.subcription_cost} / month •
-                Unlimited vouchers
+              <Typography.Muted className='text-sm capitalize'>
+                {orgData?.currency_symbol}&nbsp;
+                {orgData?.subcription?.price[orgData?.subscription_period]}
+                &nbsp;/&nbsp;
+                {orgData?.subscription_period}
               </Typography.Muted>
             </div>
             <Button variant='outline'>Upgrade Plan</Button>

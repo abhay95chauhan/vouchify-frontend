@@ -175,7 +175,17 @@ export default function LoginForm() {
           </div>
         </div>
       </div>
-      <div className='bg-muted relative h-screen hidden lg:flex items-center justify-center'>
+      <div
+        style={{
+          minHeight: '100vh',
+          background: `linear-gradient(
+      135deg,
+      oklch(0.92 0.05 280),
+      oklch(0.95 0.03 340)
+    )`,
+        }}
+        className='bg-muted relative h-screen hidden lg:flex items-center justify-center'
+      >
         <Card className='shadow-2xl rounded-2xl border border-vpro-gray-200 dark:border-vpro-gray-700 overflow-hidden max-w-sm w-full'>
           {/* Logo */}
           <CardHeader className='bg-gradient-to-b from-vpro-purple-100 via-vpro-purple-50 to-transparent dark:from-vpro-purple-900 dark:via-vpro-purple-950 dark:to-transparent'>

@@ -1,5 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import {
+  ISubscriptionGet,
+  ISubscriptionPeriod,
+} from '../../subcriptions/model-interfaces/interfaces';
+
 // Types
 
 export interface IApiKeysGet {
@@ -19,10 +24,11 @@ export interface IOrganizationPost {
   email?: string;
   currency: string;
   currency_symbol: string;
+  subcription_id: string;
+  subscription_period: ISubscriptionPeriod;
   timezone: string;
   description?: string;
   website?: string;
-  subcription_cost?: number;
   subcription_expire: Date;
 }
 
@@ -34,7 +40,9 @@ export interface IOrganizationGet {
   api_keys: IApiKeysGet;
   slug: string;
   subcription_status: string;
-  subcription: string;
+  subcription_id: string;
+  subscription_period: ISubscriptionPeriod;
+  subcription: ISubscriptionGet;
   created_at: string;
   updated_at: string;
   industry: string;
@@ -44,7 +52,6 @@ export interface IOrganizationGet {
   timezone: string;
   description?: string;
   website?: string;
-  subcription_cost: number;
   subcription_expire: string;
 }
 

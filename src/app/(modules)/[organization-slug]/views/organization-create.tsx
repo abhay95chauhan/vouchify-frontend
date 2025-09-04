@@ -44,11 +44,15 @@ import { createOrganizationService } from '../actions-services/services';
 import { redirect } from 'next/navigation';
 import { toast } from 'sonner';
 import moment from 'moment';
+import Pricing from '@/components/ui/pricing';
+import { ISubscriptionPeriod } from '../../subcriptions/model-interfaces/interfaces';
 
 export default function OrganizationCreate() {
   const [state, setState] = useState({
     formStep: 1,
     isLoading: false,
+    selectedPlanId: '',
+    subscriptionPeriod: '' as ISubscriptionPeriod,
   });
 
   const form = useForm<z.infer<typeof organizationSchema>>({
@@ -63,6 +67,8 @@ export default function OrganizationCreate() {
     setState((prev) => ({ ...prev, isLoading: true }));
     const res = await createOrganizationService({
       ...values,
+      subcription_id: state.selectedPlanId,
+      subscription_period: state.subscriptionPeriod,
       currency_symbol: values.currency_symbol as string,
       subcription_expire: moment()
         ?.tz(values?.timezone)
@@ -122,196 +128,38 @@ export default function OrganizationCreate() {
                 onReset={onReset}
                 className='space-y-6 w-full'
               >
-                <div className='grid grid-cols-12 gap-4'>
-                  {state.formStep == 1 && (
-                    <>
-                      <FormField
-                        control={form.control}
-                        name='name'
-                        render={({ field }) => (
-                          <FormItem className='col-span-12 col-start-auto flex self-end flex-col gap-2 space-y-0 items-start'>
-                            <FormLabel className='flex shrink-0'>
-                              Organizations Name
-                            </FormLabel>
+                {state.formStep === 3 && (
+                  <Pricing
+                    onSelecPlan={(subData: {
+                      subId: string;
+                      period: ISubscriptionPeriod;
+                    }) =>
+                      setState((prev) => ({
+                        ...prev,
+                        selectedPlanId: subData.subId,
+                        subscriptionPeriod: subData.period,
+                      }))
+                    }
+                  />
+                )}
+                {(state.formStep == 1 || state.formStep == 2) && (
+                  <div className='grid grid-cols-12 gap-4'>
+                    {state.formStep == 1 && (
+                      <>
+                        <FormField
+                          control={form.control}
+                          name='name'
+                          render={({ field }) => (
+                            <FormItem className='col-span-12 col-start-auto flex self-end flex-col gap-2 space-y-0 items-start'>
+                              <FormLabel className='flex shrink-0'>
+                                Organizations Name
+                                <span className='text-destructive'>*</span>
+                              </FormLabel>
 
-                            <FormControl>
-                              <Input
-                                key='text-input-0'
-                                placeholder='Acme Solution'
-                                type='text'
-                                id='name'
-                                {...field}
-                              />
-                            </FormControl>
-
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name='industry'
-                        render={({ field }) => (
-                          <FormItem className='col-span-12 col-start-auto flex self-end flex-col gap-2 space-y-0 items-start'>
-                            <FormLabel className='flex shrink-0'>
-                              Industry
-                            </FormLabel>
-
-                            <div className='w-full space-y-2'>
-                              <FormControl>
-                                <Select
-                                  key='select-0'
-                                  {...field}
-                                  onValueChange={field.onChange}
-                                >
-                                  <SelectTrigger className='w-full '>
-                                    <SelectValue placeholder='Software' />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    {industries?.map((ind) => (
-                                      <SelectItem
-                                        key={ind.value}
-                                        value={ind.value}
-                                      >
-                                        {ind.label}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                              </FormControl>
-
-                              <FormMessage />
-                            </div>
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name='organization_type'
-                        render={({ field }) => (
-                          <FormItem className='col-span-12 col-start-auto flex self-end flex-col gap-2 space-y-0 items-start'>
-                            <FormLabel className='flex shrink-0'>
-                              Industry Type
-                            </FormLabel>
-
-                            <div className='w-full space-y-2'>
-                              <FormControl>
-                                <RadioCards
-                                  options={industryTypes.map((type) => ({
-                                    ...type,
-                                    icon: type.icon ? <type.icon /> : null,
-                                  }))}
-                                  {...field}
-                                />
-                              </FormControl>
-
-                              <FormMessage />
-                            </div>
-                          </FormItem>
-                        )}
-                      />
-                    </>
-                  )}
-                  {state.formStep == 2 && (
-                    <>
-                      <FormField
-                        control={form.control}
-                        name='currency'
-                        render={({ field }) => (
-                          <FormItem className='col-span-6 col-start-auto flex self-end flex-col gap-2 space-y-0 items-start'>
-                            <FormLabel className='flex shrink-0'>
-                              Currency
-                            </FormLabel>
-
-                            <div className='w-full space-y-2'>
-                              <FormControl>
-                                <Select
-                                  key='select-0'
-                                  {...field}
-                                  onValueChange={(val) => {
-                                    const findSymbol = currencies.find(
-                                      (cur) => cur.value === val
-                                    );
-                                    field.onChange(val);
-                                    form.setValue(
-                                      'currency_symbol',
-                                      findSymbol?.symbol
-                                    );
-                                  }}
-                                >
-                                  <SelectTrigger className='w-full '>
-                                    <SelectValue placeholder='Indian Rupee (INR)' />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    {currencies?.map((cur) => (
-                                      <SelectItem
-                                        key={cur.value}
-                                        value={cur.value}
-                                      >
-                                        {cur.label}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                              </FormControl>
-
-                              <FormMessage />
-                            </div>
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name='timezone'
-                        render={({ field }) => (
-                          <FormItem className='col-span-6 col-start-auto flex self-end flex-col gap-2 space-y-0 items-start'>
-                            <FormLabel className='flex shrink-0'>
-                              Timezone
-                            </FormLabel>
-
-                            <div className='w-full space-y-2'>
-                              <FormControl>
-                                <Select
-                                  key='select-0'
-                                  {...field}
-                                  onValueChange={field.onChange}
-                                >
-                                  <SelectTrigger className='w-full '>
-                                    <SelectValue placeholder='Asia/Kolkata' />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    {timezonesWithOffset?.map((tz) => (
-                                      <SelectItem
-                                        key={tz.value}
-                                        value={tz.value}
-                                      >
-                                        {tz.label}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                              </FormControl>
-
-                              <FormMessage />
-                            </div>
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name='website'
-                        render={({ field }) => (
-                          <FormItem className='col-span-12 col-start-auto flex self-end flex-col gap-2 space-y-0 items-start'>
-                            <FormLabel className='flex shrink-0'>
-                              Website
-                            </FormLabel>
-
-                            <div className='w-full space-y-2'>
                               <FormControl>
                                 <Input
                                   key='text-input-0'
-                                  placeholder='http://example.com'
+                                  placeholder='Acme Solution'
                                   type='text'
                                   id='name'
                                   {...field}
@@ -319,38 +167,218 @@ export default function OrganizationCreate() {
                               </FormControl>
 
                               <FormMessage />
-                            </div>
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name='description'
-                        render={({ field }) => (
-                          <FormItem className='col-span-12 col-start-auto flex self-end flex-col gap-2 space-y-0 items-start'>
-                            <FormLabel className='flex shrink-0'>
-                              Description
-                            </FormLabel>
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name='industry'
+                          render={({ field }) => (
+                            <FormItem className='col-span-12 col-start-auto flex self-end flex-col gap-2 space-y-0 items-start'>
+                              <FormLabel className='flex shrink-0'>
+                                Industry
+                                <span className='text-destructive'>*</span>
+                              </FormLabel>
 
-                            <div className='w-full'>
-                              <FormControl>
-                                <Textarea
-                                  key='textarea-0'
-                                  id='description'
-                                  placeholder='Tell us About Your Company...'
-                                  className=''
-                                  {...field}
-                                />
-                              </FormControl>
+                              <div className='w-full space-y-2'>
+                                <FormControl>
+                                  <Select
+                                    key='select-0'
+                                    {...field}
+                                    onValueChange={field.onChange}
+                                  >
+                                    <SelectTrigger className='w-full '>
+                                      <SelectValue placeholder='Software' />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      {industries?.map((ind) => (
+                                        <SelectItem
+                                          key={ind.value}
+                                          value={ind.value}
+                                        >
+                                          {ind.label}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                </FormControl>
 
-                              <FormMessage />
-                            </div>
-                          </FormItem>
-                        )}
-                      />
-                    </>
-                  )}
-                </div>
+                                <FormMessage />
+                              </div>
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name='organization_type'
+                          render={({ field }) => (
+                            <FormItem className='col-span-12 col-start-auto flex self-end flex-col gap-2 space-y-0 items-start'>
+                              <FormLabel className='flex shrink-0'>
+                                Industry Type
+                                <span className='text-destructive'>*</span>
+                              </FormLabel>
+
+                              <div className='w-full space-y-2'>
+                                <FormControl>
+                                  <RadioCards
+                                    options={industryTypes.map((type) => ({
+                                      ...type,
+                                      icon: type.icon ? <type.icon /> : null,
+                                    }))}
+                                    {...field}
+                                  />
+                                </FormControl>
+
+                                <FormMessage />
+                              </div>
+                            </FormItem>
+                          )}
+                        />
+                      </>
+                    )}
+                    {state.formStep == 2 && (
+                      <>
+                        <FormField
+                          control={form.control}
+                          name='currency'
+                          render={({ field }) => (
+                            <FormItem className='col-span-6 col-start-auto flex self-end flex-col gap-2 space-y-0 items-start'>
+                              <FormLabel className='flex shrink-0'>
+                                Currency
+                                <span className='text-destructive'>*</span>
+                              </FormLabel>
+
+                              <div className='w-full space-y-2'>
+                                <FormControl>
+                                  <Select
+                                    key='select-0'
+                                    {...field}
+                                    onValueChange={(val) => {
+                                      const findSymbol = currencies.find(
+                                        (cur) => cur.value === val
+                                      );
+                                      field.onChange(val);
+                                      form.setValue(
+                                        'currency_symbol',
+                                        findSymbol?.symbol
+                                      );
+                                    }}
+                                  >
+                                    <SelectTrigger className='w-full '>
+                                      <SelectValue placeholder='Indian Rupee (INR)' />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      {currencies?.map((cur) => (
+                                        <SelectItem
+                                          key={cur.value}
+                                          value={cur.value}
+                                        >
+                                          {cur.label}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                </FormControl>
+
+                                <FormMessage />
+                              </div>
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name='timezone'
+                          render={({ field }) => (
+                            <FormItem className='col-span-6 col-start-auto flex self-end flex-col gap-2 space-y-0 items-start'>
+                              <FormLabel className='flex shrink-0'>
+                                Timezone
+                                <span className='text-destructive'>*</span>
+                              </FormLabel>
+
+                              <div className='w-full space-y-2'>
+                                <FormControl>
+                                  <Select
+                                    key='select-0'
+                                    {...field}
+                                    onValueChange={field.onChange}
+                                  >
+                                    <SelectTrigger className='w-full '>
+                                      <SelectValue placeholder='Asia/Kolkata' />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      {timezonesWithOffset?.map((tz) => (
+                                        <SelectItem
+                                          key={tz.value}
+                                          value={tz.value}
+                                        >
+                                          {tz.label}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                </FormControl>
+
+                                <FormMessage />
+                              </div>
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name='website'
+                          render={({ field }) => (
+                            <FormItem className='col-span-12 col-start-auto flex self-end flex-col gap-2 space-y-0 items-start'>
+                              <FormLabel className='flex shrink-0'>
+                                Website
+                              </FormLabel>
+
+                              <div className='w-full space-y-2'>
+                                <FormControl>
+                                  <Input
+                                    key='text-input-0'
+                                    placeholder='http://example.com'
+                                    type='text'
+                                    id='name'
+                                    {...field}
+                                  />
+                                </FormControl>
+
+                                <FormMessage />
+                              </div>
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name='description'
+                          render={({ field }) => (
+                            <FormItem className='col-span-12 col-start-auto flex self-end flex-col gap-2 space-y-0 items-start'>
+                              <FormLabel className='flex shrink-0'>
+                                Description
+                              </FormLabel>
+
+                              <div className='w-full'>
+                                <FormControl>
+                                  <Textarea
+                                    key='textarea-0'
+                                    id='description'
+                                    placeholder='Tell us About Your Company...'
+                                    className=''
+                                    {...field}
+                                  />
+                                </FormControl>
+
+                                <FormMessage />
+                              </div>
+                            </FormItem>
+                          )}
+                        />
+                      </>
+                    )}
+                  </div>
+                )}
+
                 <div
                   className={cn(
                     state.formStep > 1 ? 'grid-cols-2' : 'grid-cols-1',
@@ -359,6 +387,7 @@ export default function OrganizationCreate() {
                 >
                   {state.formStep > 1 && (
                     <Button
+                      type='button'
                       className='w-full'
                       variant={'outline'}
                       onClick={() =>
@@ -371,20 +400,24 @@ export default function OrganizationCreate() {
                       Back
                     </Button>
                   )}
-                  {state.formStep !== 2 && (
+                  {state.formStep !== 3 && (
                     <Button
                       className='w-full'
-                      onClick={() =>
+                      type='button'
+                      onClick={() => {
+                        if (state.formStep === 2 && !form.formState.isValid) {
+                          return;
+                        }
                         setState((prev) => ({
                           ...prev,
                           formStep: prev.formStep + 1,
-                        }))
-                      }
+                        }));
+                      }}
                     >
                       Next
                     </Button>
                   )}
-                  {state.formStep === 2 && (
+                  {state.formStep === 3 && (
                     <Button
                       disabled={state.isLoading}
                       className='w-full'

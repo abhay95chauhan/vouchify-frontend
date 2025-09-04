@@ -48,8 +48,6 @@ interface IProps {
   orgData: IOrganizationGet;
 }
 const UpdateOraganization = ({ orgData }: IProps) => {
-  // const { user } = useAppSelector((state) => state.user);
-
   const [state, setState] = useState({
     isLoading: false,
   });

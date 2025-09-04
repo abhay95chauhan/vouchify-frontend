@@ -1,3 +1,8 @@
+import {
+  ISubscriptionGet,
+  ISubscriptionPeriod,
+} from '../../subcriptions/model-interfaces/interfaces';
+import { SubscriptionModelGet } from '../../subcriptions/model-interfaces/model';
 import { IApiKeysGet, IOrganizationGet } from './interfaces';
 
 export class ApiKeyModel implements IApiKeysGet {
@@ -28,8 +33,9 @@ export class OrganizationModelGet implements IOrganizationGet {
   api_key_id: string;
   api_keys: IApiKeysGet;
   slug: string;
-  subcription_status: string;
-  subcription: string;
+  subcription_id: string;
+  subscription_period: ISubscriptionPeriod;
+  subcription: ISubscriptionGet;
   created_at: string;
   updated_at: string;
   industry: string;
@@ -39,18 +45,20 @@ export class OrganizationModelGet implements IOrganizationGet {
   timezone: string;
   description?: string;
   website?: string;
-  subcription_cost: number;
+  subcription_status: string;
   subcription_expire: string;
 
   constructor(data?: Partial<IOrganizationGet>) {
     this.id = data?.id ?? '';
     this.name = data?.name ?? '';
     this.email = data?.email ?? '';
+    this.subcription_status = data?.subcription_status ?? '';
     this.api_key_id = data?.api_key_id ?? '';
     this.api_keys = data?.api_keys ?? new ApiKeyModel();
     this.slug = data?.slug ?? '';
-    this.subcription_status = data?.subcription_status ?? '';
-    this.subcription = data?.subcription ?? '';
+    this.subcription_id = data?.subcription_id ?? '';
+    this.subscription_period = data?.subscription_period ?? 'monthly';
+    this.subcription = data?.subcription ?? new SubscriptionModelGet();
     this.industry = data?.industry ?? '';
     this.organization_type = data?.organization_type ?? '';
     this.currency = data?.currency ?? ''; // ISO date string
@@ -60,7 +68,6 @@ export class OrganizationModelGet implements IOrganizationGet {
     this.timezone = data?.timezone ?? '';
     this.description = data?.description ?? '';
     this.website = data?.website ?? '';
-    this.subcription_cost = data?.subcription_cost ?? 0;
     this.subcription_expire = data?.subcription_expire ?? '';
   }
 }
