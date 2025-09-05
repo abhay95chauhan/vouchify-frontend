@@ -27,7 +27,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import Logo from '@/global/components/logo/logo';
 import { cn } from '@/lib/utils';
-import { Loader } from 'lucide-react';
+import { CheckCircle, Loader } from 'lucide-react';
 import { useState } from 'react';
 import { organizationSchema } from '../schema/schema';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -36,6 +36,7 @@ import z from 'zod';
 import RadioCards from '@/global/components/radio-button/radio-card';
 import {
   currencies,
+  formSteps,
   industries,
   industryTypes,
   timezonesWithOffset,
@@ -93,7 +94,7 @@ export default function OrganizationCreate() {
 
   return (
     <div
-      className='flex items-center justify-center min-h-screen '
+      className='flex flex-col items-center justify-center min-h-screen'
       style={{
         minHeight: '100vh',
         background: `linear-gradient(
@@ -101,13 +102,66 @@ export default function OrganizationCreate() {
       oklch(0.92 0.05 280),
       oklch(0.95 0.03 340)
     )`,
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: '2rem',
       }}
     >
-      <Card className='max-w-3xl w-full'>
+      <div className='relative my-6 max-w-3xl container mx-auto '>
+        {/* Step Icons + Titles */}
+        <div className='flex items-center justify-between mb-2 relative'>
+          {formSteps.map((step) => (
+            <div
+              key={step.id}
+              className='flex flex-col items-center text-center relative z-10 w-1/3'
+            >
+              <div
+                className={cn(
+                  'w-12 h-12 rounded-full border-2 flex items-center justify-center transition-all duration-300',
+                  state.formStep > step.id
+                    ? 'bg-primary border-primary text-primary-foreground'
+                    : state.formStep === step.id
+                    ? 'bg-primary border-primary text-primary-foreground shadow-lg shadow-primary/25'
+                    : 'bg-card border-border text-muted-foreground'
+                )}
+              >
+                {state.formStep > step.id ? (
+                  <CheckCircle className='w-6 h-6' />
+                ) : (
+                  <step.icon className='w-6 h-6' />
+                )}
+              </div>
+              <div className='mt-2'>
+                <p
+                  className={cn(
+                    'text-sm font-medium transition-colors',
+                    state.formStep >= step.id
+                      ? 'text-foreground'
+                      : 'text-muted-foreground'
+                  )}
+                >
+                  {step.title}
+                </p>
+                <p className='text-xs text-muted-foreground hidden sm:block'>
+                  {step.description}
+                </p>
+              </div>
+            </div>
+          ))}
+
+          {/* Progress Line */}
+          <div className='absolute top-6 left-[120px] right-[120px] h-0.5 bg-border -z-0'>
+            <div
+              className='h-full bg-primary transition-all duration-500 ease-out'
+              style={{
+                width: `${Math.max(
+                  0,
+                  ((state.formStep - 1) / (formSteps.length - 1)) * 100
+                )}%`,
+              }}
+            />
+          </div>
+        </div>
+      </div>
+
+      <Card className='max-w-3xl w-full mb-6'>
         <CardHeader className='text-center space-y-2'>
           <div className='mx-auto'>
             <Logo />

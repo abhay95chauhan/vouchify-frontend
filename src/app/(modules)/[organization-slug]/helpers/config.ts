@@ -1,4 +1,11 @@
-import { Building, Landmark, University } from 'lucide-react';
+import {
+  Building,
+  Building2,
+  CreditCard,
+  Globe,
+  Landmark,
+  University,
+} from 'lucide-react';
 import moment from 'moment-timezone';
 export const industryTypes = [
   {
@@ -94,3 +101,24 @@ export const timezonesWithOffset = moment.tz.names().map((tz) => {
   const offset = moment.tz(tz).format('Z'); // e.g., "+05:30"
   return { label: `${tz} (UTC${offset})`, value: tz };
 });
+
+export const formSteps = [
+  {
+    id: 1,
+    title: 'Organization Details',
+    description: 'Basic information about your organization',
+    icon: Building2,
+  },
+  {
+    id: 2,
+    title: 'Configuration',
+    description: 'Set up your preferences and settings',
+    icon: Globe,
+  },
+  {
+    id: 3,
+    title: 'Choose Plan',
+    description: 'Select the perfect plan for your needs',
+    icon: CreditCard,
+  },
+];
