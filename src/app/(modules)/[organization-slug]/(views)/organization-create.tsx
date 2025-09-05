@@ -460,6 +460,7 @@ export default function OrganizationCreate() {
                       type='button'
                       onClick={() => {
                         if (state.formStep === 2 && !form.formState.isValid) {
+                          form.trigger();
                           return;
                         }
                         setState((prev) => ({

@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { LayoutDashboard, Settings2, Ticket } from 'lucide-react';
+import { Building2, LayoutDashboard, Ticket } from 'lucide-react';
 
 import {
   Sidebar,
@@ -31,9 +31,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         icon: Ticket,
       },
       {
-        title: 'Settings',
-        url: `/${user.organization?.slug}/settings`,
-        icon: Settings2,
+        title: 'Organization',
+        url: `/${user.organization?.slug}`,
+        icon: Building2,
       },
     ],
   };

@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { getMeUserService } from './auth/login/actions-services/services';
-import OrganizationCreate from './(modules)/[organization-slug]/views/organization-create';
+import OrganizationCreate from './(modules)/[organization-slug]/(views)/organization-create';
 
 export default async function Home() {
   const jwt = (await cookies()).get('jwt')?.value;

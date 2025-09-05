@@ -3,9 +3,9 @@
 import {
   BadgeCheck,
   Bell,
+  Building2,
   ChevronsUpDown,
   LogOut,
-  Settings2,
 } from 'lucide-react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -77,10 +77,10 @@ export function NavUser({ user }: { user: IUser }) {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <Link href={`/${user.organization?.slug}/settings`}>
+              <Link href={`/${user.organization?.slug}`}>
                 <DropdownMenuItem>
-                  <Settings2 />
-                  Organization&apos;s Settings
+                  <Building2 />
+                  Organization
                 </DropdownMenuItem>
               </Link>
               <Link href={'/account'}>
