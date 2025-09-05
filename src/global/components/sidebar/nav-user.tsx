@@ -80,7 +80,7 @@ export function NavUser({ user }: { user: IUser }) {
               <Link href={`/${user.organization?.slug}`}>
                 <DropdownMenuItem>
                   <Building2 />
-                  Organization
+                  {user.organization?.name}
                 </DropdownMenuItem>
               </Link>
               <Link href={'/account'}>

@@ -31,7 +31,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         icon: Ticket,
       },
       {
-        title: 'Organization',
+        title: user.organization?.name,
         url: `/${user.organization?.slug}`,
         icon: Building2,
       },
