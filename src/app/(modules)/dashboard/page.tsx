@@ -1,13 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PageHeader } from '@/global/components/page-header/page-header';
-import { redirect } from 'next/navigation';
 
 export default function Dashboard() {
   return (
     <main className='space-y-6'>
       {/* Top bar */}
       <PageHeader
-        onBack={() => redirect('/vouchers')}
+        backRedirectUrl={'/vouchers'}
         title={'Dashboard'}
         description='Manage and Monitor your Dashboard.'
       />

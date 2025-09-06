@@ -179,7 +179,7 @@ const VoucherCreate = ({ voucherData }: { voucherData: IVoucherPost }) => {
       <div className='flex justify-between items-start'>
         <PageHeader
           showBackButton
-          onBack={() => redirect('/vouchers')}
+          backRedirectUrl={'/vouchers'}
           title={voucherData?.code ? 'Update Voucher' : 'Create New Voucher'}
           description='Design and configure your new promotional voucher.'
         />

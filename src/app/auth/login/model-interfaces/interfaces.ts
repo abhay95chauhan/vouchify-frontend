@@ -14,10 +14,13 @@ export interface IUser {
   phone_number: string;
   avatar_url: string;
   is_active: boolean;
+  is_invited: boolean;
+  is_phone_verified: boolean;
   is_email_varified: boolean;
   organization_id: string;
   joined_at: string; // ISO date string
   created_at: string; // ISO date string
   updated_at: string; // ISO date string
+  last_login_at: string; // ISO date string
   organization: IOrganizationGet;
 }

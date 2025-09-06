@@ -1,19 +1,21 @@
+'use client';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { Typography } from '../typography/typography';
+import { redirect } from 'next/navigation';
 
 interface PageHeaderProps {
   title: string;
   description?: string;
   showBackButton?: boolean;
-  onBack?: () => void;
+  backRedirectUrl?: string;
 }
 
 export function PageHeader({
   title,
   description,
   showBackButton = false,
-  onBack,
+  backRedirectUrl,
 }: PageHeaderProps) {
   return (
     <div className='flex gap-4 items-center'>
@@ -21,7 +23,7 @@ export function PageHeader({
         <Button
           variant='ghost'
           size='sm'
-          onClick={onBack}
+          onClick={() => redirect(backRedirectUrl as string)}
           className='flex items-center gap-2'
         >
           <ArrowLeft className='h-4 w-4' />
