@@ -17,7 +17,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { useState, useEffect, useCallback, MouseEvent } from 'react';
-import { Plus, Search } from 'lucide-react';
+import { ArrowDown, ArrowUp, ArrowUpDown, Plus, Search } from 'lucide-react';
 import { vouchifyApi } from '@/global/utils/api';
 import {
   Select,
@@ -38,6 +38,7 @@ import {
 import { TableSkeleton } from './list-view-skeleton-loader';
 import { Typography } from '../typography/typography';
 import { useAppSelector } from '@/redux/hook';
+import { Label } from '@/components/ui/label';
 
 interface TableProps<T> {
   onRowClick?: (row: Row<T>, e: MouseEvent<HTMLTableRowElement>) => void;
@@ -74,6 +75,8 @@ export default function VouchersTable<T>({
 
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [orderByField, setOrderByField] = useState('');
+  const [orderBy, setOrderBy] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
@@ -90,6 +93,8 @@ export default function VouchersTable<T>({
       const params = new URLSearchParams({
         page: page.toString(),
         limit: limit.toString(),
+        orderByField: orderByField.toString(),
+        orderBy: !orderBy ? 'ASC' : 'DESC',
         ...(search && { search }),
       });
 
@@ -132,7 +137,7 @@ export default function VouchersTable<T>({
     } finally {
       setLoading(false);
     }
-  }, [url, currentPage, pageSize, debouncedSearch]);
+  }, [url, currentPage, pageSize, debouncedSearch, orderBy, orderByField]);
 
   useEffect(() => {
     fetchData();
@@ -250,13 +255,37 @@ export default function VouchersTable<T>({
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id} className='text-left'>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                  <TableHead
+                    onClick={() => {
+                      if (header.column.columnDef.enableSorting !== false) {
+                        setOrderByField(header.column.id);
+                        setOrderBy((prev) => !prev);
+                      }
+                    }}
+                    key={header.id}
+                    className='text-left cursor-pointer space-x-2'
+                  >
+                    <div className='flex items-center gap-1'>
+                      <Label>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                      </Label>
+                      {orderByField === header.column.id ? (
+                        orderBy ? (
+                          <ArrowDown className='w-4 h-4 inline-block' />
+                        ) : (
+                          <ArrowUp className='w-4 h-4 inline-block' />
+                        )
+                      ) : (
+                        header.column.columnDef.enableSorting !== false && (
+                          <ArrowUpDown className='w-3 h-3 text-muted-foreground inline-block' />
+                        )
+                      )}
+                    </div>
                   </TableHead>
                 ))}
               </TableRow>

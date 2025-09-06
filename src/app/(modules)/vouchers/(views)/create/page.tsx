@@ -579,7 +579,7 @@ const VoucherCreate = ({ voucherData }: { voucherData: IVoucherPost }) => {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>
-                            Start Date
+                            Activate From
                             <span className='text-destructive'> *</span>
                           </FormLabel>
                           <FormControl>
@@ -610,7 +610,7 @@ const VoucherCreate = ({ voucherData }: { voucherData: IVoucherPost }) => {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>
-                            End Date
+                            Valid Until
                             <span className='text-destructive'> *</span>
                           </FormLabel>
                           <FormControl>

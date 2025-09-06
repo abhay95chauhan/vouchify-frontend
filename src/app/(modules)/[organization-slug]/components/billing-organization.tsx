@@ -37,8 +37,12 @@ const BillingOrganization = ({ orgData }: IProps) => {
               <Typography.Muted className='text-sm capitalize'>
                 INR&nbsp;
                 {orgData?.subcription?.price[orgData?.subscription_period]}
-                &nbsp;/&nbsp;
-                {orgData?.subscription_period}
+                {!orgData.subcription.isFree && (
+                  <>
+                    &nbsp;/&nbsp;
+                    {orgData?.subscription_period}
+                  </>
+                )}
               </Typography.Muted>
             </div>
             <Button variant='outline'>Upgrade Plan</Button>

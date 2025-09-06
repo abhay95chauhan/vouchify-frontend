@@ -5,6 +5,7 @@ export class SubscriptionModelGet implements ISubscriptionGet {
   isFree: boolean;
   name: string;
   price: { monthly: number; yearly: number };
+  discount_in_percentage: number;
   description?: string | null;
   features: string[];
   buttonLabel: string;
@@ -14,6 +15,7 @@ export class SubscriptionModelGet implements ISubscriptionGet {
   constructor(data?: ISubscriptionGet) {
     this.id = data?.id ?? '';
     this.isFree = data?.isFree || false;
+    this.discount_in_percentage = data?.discount_in_percentage || 0;
     this.name = data?.name ?? '';
     this.price = data?.price ?? {
       monthly: 0,

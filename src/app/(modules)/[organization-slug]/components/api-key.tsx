@@ -35,7 +35,7 @@ const ApiKey = ({ orgData }: IProps) => {
             <div className='space-y-2'>
               <Typography.H5 className='font-semibold'>Api Key</Typography.H5>
               <div className='flex items-center justify-between gap-4 p-4 border border-primary rounded-lg'>
-                <Typography.Muted className='text-sm'>
+                <Typography.Muted className='text-sm truncate'>
                   {orgData?.api_keys?.api_key}
                 </Typography.Muted>
                 <CopyButton
@@ -50,10 +50,10 @@ const ApiKey = ({ orgData }: IProps) => {
                 Api Secret
               </Typography.H5>
               <div className='flex items-center justify-between gap-4 p-4 border border-primary rounded-lg'>
-                <Typography.Muted className='text-sm'>
+                <Typography.Muted className='text-sm truncate'>
                   {showSecret
                     ? orgData?.api_keys?.api_secret
-                    : '********************'}
+                    : 'sk****************************************'}
                 </Typography.Muted>
                 <div className='flex items-center gap-2'>
                   {showSecret ? (

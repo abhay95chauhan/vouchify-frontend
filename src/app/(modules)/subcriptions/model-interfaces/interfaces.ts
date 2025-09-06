@@ -8,6 +8,7 @@ export interface ISubscriptionGet {
     monthly: number;
     yearly: number;
   };
+  discount_in_percentage: number;
   description?: string | null;
   features: string[];
   buttonLabel: string;

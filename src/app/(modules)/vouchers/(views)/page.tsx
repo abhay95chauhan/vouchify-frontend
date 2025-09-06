@@ -50,6 +50,12 @@ const VouchersList = () => {
       },
       labelClass: 'text-destructive font-medium',
     },
+    {
+      label: 'Edit',
+      fn: async (row: IVoucherGet) => {
+        redirect(`/vouchers/${row.code}`);
+      },
+    },
   ];
 
   const columns: ColumnDef<IVoucherGet>[] = [
@@ -129,6 +135,7 @@ const VouchersList = () => {
     },
     {
       accessorKey: 'status',
+      enableSorting: false,
       header: 'Status',
       cell: ({ row }) => {
         const status = checkVoucherStatus(
@@ -150,6 +157,7 @@ const VouchersList = () => {
     {
       id: 'actions',
       enableHiding: false,
+      enableSorting: false,
       cell: ({ row }) => {
         return (
           <CustomDropdown

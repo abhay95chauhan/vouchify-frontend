@@ -1,5 +1,4 @@
 'use client';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -19,6 +18,8 @@ import {
   ISubscriptionGet,
   ISubscriptionPeriod,
 } from '@/app/(modules)/subcriptions/model-interfaces/interfaces';
+import { subcriptionPeriod } from '@/app/(modules)/subcriptions/helpers/config';
+import { Badge } from './badge';
 
 const Pricing = ({
   onSelecPlan,
@@ -28,7 +29,7 @@ const Pricing = ({
     period: ISubscriptionPeriod;
   }) => void;
 }) => {
-  const [frequency, setFrequency] = useState<string>('monthly');
+  const [frequency, setFrequency] = useState<string>(subcriptionPeriod[0]);
   const [selectedPlan, setSelectedPlan] = useState<string>('free'); // 👈 track selection
   const [subcriptions, setSubcriptions] = useState<ISubscriptionGet[]>([]); // 👈 track selection
 
@@ -39,6 +40,8 @@ const Pricing = ({
     })();
   }, []);
 
+  const selectedPlanObj = subcriptions?.find((p) => p.id === selectedPlan);
+
   return (
     <div className='flex flex-col text-center'>
       <div className='flex flex-col items-center justify-center gap-6'>
@@ -48,15 +51,23 @@ const Pricing = ({
         </Typography.P>
 
         {/* Frequency toggle */}
-        <Tabs defaultValue={frequency} onValueChange={setFrequency}>
-          <TabsList>
-            <TabsTrigger value='monthly'>Monthly</TabsTrigger>
-            <TabsTrigger value='yearly'>
-              Yearly
-              <Badge variant='secondary'>20% off</Badge>
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
+        {!selectedPlanObj?.isFree && (
+          <Tabs defaultValue={frequency} onValueChange={setFrequency}>
+            <TabsList>
+              {subcriptionPeriod.map((item, i) => (
+                <TabsTrigger key={i} value={item} className='capitalize'>
+                  {item}
+                  {item === subcriptionPeriod[1] &&
+                    selectedPlanObj?.discount_in_percentage && (
+                      <Badge variant='secondary'>
+                        {selectedPlanObj?.discount_in_percentage} % off
+                      </Badge>
+                    )}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
+        )}
 
         {/* Plans */}
         <div className='mt-4 grid w-full max-w-4xl gap-4 lg:grid-cols-2'>
