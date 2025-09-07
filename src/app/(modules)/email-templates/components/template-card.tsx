@@ -13,6 +13,7 @@ import { deleteEmailTemplatesService } from '../actions/services';
 import { useAppDispatch } from '@/redux/hook';
 import { getAllEmailTemplatesAction } from '../actions/actions';
 import CreateEmailTemplate from '../views/create-email-template';
+import { toast } from 'sonner';
 
 export default function TemplateCard({
   t,
@@ -37,7 +38,12 @@ export default function TemplateCard({
   };
 
   const deleteEmailTempalte = async () => {
-    await deleteEmailTemplatesService(t.id);
+    const res = await deleteEmailTemplatesService(t.id);
+    if (res?.error) {
+      toast.error(res?.error?.message);
+    } else {
+      toast.success(res?.message);
+    }
     dispatch(getAllEmailTemplatesAction());
     onCloseModal();
   };

@@ -64,7 +64,7 @@ export default function CreateEmailTemplate(props: IProps) {
     }
 
     if (res?.error) {
-      toast.success(res?.error?.message);
+      toast.error(res?.error?.message);
     } else {
       toast.success(res?.message);
     }
@@ -79,6 +79,7 @@ export default function CreateEmailTemplate(props: IProps) {
   };
   return (
     <CustomModal
+      desc='Please review the Email Template System guide before adding a new template.'
       title={props?.template?.id ? 'Edit Template' : 'Create Template'}
       loading={state.isLoading}
       showModal={props.showModal}

@@ -14,7 +14,8 @@ export const VoucherPostSchema = z
     name: z
       .string(fieldValidation('Voucher Name'))
       .trim()
-      .min(1, fieldValidation('Voucher Name')),
+      .min(1, fieldValidation('Voucher Name'))
+      .trim(),
     description: z.string().trim().optional(),
 
     code: z
