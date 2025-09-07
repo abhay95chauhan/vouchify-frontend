@@ -17,7 +17,15 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { useState, useEffect, useCallback, MouseEvent } from 'react';
-import { ArrowDown, ArrowUp, ArrowUpDown, Plus, Search } from 'lucide-react';
+import {
+  ArrowDown,
+  ArrowUp,
+  ArrowUpDown,
+  ChevronDownIcon,
+  Loader2,
+  Plus,
+  Search,
+} from 'lucide-react';
 import { vouchifyApi } from '@/global/utils/api';
 import {
   Select,
@@ -39,10 +47,21 @@ import { TableSkeleton } from './list-view-skeleton-loader';
 import { Typography } from '../typography/typography';
 import { useAppSelector } from '@/redux/hook';
 import { Label } from '@/components/ui/label';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { saveAs } from 'file-saver';
+import { tableColumns } from './export-table';
+import { json2csv } from 'json-2-csv';
+import { toast } from 'sonner';
 
 interface TableProps<T> {
   onRowClick?: (row: Row<T>, e: MouseEvent<HTMLTableRowElement>) => void;
   url: string;
+  showDownloadButton?: boolean;
   columns: ColumnDef<T>[];
   emptyStateMsg: {
     heading: string;
@@ -67,8 +86,13 @@ export default function VouchersTable<T>({
   columns,
   emptyStateMsg,
   onRowClick,
+  showDownloadButton,
 }: TableProps<T>) {
   const { hardRefresh } = useAppSelector((state) => state.common);
+
+  const [state, setState] = useState({
+    downloadLoader: false,
+  });
 
   const [data, setData] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);
@@ -227,6 +251,23 @@ export default function VouchersTable<T>({
     );
   };
 
+  async function downloadTable() {
+    try {
+      setState((prev) => ({ ...prev, downloadLoader: true }));
+      const csv = json2csv(data as object[], {
+        keys: tableColumns(url).header,
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      saveAs(blob, `${url}-${Date.now()}.csv`);
+      setState((prev) => ({ ...prev, downloadLoader: false }));
+      toast.success(`${url.replace('/', ' ')} Downloaded`);
+    } catch (error) {
+      toast.error(`Failed to Download ${url.replace('/', ' ')}`);
+      console.error('CSV export failed:', error);
+    }
+  }
+
   return (
     <div className='w-full'>
       <div className='flex items-center pb-4'>
@@ -349,6 +390,25 @@ export default function VouchersTable<T>({
               {Math.min(currentPage * pageSize, totalItems)} of {totalItems}{' '}
               results
             </Typography.Muted>
+            {showDownloadButton !== false && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant={'link'}>
+                    Export As
+                    {state.downloadLoader ? (
+                      <Loader2 className='ml-2 h-4 w-4 animate-spin' />
+                    ) : (
+                      <ChevronDownIcon className='ml-2 h-4 w-4' />
+                    )}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem onClick={() => downloadTable()}>
+                    CSV
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </div>
 
           <div>

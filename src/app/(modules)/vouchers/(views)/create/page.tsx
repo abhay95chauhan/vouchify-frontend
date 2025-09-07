@@ -89,6 +89,7 @@ const VoucherCreate = ({ voucherData }: { voucherData: IVoucherPost }) => {
           ? voucherData.code.split('-')[1]
           : voucherData.code,
         max_redemptions: Number(voucherData?.max_redemptions) ?? null,
+        max_discount_amount: Number(voucherData?.max_discount_amount) ?? null,
       });
       const status = checkVoucherStatus(
         voucherData.start_date,
@@ -428,13 +429,12 @@ const VoucherCreate = ({ voucherData }: { voucherData: IVoucherPost }) => {
                   <div className='col-span-4'>
                     <FormField
                       control={form.control}
-                      name='min_order_amount'
+                      name='max_discount_amount'
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>
-                            Minimum Order Amount (
+                            Maximum Discount Amount&nbsp; (
                             {user.organization?.currency_symbol})
-                            <span className='text-destructive'> *</span>
                           </FormLabel>
                           <FormControl>
                             <Input
@@ -460,7 +460,33 @@ const VoucherCreate = ({ voucherData }: { voucherData: IVoucherPost }) => {
                     />
                   </div>
                 </div>
+                <FormField
+                  control={form.control}
+                  name='min_order_amount'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        Minimum Order Amount (
+                        {user.organization?.currency_symbol})
+                        <span className='text-destructive'> *</span>
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder='e.g., 20'
+                          type='text'
+                          onChange={(e) => {
+                            const raw = e.target.value.replace(/[^\d.]/g, '');
+                            const num = parseFloat(raw);
 
+                            field.onChange(raw === '' || isNaN(num) ? 0 : num);
+                          }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <FormField
                   control={form.control}
                   name='description'
@@ -596,7 +622,7 @@ const VoucherCreate = ({ voucherData }: { voucherData: IVoucherPost }) => {
                             />
                           </FormControl>
                           <FormDescription>
-                            Voucher becomes active from this Date.
+                            Voucher Becomes active From this Date.
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
@@ -621,7 +647,7 @@ const VoucherCreate = ({ voucherData }: { voucherData: IVoucherPost }) => {
                             />
                           </FormControl>
                           <FormDescription>
-                            Voucher becomes active from this Date.
+                            Voucher Active Until this Date.
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
@@ -690,6 +716,21 @@ const VoucherCreate = ({ voucherData }: { voucherData: IVoucherPost }) => {
 
               {/* Additional Details */}
               <div className='space-y-2 text-sm text-vpro-gray-600 dark:text-vpro-gray-300'>
+                <Typography.P className='flex items-center gap-2'>
+                  {!form.watch('max_discount_amount') ? (
+                    <>
+                      <Infinity className='h-4 w-4 text-emerald-600' />
+                      <span>No Maximum Discount Cap Applied</span>
+                    </>
+                  ) : (
+                    <span>
+                      💰 Maximum Discount Amount is&nbsp;
+                      {form.watch('max_discount_amount')}&nbsp;
+                      {user.organization?.currency_symbol}
+                    </span>
+                  )}
+                </Typography.P>
+
                 <Typography.P className='flex items-center gap-2'>
                   {!form.watch('max_redemptions') ? (
                     <>

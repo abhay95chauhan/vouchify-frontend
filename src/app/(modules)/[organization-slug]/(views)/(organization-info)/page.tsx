@@ -16,7 +16,7 @@ const OrganizationSettings = async () => {
   const { data: smtpData } = await getMySmtpService(jwt);
 
   return (
-    <div className='space-y-8 w-full'>
+    <div className='space-y-4 w-full'>
       <div className='space-y-2'>
         <h1 className='text-3xl font-bold tracking-tight'>{orgRes?.name}</h1>
         <p className='text-muted-foreground'>{orgRes?.description}</p>
