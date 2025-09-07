@@ -18,7 +18,6 @@ import { useForm } from 'react-hook-form';
 import { smtpSchema } from '../schema/schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import z from 'zod';
-import SelectComponent from '@/global/components/select/select';
 import { ISmtpGet } from '../model-interfaces/interfaces';
 import { createOrganizationSmtp } from '../actions/services';
 import { toast } from 'sonner';
@@ -193,17 +192,24 @@ export default function SMTPSettings({ smtpData }: { smtpData: ISmtpGet }) {
 
                           <div className='w-full space-y-2'>
                             <FormControl>
-                              <SelectComponent
+                              <Input
                                 {...field}
-                                value={field.value?.toString()}
-                                onChange={(e) => {
-                                  field.onChange(parseInt(e));
+                                placeholder='e.g., 465'
+                                type='number'
+                                onKeyDown={(e) => {
+                                  if (['e', 'E', '+', '-'].includes(e.key)) {
+                                    e.preventDefault();
+                                  }
                                 }}
-                                placeholder='578'
-                                options={[
-                                  { label: '578', value: '578' },
-                                  { label: '465', value: '465' },
-                                ]}
+                                onChange={(e) => {
+                                  const raw = e.target.value.replace(
+                                    /[^\d.]/g,
+                                    ''
+                                  );
+                                  field.onChange(
+                                    raw === '' ? undefined : Number(raw)
+                                  );
+                                }}
                               />
                             </FormControl>
 
@@ -246,7 +252,7 @@ export default function SMTPSettings({ smtpData }: { smtpData: ISmtpGet }) {
                       render={({ field }) => (
                         <FormItem className='col-span-12 col-start-auto flex self-end flex-col gap-2 space-y-0 items-start'>
                           <FormLabel className='flex shrink-0'>
-                            SMTP Password
+                            Password
                           </FormLabel>
 
                           <div className='w-full space-y-2'>
@@ -271,10 +277,12 @@ export default function SMTPSettings({ smtpData }: { smtpData: ISmtpGet }) {
 
             {/* Save button */}
 
-            <Button type='submit' className='w-full' disabled={state.isLoading}>
-              {state.isLoading && <Loader className='animate-spin' />}
-              Save SMTP Settings
-            </Button>
+            <div className='w-full flex justify-end'>
+              <Button type='submit' disabled={state.isLoading}>
+                {state.isLoading && <Loader className='animate-spin' />}
+                Configure SMTP Settings
+              </Button>
+            </div>
           </form>
         </Form>
       </CardComponent>

@@ -321,15 +321,12 @@ const UpdateOraganization = ({ orgData }: IProps) => {
                     />
                   </>
                 </div>
-
-                <Button
-                  disabled={state.isLoading}
-                  className='w-full'
-                  type='submit'
-                >
-                  {state.isLoading && <Loader className='animate-spin' />}
-                  Save
-                </Button>
+                <div className='w-full flex justify-end'>
+                  <Button disabled={state.isLoading} type='submit'>
+                    {state.isLoading && <Loader className='animate-spin' />}
+                    Save Changes
+                  </Button>
+                </div>
               </form>
             </Form>
           </div>
