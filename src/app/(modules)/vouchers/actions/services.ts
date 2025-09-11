@@ -83,7 +83,7 @@ export const validateVoucherService = async (
 
 export const sendVoucherViaEmailService = async (mailData: {
   code: string;
-  email: string;
+  email: string | string[];
 }) => {
   try {
     const res = await vouchifyApi.request('/voucher/send-mail', {

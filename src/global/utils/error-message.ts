@@ -1,6 +1,7 @@
 export const errorMessages = {
   voucher: {
     delete: 'Deleting this voucher cannot be undone. Continue?',
+    sendVoucherMail: 'Mail This Voucher with Your User',
     notFound: {
       title: 'No voucher Found',
       btnLabel: 'Create Voucher',
@@ -10,6 +11,7 @@ export const errorMessages = {
   email: {
     htmlUpdate: 'HTML Updated',
     delete: 'Deleting this Email Template cannot be undone. Continue?',
+    sendTestMailDesc: 'Test This Email Template with Your Organization Members',
     notFound: {
       title: 'No Email Template Found',
       btnLabel: 'New Template',

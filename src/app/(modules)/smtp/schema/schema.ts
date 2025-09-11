@@ -15,7 +15,11 @@ export const smtpSchema = z.object({
 
 export const sendEmailToRecipients = z.object({
   emails: z
-    .string({ message: fieldValidation('Emails') })
-    .email({ message: 'Invalid Email' })
-    .trim(),
+    .array(
+      z
+        .string({ message: fieldValidation('Emails') })
+        .email({ message: 'Invalid Email' })
+        .trim()
+    )
+    .nonempty({ message: 'At least one email is required' }),
 });

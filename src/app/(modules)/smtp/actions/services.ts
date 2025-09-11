@@ -35,7 +35,7 @@ export const createOrganizationSmtp = async (smtpData: ISmtpPost) => {
 
 export const sendEmailTemplateMailService = async (mailData: {
   templateId: string;
-  email: string;
+  email: string | string[];
 }) => {
   try {
     const res = await vouchifyApi.request(`/smtp/send-mail`, {

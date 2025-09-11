@@ -4,7 +4,7 @@ import CardComponent from '@/global/components/card/card-component';
 import ListViewComponent from '@/global/components/list-view/list-view';
 import { Typography } from '@/global/components/typography/typography';
 import { ColumnDef } from '@tanstack/react-table';
-import { MoreHorizontal, Plus } from 'lucide-react';
+import { MoreHorizontal, Pen, Plus, Trash } from 'lucide-react';
 import React, { Suspense, useState } from 'react';
 import { DiscountType, IVoucherGet } from '../interface-model/interfaces';
 import { TableSkeleton } from '@/global/components/list-view/list-view-skeleton-loader';
@@ -49,12 +49,14 @@ const VouchersList = () => {
         }));
       },
       labelClass: 'text-destructive font-medium',
+      icon: <Trash className='text-destructive' />,
     },
     {
       label: 'Edit',
       fn: async (row: IVoucherGet) => {
         redirect(`/vouchers/${row.code}`);
       },
+      icon: <Pen />,
     },
   ];
 

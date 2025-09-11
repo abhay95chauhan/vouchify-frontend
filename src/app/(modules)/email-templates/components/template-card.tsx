@@ -75,7 +75,7 @@ export default function TemplateCard({ t, onPreview }: IProps) {
     },
   ];
 
-  const sendTestMail = async (emails: string) => {
+  const sendTestMail = async (emails: string | string[]) => {
     const res = await sendEmailTemplateMailService({
       templateId: t.id,
       email: emails,
@@ -185,7 +185,8 @@ export default function TemplateCard({ t, onPreview }: IProps) {
 
       {/* send test mail */}
       <SendEmailToRecipients
-        title='Test Mail'
+        title='Send Mail'
+        description={errorMessages.email.sendTestMailDesc}
         showModal={state.showSendTestEmailModal}
         closeModal={onCloseModal}
         onSave={sendTestMail}

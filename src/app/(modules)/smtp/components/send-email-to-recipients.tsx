@@ -1,3 +1,4 @@
+'use client';
 import { CustomModal } from '@/global/components/modal/custom-modal';
 import { Send } from 'lucide-react';
 import React, { useState } from 'react';
@@ -13,13 +14,15 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+
+import ReactSelectComponent from '@/global/components/select/react-select';
 
 export interface IProps {
   title: string;
+  description?: string;
   showModal: boolean;
   closeModal: () => void;
-  onSave: (emails: string) => void;
+  onSave: (emails: string | string[]) => void;
 }
 
 const SendEmailToRecipients = (props: IProps) => {
@@ -49,9 +52,9 @@ const SendEmailToRecipients = (props: IProps) => {
     <>
       <CustomModal
         title={props.title}
+        desc={props.description}
         loading={state.isLoading}
         showModal={props.showModal}
-        className='max-w-sm'
         buttonLabel={state.isLoading ? 'Sending...' : 'Send'}
         close={onClose}
         save={form.handleSubmit(sendEmail)}
@@ -67,17 +70,34 @@ const SendEmailToRecipients = (props: IProps) => {
                 control={form.control}
                 name='emails'
                 render={({ field }) => (
-                  <FormItem className='col-span-12 col-start-auto flex self-end flex-col gap-2 space-y-0 items-start'>
+                  <FormItem className='col-span-12 col-start-auto flex self-end flex-col gap-2 space-y-1 items-start'>
                     <FormLabel className='flex shrink-0'>
                       Recipient&apos;s Emails
                     </FormLabel>
 
-                    <div className='w-full space-y-2'>
+                    <div className='w-full'>
                       <FormControl>
-                        <Input
-                          placeholder='e.g. admin@yourdomain.com'
-                          type='text'
-                          {...field}
+                        <ReactSelectComponent
+                          value={
+                            field.value?.length
+                              ? field.value?.map((item) => ({
+                                  label: item,
+                                  value: item,
+                                }))
+                              : null
+                          }
+                          onChange={(data) => {
+                            const values = Array.isArray(data)
+                              ? data.map((item) => item.value)
+                              : data
+                              ? [data.value]
+                              : [];
+
+                            field.onChange(values);
+                          }}
+                          placeholder='Create e.g., example@example.com'
+                          isMulti
+                          isCreatable
                         />
                       </FormControl>
 

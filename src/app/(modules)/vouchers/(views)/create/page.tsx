@@ -61,6 +61,7 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import ValidateVoucher from '../../components/validate-voucher';
 import SendEmailToRecipients from '@/app/(modules)/smtp/components/send-email-to-recipients';
+import { errorMessages } from '@/global/utils/error-message';
 
 const VoucherCreate = ({ voucherData }: { voucherData: IVoucherPost }) => {
   const { user } = useAppSelector((state) => state.user);
@@ -188,7 +189,7 @@ const VoucherCreate = ({ voucherData }: { voucherData: IVoucherPost }) => {
     }));
   };
 
-  const sendMail = async (emails: string) => {
+  const sendMail = async (emails: string | string[]) => {
     const res = await sendVoucherViaEmailService({
       code: voucherData.code,
       email: emails,
@@ -201,7 +202,7 @@ const VoucherCreate = ({ voucherData }: { voucherData: IVoucherPost }) => {
   };
   return (
     <div className='space-y-6'>
-      <div className='flex justify-between items-start'>
+      <div className='flex md:flex-row flex-col justify-between items-start gap-4'>
         <PageHeader
           showBackButton
           backRedirectUrl={'/vouchers'}
@@ -209,6 +210,18 @@ const VoucherCreate = ({ voucherData }: { voucherData: IVoucherPost }) => {
           description='Design and configure your new promotional voucher.'
         />
         <div className='space-x-2'>
+          {voucherData?.code ? (
+            <Button
+              onClick={() => {
+                setState((prev) => ({
+                  ...prev,
+                  showValidateVoucherModal: true,
+                }));
+              }}
+            >
+              <BadgeCheck /> Validate
+            </Button>
+          ) : null}
           {voucherData?.code ? (
             <Button
               variant={'outline'}
@@ -220,18 +233,6 @@ const VoucherCreate = ({ voucherData }: { voucherData: IVoucherPost }) => {
               }}
             >
               <Mail /> Send Voucher via Email
-            </Button>
-          ) : null}
-          {voucherData?.code ? (
-            <Button
-              onClick={() => {
-                setState((prev) => ({
-                  ...prev,
-                  showValidateVoucherModal: true,
-                }));
-              }}
-            >
-              <BadgeCheck /> Validate
             </Button>
           ) : null}
         </div>
@@ -818,6 +819,7 @@ const VoucherCreate = ({ voucherData }: { voucherData: IVoucherPost }) => {
       {voucherData?.code ? (
         <SendEmailToRecipients
           title='Mail Voucher'
+          description={errorMessages.voucher.sendVoucherMail}
           showModal={state.showSendEmailVoucherModal}
           closeModal={onCloseModal}
           onSave={sendMail}

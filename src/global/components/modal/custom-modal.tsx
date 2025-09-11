@@ -1,3 +1,4 @@
+import { cn } from '@/lib/utils';
 import { Button } from '../../../components/ui/button';
 import {
   Dialog,
@@ -32,11 +33,12 @@ export function CustomModal(props: Readonly<IProps>) {
   return (
     <Dialog open={props.showModal}>
       <DialogContent
-        className={`w-full sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl ${
-          props.className || ''
-        }`}
+        className={cn(
+          props.className,
+          'w-full sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl'
+        )}
       >
-        <DialogHeader className='space-y-2'>
+        <DialogHeader>
           {/* Title + Close button row */}
           <div className='flex justify-between items-center w-full'>
             <DialogTitle className='text-lg sm:text-xl md:text-2xl font-semibold'>
@@ -59,7 +61,7 @@ export function CustomModal(props: Readonly<IProps>) {
           </div>
 
           {props.desc && (
-            <DialogDescription className='text-sm sm:text-base'>
+            <DialogDescription className='text-sm'>
               {props.desc}
             </DialogDescription>
           )}

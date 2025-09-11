@@ -161,6 +161,7 @@ export default function VouchersTable<T>({
     } finally {
       setLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [url, currentPage, pageSize, debouncedSearch, orderBy, orderByField]);
 
   useEffect(() => {
