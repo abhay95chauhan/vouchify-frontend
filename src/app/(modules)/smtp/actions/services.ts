@@ -32,3 +32,19 @@ export const createOrganizationSmtp = async (smtpData: ISmtpPost) => {
     toast.error(message);
   }
 };
+
+export const sendEmailTemplateMailService = async (mailData: {
+  templateId: string;
+  email: string;
+}) => {
+  try {
+    const res = await vouchifyApi.request(`/smtp/send-mail`, {
+      method: 'POST',
+      data: mailData,
+    });
+    return res;
+  } catch (error) {
+    const { message } = handleError(error);
+    toast.error(message);
+  }
+};

@@ -3,6 +3,10 @@
 
 @custom-variant dark (&:is(.dark *));
 
+body[style*="pointer-events: none;"] {
+  pointer-events: auto !important;
+}
+
 :root {
   --background: oklch(1 0 0);
   --success: oklch(0.632 0.186 147.37);

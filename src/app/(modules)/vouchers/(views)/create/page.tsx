@@ -17,7 +17,13 @@ import {
 import { Input } from '@/components/ui/input';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
-import { AlertCircleIcon, BadgeCheck, Infinity, Loader } from 'lucide-react';
+import {
+  AlertCircleIcon,
+  BadgeCheck,
+  Infinity,
+  Loader,
+  Mail,
+} from 'lucide-react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import {
   buildVoucherCode,
@@ -44,6 +50,7 @@ import moment from 'moment';
 import { fieldValidation } from '@/global/utils/validation';
 import {
   createVoucherService,
+  sendVoucherViaEmailService,
   updateVoucherService,
 } from '../../actions/services';
 import { toast } from 'sonner';
@@ -53,6 +60,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import ValidateVoucher from '../../components/validate-voucher';
+import SendEmailToRecipients from '@/app/(modules)/smtp/components/send-email-to-recipients';
 
 const VoucherCreate = ({ voucherData }: { voucherData: IVoucherPost }) => {
   const { user } = useAppSelector((state) => state.user);
@@ -62,6 +70,7 @@ const VoucherCreate = ({ voucherData }: { voucherData: IVoucherPost }) => {
     codeLength: 4,
     isLoading: false,
     showValidateVoucherModal: false,
+    showSendEmailVoucherModal: false,
     isAutoGenerate: false,
     isVoucherActive: true,
     voucherFindLoading: false,
@@ -172,9 +181,24 @@ const VoucherCreate = ({ voucherData }: { voucherData: IVoucherPost }) => {
   );
 
   const onCloseModal = () => {
-    setState((prev) => ({ ...prev, showValidateVoucherModal: false }));
+    setState((prev) => ({
+      ...prev,
+      showValidateVoucherModal: false,
+      showSendEmailVoucherModal: false,
+    }));
   };
 
+  const sendMail = async (emails: string) => {
+    const res = await sendVoucherViaEmailService({
+      code: voucherData.code,
+      email: emails,
+    });
+    if (res?.error) {
+      toast.error(res?.error?.message);
+    } else {
+      toast.success(res?.message);
+    }
+  };
   return (
     <div className='space-y-6'>
       <div className='flex justify-between items-start'>
@@ -184,18 +208,33 @@ const VoucherCreate = ({ voucherData }: { voucherData: IVoucherPost }) => {
           title={voucherData?.code ? 'Update Voucher' : 'Create New Voucher'}
           description='Design and configure your new promotional voucher.'
         />
-        {voucherData?.code ? (
-          <Button
-            onClick={() => {
-              setState((prev) => ({
-                ...prev,
-                showValidateVoucherModal: true,
-              }));
-            }}
-          >
-            <BadgeCheck /> Validate
-          </Button>
-        ) : null}
+        <div className='space-x-2'>
+          {voucherData?.code ? (
+            <Button
+              variant={'outline'}
+              onClick={() => {
+                setState((prev) => ({
+                  ...prev,
+                  showSendEmailVoucherModal: true,
+                }));
+              }}
+            >
+              <Mail /> Send Voucher via Email
+            </Button>
+          ) : null}
+          {voucherData?.code ? (
+            <Button
+              onClick={() => {
+                setState((prev) => ({
+                  ...prev,
+                  showValidateVoucherModal: true,
+                }));
+              }}
+            >
+              <BadgeCheck /> Validate
+            </Button>
+          ) : null}
+        </div>
       </div>
 
       {voucherData?.code && !state.isVoucherActive ? (
@@ -773,6 +812,15 @@ const VoucherCreate = ({ voucherData }: { voucherData: IVoucherPost }) => {
           discountType={voucherData.discount_type}
           showModal={state.showValidateVoucherModal}
           closeModal={onCloseModal}
+        />
+      ) : null}
+
+      {voucherData?.code ? (
+        <SendEmailToRecipients
+          title='Mail Voucher'
+          showModal={state.showSendEmailVoucherModal}
+          closeModal={onCloseModal}
+          onSave={sendMail}
         />
       ) : null}
     </div>

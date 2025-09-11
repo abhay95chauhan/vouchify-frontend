@@ -1,7 +1,7 @@
 'use client';
 import CardComponent from '@/global/components/card/card-component';
 import { Typography } from '@/global/components/typography/typography';
-import { Clock, Eye, Mail, Pen, Tag, Trash } from 'lucide-react';
+import { Clock, Eye, Mail, MoreVertical, Pen, Tag, Trash } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import moment from 'moment';
 import { Button } from '@/components/ui/button';
@@ -14,19 +14,22 @@ import { useAppDispatch } from '@/redux/hook';
 import { getAllEmailTemplatesAction } from '../actions/actions';
 import CreateEmailTemplate from '../views/create-email-template';
 import { toast } from 'sonner';
+import CustomDropdown from '@/global/components/drop-down/custom-dropdown';
+import SendEmailToRecipients from '../../smtp/components/send-email-to-recipients';
+import { sendEmailTemplateMailService } from '../../smtp/actions/services';
 
-export default function TemplateCard({
-  t,
-  onPreview,
-}: {
+interface IProps {
   t: IEmailTemplate;
   onPreview: (t: IEmailTemplate) => void;
-}) {
+}
+
+export default function TemplateCard({ t, onPreview }: IProps) {
   const dispatch = useAppDispatch();
 
   const [state, setState] = useState({
     showEmailTemplateDeleteModal: false,
     showEmailTemplateEditModal: false,
+    showSendTestEmailModal: false,
   });
 
   const onCloseModal = () => {
@@ -34,6 +37,7 @@ export default function TemplateCard({
       ...prev,
       showEmailTemplateDeleteModal: false,
       showEmailTemplateEditModal: false,
+      showSendTestEmailModal: false,
     }));
   };
 
@@ -46,6 +50,41 @@ export default function TemplateCard({
     }
     dispatch(getAllEmailTemplatesAction());
     onCloseModal();
+  };
+
+  const threeDotMenu = [
+    {
+      label: 'Edit',
+      icon: <Pen />,
+      fn: async () => {
+        setState((prev) => ({
+          ...prev,
+          showEmailTemplateEditModal: true,
+        }));
+      },
+    },
+    {
+      label: 'Test Mail',
+      icon: <Mail />,
+      fn: async () => {
+        setState((prev) => ({
+          ...prev,
+          showSendTestEmailModal: true,
+        }));
+      },
+    },
+  ];
+
+  const sendTestMail = async (emails: string) => {
+    const res = await sendEmailTemplateMailService({
+      templateId: t.id,
+      email: emails,
+    });
+    if (res?.error) {
+      toast.error(res?.error?.message);
+    } else {
+      toast.success(res?.message);
+    }
   };
 
   return (
@@ -63,7 +102,12 @@ export default function TemplateCard({
                 <Tag className='h-3.5 w-3.5' /> {t.category}
               </Badge>
             )}
-            <Button
+            <CustomDropdown menu={threeDotMenu} label='Actions'>
+              <Button variant='ghost'>
+                <MoreVertical className='h-4 w-4' />
+              </Button>
+            </CustomDropdown>
+            {/* <Button
               size={'icon'}
               variant={'outline'}
               onClick={() =>
@@ -74,7 +118,7 @@ export default function TemplateCard({
               }
             >
               <Pen />
-            </Button>
+            </Button> */}
           </div>
         </div>
         <div className='mt-1 flex items-center gap-2 text-xs text-muted-foreground'>
@@ -137,6 +181,14 @@ export default function TemplateCard({
         template={t}
         showModal={state.showEmailTemplateEditModal}
         closeModal={onCloseModal}
+      />
+
+      {/* send test mail */}
+      <SendEmailToRecipients
+        title='Test Mail'
+        showModal={state.showSendTestEmailModal}
+        closeModal={onCloseModal}
+        onSave={sendTestMail}
       />
     </CardComponent>
   );

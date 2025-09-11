@@ -15,6 +15,7 @@ interface IProps {
   close: () => void;
   save: () => void;
   children: React.ReactNode;
+  icon?: React.ReactNode;
   showModal: boolean;
   disableBtn?: boolean;
   loading: boolean;
@@ -89,8 +90,10 @@ export function CustomModal(props: Readonly<IProps>) {
               disabled={props.loading || props.disableBtn}
               onClick={props.save}
             >
-              {props.loading && (
+              {props.loading ? (
                 <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+              ) : (
+                props.icon && props.icon
               )}
               {props.buttonLabel || 'Save'}
             </Button>

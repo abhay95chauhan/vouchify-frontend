@@ -14,6 +14,7 @@ import {
 interface Menu {
   label: string;
   labelClass?: string;
+  icon?: React.ReactNode;
   fn: (data?: any) => void;
 }
 interface IProps<T = any> {
@@ -49,7 +50,7 @@ const CustomDropdown: React.FC<IProps> = (props: IProps) => {
                   }
                 }}
               >
-                {item?.label}
+                {item.icon} {item?.label}
               </DropdownMenuItem>
             );
           })

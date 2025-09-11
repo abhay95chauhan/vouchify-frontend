@@ -80,3 +80,19 @@ export const validateVoucherService = async (
     toast.error(message);
   }
 };
+
+export const sendVoucherViaEmailService = async (mailData: {
+  code: string;
+  email: string;
+}) => {
+  try {
+    const res = await vouchifyApi.request('/voucher/send-mail', {
+      method: 'POST',
+      data: mailData,
+    });
+    return res;
+  } catch (error) {
+    const { message } = handleError(error);
+    toast.error(message);
+  }
+};

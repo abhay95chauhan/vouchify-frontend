@@ -12,3 +12,10 @@ export const smtpSchema = z.object({
   username: z.string({ message: fieldValidation('Username') }),
   password: z.string({ message: fieldValidation('Password') }),
 });
+
+export const sendEmailToRecipients = z.object({
+  emails: z
+    .string({ message: fieldValidation('Emails') })
+    .email({ message: 'Invalid Email' })
+    .trim(),
+});
