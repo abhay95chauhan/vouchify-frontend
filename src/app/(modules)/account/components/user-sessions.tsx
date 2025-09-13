@@ -32,7 +32,7 @@ import { toast } from 'sonner';
 import { revalidateOrganizationPage } from '../../[organization-slug]/components/revalidate-path';
 import { useState } from 'react';
 import { errorMessages } from '@/global/utils/error-message';
-import { fa } from 'zod/v4/locales';
+import AlertModal from '@/global/components/modal/alert-modal';
 
 interface IProps {
   sessions: IUserSessionGet[];
@@ -45,6 +45,7 @@ export default function UserSessions({ sessions, token }: IProps) {
   const [state, setState] = useState({
     isLoading: false,
     revokeAllSessionsLoading: false,
+    showRevokeAllSessionsModal: false,
     sessionId: '',
   });
 
@@ -135,7 +136,15 @@ export default function UserSessions({ sessions, token }: IProps) {
       toast.success(res?.message);
       redirect('/auth/login');
     }
-    setState((prev) => ({ ...prev, revokeAllSessionsLoading: false }));
+    onCloseModal();
+  };
+
+  const onCloseModal = () => {
+    setState((prev) => ({
+      ...prev,
+      showRevokeAllSessionsModal: false,
+      revokeAllSessionsLoading: false,
+    }));
   };
 
   return (
@@ -154,7 +163,10 @@ export default function UserSessions({ sessions, token }: IProps) {
         </div>
         <Button
           disabled={state.revokeAllSessionsLoading}
-          onClick={handleLogoutAll}
+          variant={'destructive'}
+          onClick={() =>
+            setState((prev) => ({ ...prev, showRevokeAllSessionsModal: true }))
+          }
         >
           {state.revokeAllSessionsLoading && (
             <Loader className='animate-spin' />
@@ -313,6 +325,15 @@ export default function UserSessions({ sessions, token }: IProps) {
           </CardComponent>
         )}
       </div>
+
+      {/* Revoke All Sessions */}
+      <AlertModal
+        deleteFn={handleLogoutAll}
+        showModal={state.showRevokeAllSessionsModal}
+        onClose={onCloseModal}
+        btnTitle='Revoke'
+        subTitle={errorMessages.userSession.allRevokeSession}
+      />
     </div>
   );
 }

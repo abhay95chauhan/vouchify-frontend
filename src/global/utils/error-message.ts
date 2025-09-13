@@ -1,6 +1,8 @@
 export const errorMessages = {
   userSession: {
     alreadyRevoked: 'Session Already Revoked',
+    allRevokeSession:
+      'Revoking all sessions will log out every user, including you. This action is permanent and cannot be reversed. Continue?',
   },
   voucher: {
     delete: 'Deleting this voucher cannot be undone. Continue?',
