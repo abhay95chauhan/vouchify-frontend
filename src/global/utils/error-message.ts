@@ -1,4 +1,7 @@
 export const errorMessages = {
+  userSession: {
+    alreadyRevoked: 'Session Already Revoked',
+  },
   voucher: {
     delete: 'Deleting this voucher cannot be undone. Continue?',
     sendVoucherMail: 'Mail This Voucher with Your User',

@@ -16,6 +16,19 @@ export const getAllUserSessionsService = async (token: string) => {
   }
 };
 
+export const getUserSessionByTokenService = async (token: string) => {
+  try {
+    const res = await vouchifyApi.request(`/user-sessions/${token}`, {
+      method: 'GET',
+      jwt: token,
+    });
+    return res;
+  } catch (error) {
+    const { message } = handleError(error);
+    toast?.error(message);
+  }
+};
+
 export const updateUserSessionsService = async (
   id: string,
   sessionData: Partial<IUserSessionGet>
@@ -40,6 +53,21 @@ export const deleteUserSessionsService = async (id: string) => {
     const res = await vouchifyApi.request(`/user-sessions/${id}`, {
       method: 'DELETE',
     });
+    return res;
+  } catch (error) {
+    const { message } = handleError(error);
+    toast?.error(message);
+  }
+};
+
+export const deleteAllUserSessionsService = async () => {
+  try {
+    const res = await vouchifyApi.request(
+      `/user-sessions/sessions/revoke-all-session`,
+      {
+        method: 'DELETE',
+      }
+    );
     return res;
   } catch (error) {
     const { message } = handleError(error);

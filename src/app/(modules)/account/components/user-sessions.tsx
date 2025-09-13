@@ -24,12 +24,15 @@ import { useAppSelector } from '@/redux/hook';
 import { logoutService } from '@/app/auth/login/actions-services/services';
 import { redirect } from 'next/navigation';
 import {
+  deleteAllUserSessionsService,
   deleteUserSessionsService,
   updateUserSessionsService,
 } from '../actions/services';
 import { toast } from 'sonner';
 import { revalidateOrganizationPage } from '../../[organization-slug]/components/revalidate-path';
 import { useState } from 'react';
+import { errorMessages } from '@/global/utils/error-message';
+import { fa } from 'zod/v4/locales';
 
 interface IProps {
   sessions: IUserSessionGet[];
@@ -41,6 +44,8 @@ export default function UserSessions({ sessions, token }: IProps) {
 
   const [state, setState] = useState({
     isLoading: false,
+    revokeAllSessionsLoading: false,
+    sessionId: '',
   });
 
   const getDeviceIcon = (userAgent?: string) => {
@@ -90,7 +95,7 @@ export default function UserSessions({ sessions, token }: IProps) {
   };
 
   const handleLogout = async (curSe: boolean, sessionId: string) => {
-    setState((prev) => ({ ...prev, isLoading: true }));
+    setState((prev) => ({ ...prev, isLoading: true, sessionId }));
     if (curSe) {
       logoutService();
       redirect('/auth/login');
@@ -105,11 +110,11 @@ export default function UserSessions({ sessions, token }: IProps) {
       }
     }
     revalidateOrganizationPage();
-    setState((prev) => ({ ...prev, isLoading: false }));
+    setState((prev) => ({ ...prev, isLoading: false, sessionId: '' }));
   };
 
   const handleDeleteSession = async (sessionId: string) => {
-    setState((prev) => ({ ...prev, isLoading: true }));
+    setState((prev) => ({ ...prev, isLoading: true, sessionId }));
     const res = await deleteUserSessionsService(sessionId);
     revalidateOrganizationPage();
     if (res?.error) {
@@ -117,29 +122,45 @@ export default function UserSessions({ sessions, token }: IProps) {
     } else {
       toast.success(res?.message);
     }
-    setState((prev) => ({ ...prev, isLoading: false }));
+    setState((prev) => ({ ...prev, isLoading: false, sessionId: '' }));
   };
 
-  //   const handleLogoutAll = async () => {
-  //     setIsLoggingOut('all');
-  //     // Simulate logout all API call
-  //     await new Promise((resolve) => setTimeout(resolve, 1500));
-  //     setIsLoggingOut(null);
-  //     // Handle actual logout all logic here
-  //   };
+  const handleLogoutAll = async () => {
+    setState((prev) => ({ ...prev, revokeAllSessionsLoading: true }));
+    const res = await deleteAllUserSessionsService();
+    if (res?.error) {
+      toast.error(res?.error?.message);
+    } else {
+      await logoutService();
+      toast.success(res?.message);
+      redirect('/auth/login');
+    }
+    setState((prev) => ({ ...prev, revokeAllSessionsLoading: false }));
+  };
 
   return (
     <div className='py-4 space-y-8'>
       {/* Header Section */}
-      <div className='space-y-2'>
-        <div className='flex items-center gap-3'>
-          <Shield className='h-8 w-8 text-primary' />
-          <Typography.H2>Active Sessions</Typography.H2>
+      <div className='flex justify-between'>
+        <div className='space-y-2 '>
+          <div className='flex  items-center gap-3'>
+            <Shield className='h-8 w-8 text-primary' />
+            <Typography.H2>Active Sessions</Typography.H2>
+          </div>
+          <Typography.Muted>
+            Manage your account security by monitoring active sessions across
+            all devices
+          </Typography.Muted>
         </div>
-        <Typography.Muted>
-          Manage your account security by monitoring active sessions across all
-          devices
-        </Typography.Muted>
+        <Button
+          disabled={state.revokeAllSessionsLoading}
+          onClick={handleLogoutAll}
+        >
+          {state.revokeAllSessionsLoading && (
+            <Loader className='animate-spin' />
+          )}
+          Revoke All Sessions
+        </Button>
       </div>
 
       {/* Sessions Grid */}
@@ -211,26 +232,36 @@ export default function UserSessions({ sessions, token }: IProps) {
                     <div className='space-x-2'>
                       <Button
                         variant={'outline'}
-                        onClick={() =>
-                          handleLogout(isCurrentSession, session.id)
-                        }
+                        disabled={state.isLoading}
+                        onClick={() => {
+                          if (session.revoked) {
+                            toast.error(
+                              errorMessages.userSession.alreadyRevoked
+                            );
+                            return;
+                          }
+                          handleLogout(isCurrentSession, session.id);
+                        }}
                       >
-                        {state.isLoading ? (
+                        {session.id === state.sessionId && state.isLoading ? (
                           <Loader className='animate-spin' />
+                        ) : session.revoked ? (
+                          <AlertTriangle />
                         ) : (
                           <LogIn />
                         )}
-                        End Session
+                        {!session.revoked ? 'Revoke Session' : 'Revoked'}
                       </Button>
                       {(session.revoked || isExpired) && (
                         <Button
                           variant={'destructive'}
+                          disabled={state.isLoading}
                           onClick={() => handleDeleteSession(session.id)}
                         >
-                          {' '}
-                          {state.isLoading && (
-                            <Loader className='animate-spin' />
-                          )}
+                          {session.id === state.sessionId &&
+                            state.isLoading && (
+                              <Loader className='animate-spin' />
+                            )}
                           Delete
                         </Button>
                       )}
