@@ -14,7 +14,7 @@ export const getAllEmailTemplatesService = async (queryString?: string) => {
     return res;
   } catch (error) {
     const { message } = handleError(error);
-    toast.error(message);
+    toast?.error(message);
   }
 };
 
@@ -33,7 +33,7 @@ export const updateEmailTemplatesService = async (
     return res;
   } catch (error) {
     const { message } = handleError(error);
-    toast.error(message);
+    toast?.error(message);
   }
 };
 
@@ -51,7 +51,7 @@ export const createEmailTemplatesService = async (
     return res;
   } catch (error) {
     const { message } = handleError(error);
-    toast.error(message);
+    toast?.error(message);
   }
 };
 
@@ -63,6 +63,6 @@ export const deleteEmailTemplatesService = async (tempId: string) => {
     return res;
   } catch (error) {
     const { message } = handleError(error);
-    toast.error(message);
+    toast?.error(message);
   }
 };

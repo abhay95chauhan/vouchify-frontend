@@ -37,7 +37,7 @@ const BillingOrganization = ({ orgData }: IProps) => {
               <Typography.Muted className='text-sm capitalize'>
                 INR&nbsp;
                 {orgData?.subcription?.price[orgData?.subscription_period]}
-                {!orgData.subcription.isFree && (
+                {!orgData?.subcription?.isFree && (
                   <>
                     &nbsp;/&nbsp;
                     {orgData?.subscription_period}

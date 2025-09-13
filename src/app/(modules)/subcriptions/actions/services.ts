@@ -14,6 +14,6 @@ export const getAllSubcriptionsService = async () => {
     return res;
   } catch (error) {
     const { message } = handleError(error);
-    toast.error(message);
+    toast?.error(message);
   }
 };

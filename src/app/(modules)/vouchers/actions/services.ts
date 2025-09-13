@@ -15,7 +15,7 @@ export const createVoucherService = async (voucherData: IVoucherPost) => {
     return res;
   } catch (error) {
     const { message } = handleError(error);
-    toast.error(message);
+    toast?.error(message);
   }
 };
 
@@ -28,7 +28,7 @@ export const getVoucherByCodeService = async (code: string, jwt?: string) => {
     return res;
   } catch (error) {
     const { message } = handleError(error);
-    toast.error(message);
+    toast?.error(message);
   }
 };
 
@@ -40,7 +40,7 @@ export const deleteVoucherByCodeService = async (code: string) => {
     return res;
   } catch (error) {
     const { message } = handleError(error);
-    toast.error(message);
+    toast?.error(message);
   }
 };
 
@@ -59,7 +59,7 @@ export const updateVoucherService = async (
     return res;
   } catch (error) {
     const { message } = handleError(error);
-    toast.error(message);
+    toast?.error(message);
   }
 };
 
@@ -77,7 +77,7 @@ export const validateVoucherService = async (
     return res;
   } catch (error) {
     const { message } = handleError(error);
-    toast.error(message);
+    toast?.error(message);
   }
 };
 
@@ -93,6 +93,6 @@ export const sendVoucherViaEmailService = async (mailData: {
     return res;
   } catch (error) {
     const { message } = handleError(error);
-    toast.error(message);
+    toast?.error(message);
   }
 };

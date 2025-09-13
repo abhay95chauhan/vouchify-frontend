@@ -126,7 +126,6 @@ export default function VouchersTable<T>({
         method: 'GET',
       });
 
-      console.log(result, 'result');
       return result as ApiResponse<T>;
     } catch (error) {
       console.error('API request failed:', error);

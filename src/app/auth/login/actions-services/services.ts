@@ -10,7 +10,7 @@ export const logoutService = async () => {
     });
   } catch (error) {
     const { message } = handleError(error);
-    toast.error(message);
+    toast?.error(message);
   }
 };
 
@@ -23,7 +23,7 @@ export const loginService = async (loginData: ILogin) => {
     return res;
   } catch (error: unknown) {
     const { message } = handleError(error);
-    toast.error(message);
+    toast?.error(message);
   }
 };
 
@@ -37,5 +37,6 @@ export const getMeUserService = async (token: string) => {
   } catch (error) {
     const { message } = handleError(error);
     toast?.error(message);
+    throw error;
   }
 };

@@ -16,7 +16,7 @@ export const createOrganizationService = async (orgData: IOrganizationPost) => {
     return res;
   } catch (error) {
     const { message } = handleError(error);
-    toast.error(message);
+    toast?.error(message);
   }
 };
 
@@ -34,7 +34,7 @@ export const updateMyOrganizationService = async (
     return res;
   } catch (error) {
     const { message } = handleError(error);
-    toast.error(message);
+    toast?.error(message);
     throw error;
   }
 };
@@ -50,7 +50,7 @@ export const getMyOrganizationService = async (
     return res;
   } catch (error) {
     const { message } = handleError(error);
-    toast.error(message);
+    toast?.error(message);
     throw error; // important: preserve type consistency
   }
 };

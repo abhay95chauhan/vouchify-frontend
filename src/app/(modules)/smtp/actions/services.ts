@@ -15,7 +15,7 @@ export const getMySmtpService = async (
     return res;
   } catch (error) {
     const { message } = handleError(error);
-    toast.error(message);
+    toast?.error(message);
     throw error; // important: preserve type consistency
   }
 };
@@ -29,7 +29,8 @@ export const createOrganizationSmtp = async (smtpData: ISmtpPost) => {
     return res;
   } catch (error) {
     const { message } = handleError(error);
-    toast.error(message);
+    toast?.error(message);
+    throw error;
   }
 };
 
@@ -45,6 +46,6 @@ export const sendEmailTemplateMailService = async (mailData: {
     return res;
   } catch (error) {
     const { message } = handleError(error);
-    toast.error(message);
+    toast?.error(message);
   }
 };
