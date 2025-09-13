@@ -95,31 +95,61 @@ const VouchersList = () => {
     {
       accessorKey: 'discount_value',
       header: 'Discount Value',
-      cell: ({ row }) => (
-        <div className='capitalize'>{`${discountSymbol[
-          row.original.discount_type
-        ]({
-          currency: user.organization.currency_symbol,
-          amount: row.getValue('discount_value'),
-        })}`}</div>
-      ),
+      cell: ({ row }) =>
+        row.getValue('discount_value') ? (
+          <Badge
+            variant={'secondary'}
+            className='capitalize'
+          >{`${discountSymbol[row.original.discount_type]({
+            currency: user.organization.currency_symbol,
+            amount: row.getValue('discount_value'),
+          })}`}</Badge>
+        ) : null,
     },
 
     {
       accessorKey: 'min_order_amount',
       header: 'Minimum Order Amount',
       cell: ({ row }) => (
-        <div className='capitalize'>
+        <Badge
+          className='capitalize'
+          variant={
+            row.getValue('min_order_amount') ? 'secondary' : 'destructive'
+          }
+        >
           {discountSymbol[discountType[0] as DiscountType]({
             currency: user.organization.currency_symbol,
             amount: row.getValue('min_order_amount'),
           })}
-        </div>
+        </Badge>
       ),
     },
     {
+      accessorKey: 'max_discount_amount',
+      header: 'Maximum Discount',
+      cell: ({ row }) =>
+        row.getValue('max_discount_amount') ? (
+          <Badge
+            className='capitalize border-success text-success pt-0'
+            variant={'outline'}
+          >
+            {discountSymbol[discountType[0] as DiscountType]({
+              currency: user.organization.currency_symbol,
+              amount: row.getValue('max_discount_amount'),
+            })}
+          </Badge>
+        ) : (
+          <Badge
+            variant={'outline'}
+            className='border-destructive text-destructive pt-0'
+          >
+            None
+          </Badge>
+        ),
+    },
+    {
       accessorKey: 'start_date',
-      header: 'Start Date',
+      header: 'Valid From',
       cell: ({ row }) => (
         <div className='capitalize'>
           {moment(row.getValue('start_date')).format('ll')}
@@ -128,7 +158,7 @@ const VouchersList = () => {
     },
     {
       accessorKey: 'end_date',
-      header: 'End Date',
+      header: 'Valid Until',
       cell: ({ row }) => (
         <div className='capitalize'>
           {moment(row.getValue('end_date')).format('ll')}

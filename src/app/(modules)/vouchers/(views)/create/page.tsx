@@ -62,6 +62,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import ValidateVoucher from '../../components/validate-voucher';
 import SendEmailToRecipients from '@/app/(modules)/smtp/components/send-email-to-recipients';
 import { errorMessages } from '@/global/utils/error-message';
+import { cn } from '@/lib/utils';
 
 const VoucherCreate = ({ voucherData }: { voucherData: IVoucherPost }) => {
   const { user } = useAppSelector((state) => state.user);
@@ -389,7 +390,14 @@ const VoucherCreate = ({ voucherData }: { voucherData: IVoucherPost }) => {
                   />
                 </div>
 
-                <div className='grid grid-cols-12 gap-4'>
+                <div
+                  className={cn(
+                    form.watch('discount_type') === discountType[1]
+                      ? 'grid-cols-12'
+                      : 'grid-cols-8',
+                    'grid gap-4'
+                  )}
+                >
                   <div className='col-span-4'>
                     <FormField
                       control={form.control}
@@ -401,7 +409,13 @@ const VoucherCreate = ({ voucherData }: { voucherData: IVoucherPost }) => {
                             <span className='text-destructive'> *</span>
                           </FormLabel>
                           <FormControl>
-                            <Select {...field} onValueChange={field.onChange}>
+                            <Select
+                              {...field}
+                              onValueChange={(val) => {
+                                field.onChange(val);
+                                form.setValue('max_discount_amount', undefined);
+                              }}
+                            >
                               <SelectTrigger className='w-full'>
                                 <SelectValue placeholder='e.g., Percentage' />
                               </SelectTrigger>
@@ -467,39 +481,42 @@ const VoucherCreate = ({ voucherData }: { voucherData: IVoucherPost }) => {
                     />
                   </div>
                   <div className='col-span-4'>
-                    <FormField
-                      control={form.control}
-                      name='max_discount_amount'
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>
-                            Maximum Discount Amount&nbsp; (
-                            {user.organization?.currency_symbol})
-                          </FormLabel>
-                          <FormControl>
-                            <Input
-                              {...field}
-                              placeholder='e.g., 20'
-                              type='text'
-                              onChange={(e) => {
-                                const raw = e.target.value.replace(
-                                  /[^\d.]/g,
-                                  ''
-                                );
-                                const num = parseFloat(raw);
+                    {form.watch('discount_type') === discountType[1] && (
+                      <FormField
+                        control={form.control}
+                        name='max_discount_amount'
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>
+                              Maximum Discount Amount&nbsp; (
+                              {user.organization?.currency_symbol})
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                {...field}
+                                value={field.value}
+                                placeholder='e.g., 100 Or (leave empty)'
+                                type='text'
+                                onChange={(e) => {
+                                  const raw = e.target.value.replace(
+                                    /[^\d.]/g,
+                                    ''
+                                  );
 
-                                field.onChange(
-                                  raw === '' || isNaN(num) ? 0 : num
-                                );
-                              }}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                                  field.onChange(
+                                    raw === '' ? undefined : Number(raw)
+                                  );
+                                }}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    )}
                   </div>
                 </div>
+
                 <FormField
                   control={form.control}
                   name='min_order_amount'
@@ -513,6 +530,7 @@ const VoucherCreate = ({ voucherData }: { voucherData: IVoucherPost }) => {
                       <FormControl>
                         <Input
                           {...field}
+                          value={field.value}
                           placeholder='e.g., 20'
                           type='text'
                           onChange={(e) => {
@@ -527,6 +545,7 @@ const VoucherCreate = ({ voucherData }: { voucherData: IVoucherPost }) => {
                     </FormItem>
                   )}
                 />
+
                 <FormField
                   control={form.control}
                   name='description'
