@@ -20,6 +20,8 @@ export interface IVoucherGet {
   prefix: string;
   postfix?: string;
   redeem_limit_per_user?: RedeemPerUserType;
+  eligible_products: string[];
+  last_redeemed_at: Date | null;
 }
 
 export interface IVoucherPost {
@@ -37,6 +39,8 @@ export interface IVoucherPost {
   prefix: string;
   postfix?: string;
   redeem_limit_per_user?: RedeemPerUserType;
+  eligible_products?: string[];
+  last_redeemed_at?: Date | null;
 }
 
 export interface IValidateVoucherPost {

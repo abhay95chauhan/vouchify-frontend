@@ -26,6 +26,7 @@ import { deleteVoucherByCodeService } from '../actions/services';
 import { toast } from 'sonner';
 import { setHardRefresh } from '@/redux/common-reducers';
 import { PageHeader } from '@/global/components/page-header/page-header';
+import { Label } from '@/components/ui/label';
 
 const VouchersList = () => {
   const dispatch = useAppDispatch();
@@ -146,6 +147,32 @@ const VouchersList = () => {
             None
           </Badge>
         ),
+    },
+    {
+      accessorKey: 'eligible_products',
+      enableSorting: false,
+      header: 'Eligible Products',
+      cell: ({ row }) => {
+        return (
+          <Label className='capitalize'>
+            {row.original.eligible_products?.length ?? 0}
+          </Label>
+        );
+      },
+    },
+    {
+      accessorKey: 'last_redeemed_at',
+      enableSorting: false,
+      header: 'Last Redeemed At',
+      cell: ({ row }) => {
+        return (
+          <Label className='capitalize'>
+            {row.original.last_redeemed_at
+              ? moment(row.original.last_redeemed_at).format('lll')
+              : 'No Redeem'}
+          </Label>
+        );
+      },
     },
     {
       accessorKey: 'start_date',

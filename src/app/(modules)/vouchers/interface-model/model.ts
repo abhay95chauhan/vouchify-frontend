@@ -15,6 +15,8 @@ export class VoucherModelPost implements IVoucherPost {
   prefix: string;
   postfix?: string;
   redeem_limit_per_user?: RedeemPerUserType;
+  eligible_products?: string[];
+  last_redeemed_at?: Date | null;
 
   constructor(data?: Partial<IVoucherPost>) {
     this.name = data?.name ?? '';
@@ -31,5 +33,7 @@ export class VoucherModelPost implements IVoucherPost {
     this.prefix = data?.prefix ?? '';
     this.postfix = data?.postfix ?? '';
     this.redeem_limit_per_user = data?.redeem_limit_per_user ?? 'Once'; // optional default
+    this.eligible_products = data?.eligible_products ?? []; // optional default
+    this.last_redeemed_at = data?.last_redeemed_at ?? null; // optional default
   }
 }
