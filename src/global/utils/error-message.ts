@@ -6,6 +6,8 @@ export const errorMessages = {
   },
   voucher: {
     delete: 'Deleting this voucher cannot be undone. Continue?',
+    voucherRedeemLimitReached:
+      'This voucher has reached its maximum number of redemptions. To allow more redemptions, please increase the maximum redemption count.',
     sendVoucherMail: 'Mail This Voucher with Your User',
     notFound: {
       title: 'No voucher Found',

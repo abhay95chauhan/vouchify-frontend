@@ -14,7 +14,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
-import Image from 'next/image';
 import { useForm } from 'react-hook-form';
 import z from 'zod';
 import { toast } from 'sonner';
@@ -187,10 +186,9 @@ export default function LoginForm() {
         className='bg-muted relative h-screen hidden lg:flex items-center justify-center'
       >
         <Card className='shadow-2xl rounded-2xl border border-vpro-gray-200 dark:border-vpro-gray-700 overflow-hidden max-w-sm w-full'>
-          {/* Logo */}
           <CardHeader className='bg-gradient-to-b from-vpro-purple-100 via-vpro-purple-50 to-transparent dark:from-vpro-purple-900 dark:via-vpro-purple-950 dark:to-transparent'>
-            <CardTitle className='flex flex-col items-center justify-center gap-2'>
-              <Image alt='Logo' src='/logo.png' width={160} height={160} />
+            <CardTitle className='flex flex-col items-center justify-center gap-6'>
+              <Logo />
               <p className='text-lg font-semibold text-vpro-purple-700 dark:text-vpro-purple-200 tracking-wide'>
                 Vouchify Exclusive Offer
               </p>

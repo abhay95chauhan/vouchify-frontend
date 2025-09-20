@@ -149,14 +149,44 @@ const VouchersList = () => {
         ),
     },
     {
-      accessorKey: 'eligible_products',
-      enableSorting: false,
-      header: 'Eligible Products',
+      accessorKey: 'redemption_count',
+      header: 'Redeemed',
       cell: ({ row }) => {
         return (
-          <Label className='capitalize'>
+          <Badge variant={'outline'} className='border-success text-success'>
+            {row.original.redemption_count ?? 0}
+          </Badge>
+        );
+      },
+    },
+    {
+      accessorKey: 'redemption_left',
+      enableSorting: false,
+      header: 'Redemptions Left',
+      cell: ({ row }) => {
+        const { max_redemptions, redemption_count } = row.original;
+
+        const redemptionsLeft =
+          max_redemptions == null
+            ? 'Unlimited'
+            : Math.max(max_redemptions - redemption_count, 0); // never negative
+
+        return (
+          <Badge variant={'outline'} className='capitalize'>
+            {redemptionsLeft}
+          </Badge>
+        );
+      },
+    },
+    {
+      accessorKey: 'eligible_products',
+      enableSorting: false,
+      header: 'Linked Products',
+      cell: ({ row }) => {
+        return (
+          <Badge variant={'outline'} className='capitalize'>
             {row.original.eligible_products?.length ?? 0}
-          </Label>
+          </Badge>
         );
       },
     },

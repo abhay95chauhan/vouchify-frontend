@@ -57,6 +57,7 @@ import { saveAs } from 'file-saver';
 import { tableColumns } from './export-table';
 import { json2csv } from 'json-2-csv';
 import { toast } from 'sonner';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
 interface TableProps<T> {
   onRowClick?: (row: Row<T>, e: MouseEvent<HTMLTableRowElement>) => void;
@@ -290,76 +291,79 @@ export default function VouchersTable<T>({
         </div>
       </div>
 
-      <div className='overflow-hidden border'>
-        <Table>
-          <TableHeader className='bg-primary/10'>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead
-                    onClick={() => {
-                      if (header.column.columnDef.enableSorting !== false) {
-                        setOrderByField(header.column.id);
-                        setOrderBy((prev) => !prev);
-                      }
-                    }}
-                    key={header.id}
-                    className='text-left cursor-pointer space-x-2'
-                  >
-                    <div className='flex items-center gap-1'>
-                      <Label>
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
-                      </Label>
-                      {orderByField === header.column.id ? (
-                        orderBy ? (
-                          <ArrowDown className='w-4 h-4 inline-block' />
+      <div className='border'>
+        <ScrollArea>
+          <Table>
+            <TableHeader className='bg-primary/10'>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <TableHead
+                      onClick={() => {
+                        if (header.column.columnDef.enableSorting !== false) {
+                          setOrderByField(header.column.id);
+                          setOrderBy((prev) => !prev);
+                        }
+                      }}
+                      key={header.id}
+                      className='text-left cursor-pointer space-x-2'
+                    >
+                      <div className='flex items-center gap-1'>
+                        <Label>
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
+                        </Label>
+                        {orderByField === header.column.id ? (
+                          orderBy ? (
+                            <ArrowDown className='w-4 h-4 inline-block' />
+                          ) : (
+                            <ArrowUp className='w-4 h-4 inline-block' />
+                          )
                         ) : (
-                          <ArrowUp className='w-4 h-4 inline-block' />
-                        )
-                      ) : (
-                        header.column.columnDef.enableSorting !== false && (
-                          <ArrowUpDown className='w-3 h-3 text-muted-foreground inline-block' />
-                        )
-                      )}
-                    </div>
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-
-          <TableBody>
-            {data?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  onClick={(e) => onRowClick && onRowClick(row, e)}
-                  key={row.id}
-                  className='cursor-pointer'
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
+                          header.column.columnDef.enableSorting !== false && (
+                            <ArrowUpDown className='w-3 h-3 text-muted-foreground inline-block' />
+                          )
+                        )}
+                      </div>
+                    </TableHead>
                   ))}
                 </TableRow>
-              ))
-            ) : (
-              <TableRow className='w-full hover:bg-red'>
-                <TableCell colSpan={columns.length} className='text-center'>
-                  {EmptyState()}
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+              ))}
+            </TableHeader>
+
+            <TableBody>
+              {data?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    onClick={(e) => onRowClick && onRowClick(row, e)}
+                    key={row.id}
+                    className='cursor-pointer'
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow className='w-full hover:bg-red'>
+                  <TableCell colSpan={columns.length} className='text-center'>
+                    {EmptyState()}
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+          <ScrollBar orientation='horizontal' />
+        </ScrollArea>
       </div>
 
       {data?.length ? (

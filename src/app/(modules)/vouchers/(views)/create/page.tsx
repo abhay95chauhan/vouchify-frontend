@@ -23,6 +23,7 @@ import {
   Infinity,
   Loader,
   Mail,
+  Ticket,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import {
@@ -41,7 +42,11 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useAppSelector } from '@/redux/hook';
-import { DiscountType, IVoucherPost } from '../../interface-model/interfaces';
+import {
+  DiscountType,
+  IVoucherGet,
+  IVoucherPost,
+} from '../../interface-model/interfaces';
 import { VoucherModelPost } from '../../interface-model/model';
 import { Textarea } from '@/components/ui/textarea';
 import { PageHeader } from '@/global/components/page-header/page-header';
@@ -64,7 +69,7 @@ import SendEmailToRecipients from '@/app/(modules)/smtp/components/send-email-to
 import { errorMessages } from '@/global/utils/error-message';
 import { cn } from '@/lib/utils';
 
-const VoucherCreate = ({ voucherData }: { voucherData: IVoucherPost }) => {
+const VoucherCreate = ({ voucherData }: { voucherData: IVoucherGet }) => {
   const { user } = useAppSelector((state) => state.user);
   const timezone = user.organization.timezone;
 
@@ -203,7 +208,7 @@ const VoucherCreate = ({ voucherData }: { voucherData: IVoucherPost }) => {
   };
   return (
     <div className='space-y-6'>
-      <div className='flex md:flex-row flex-col justify-between items-start gap-4'>
+      <div className='flex lg:flex-row flex-col justify-between items-start gap-4'>
         <PageHeader
           showBackButton
           backRedirectUrl={'/vouchers'}
@@ -236,6 +241,11 @@ const VoucherCreate = ({ voucherData }: { voucherData: IVoucherPost }) => {
               <Mail /> Send Voucher via Email
             </Button>
           ) : null}
+          {voucherData?.code ? (
+            <Button variant={'secondary'}>
+              <Ticket /> {voucherData?.redemption_count} Redeemed
+            </Button>
+          ) : null}
         </div>
       </div>
 
@@ -250,6 +260,16 @@ const VoucherCreate = ({ voucherData }: { voucherData: IVoucherPost }) => {
           </AlertDescription>
         </Alert>
       ) : null}
+      {voucherData?.code &&
+      voucherData?.redemption_count === voucherData?.max_redemptions ? (
+        <Alert variant='destructive'>
+          <AlertCircleIcon className='h-4 w-4' />
+          <AlertDescription className='flex'>
+            {errorMessages.voucher.voucherRedeemLimitReached}
+          </AlertDescription>
+        </Alert>
+      ) : null}
+
       <div className='grid grid-cols-12 gap-4'>
         <div className='lg:col-span-8 col-span-12'>
           <Form {...form}>
@@ -411,6 +431,7 @@ const VoucherCreate = ({ voucherData }: { voucherData: IVoucherPost }) => {
                           <FormControl>
                             <Select
                               {...field}
+                              disabled={voucherData?.id ? true : false}
                               onValueChange={(val) => {
                                 field.onChange(val);
                                 form.setValue('max_discount_amount', undefined);
@@ -596,18 +617,22 @@ const VoucherCreate = ({ voucherData }: { voucherData: IVoucherPost }) => {
                               placeholder='e.g., 100 (leave empty for unlimited)'
                               type='number'
                               onKeyDown={(e) => {
-                                if (['e', 'E', '+', '-'].includes(e.key)) {
+                                if (['e', 'E', '+', '-'].includes(e.key))
                                   e.preventDefault();
-                                }
                               }}
                               onChange={(e) => {
-                                const raw = e.target.value.replace(
-                                  /[^\d.]/g,
-                                  ''
-                                );
-                                field.onChange(
-                                  raw === '' ? undefined : Number(raw)
-                                );
+                                if (
+                                  parseInt(e.target.value) >=
+                                  (voucherData?.redemption_count ?? 0)
+                                ) {
+                                  const raw = e.target.value.replace(
+                                    /[^\d.]/g,
+                                    ''
+                                  );
+                                  field.onChange(
+                                    raw === '' ? undefined : Number(raw)
+                                  );
+                                }
                               }}
                             />
                           </FormControl>
