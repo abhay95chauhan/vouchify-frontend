@@ -33,6 +33,7 @@ import { revalidateOrganizationPage } from '../../[organization-slug]/components
 import { useState } from 'react';
 import { errorMessages } from '@/global/utils/error-message';
 import AlertModal from '@/global/components/modal/alert-modal';
+import { getUserAgentDeviceInfo } from '../helpers/config';
 
 interface IProps {
   sessions: IUserSessionGet[];
@@ -64,35 +65,6 @@ export default function UserSessions({ sessions, token }: IProps) {
       return <Tablet className='h-5 w-5' />;
     }
     return <Monitor className='h-5 w-5' />;
-  };
-
-  const getDeviceInfo = (userAgent?: string) => {
-    if (!userAgent)
-      return { device: 'Unknown Device', browser: 'Unknown Browser' };
-
-    let device = 'Desktop';
-    let browser = 'Unknown Browser';
-
-    const ua = userAgent.toLowerCase();
-
-    // Device detection
-    if (
-      ua.includes('mobile') ||
-      ua.includes('android') ||
-      ua.includes('iphone')
-    ) {
-      device = 'Mobile';
-    } else if (ua.includes('tablet') || ua.includes('ipad')) {
-      device = 'Tablet';
-    }
-
-    // Browser detection
-    if (ua.includes('chrome')) browser = 'Chrome';
-    else if (ua.includes('firefox')) browser = 'Firefox';
-    else if (ua.includes('safari')) browser = 'Safari';
-    else if (ua.includes('edge')) browser = 'Edge';
-
-    return { device, browser };
   };
 
   const handleLogout = async (curSe: boolean, sessionId: string) => {
@@ -179,7 +151,9 @@ export default function UserSessions({ sessions, token }: IProps) {
       <div className='space-y-4'>
         {sessions?.length ? (
           sessions.map((session) => {
-            const { device, browser } = getDeviceInfo(session.user_agent);
+            const { device, browser } = getUserAgentDeviceInfo(
+              session.user_agent
+            );
             const isCurrentSession = token === session.token;
             let isExpiringSoon = false;
             let isExpired = false;

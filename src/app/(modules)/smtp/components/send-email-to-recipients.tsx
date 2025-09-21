@@ -55,6 +55,7 @@ const SendEmailToRecipients = (props: IProps) => {
         desc={props.description}
         loading={state.isLoading}
         showModal={props.showModal}
+        size='2xl'
         buttonLabel={state.isLoading ? 'Sending...' : 'Send'}
         close={onClose}
         save={form.handleSubmit(sendEmail)}

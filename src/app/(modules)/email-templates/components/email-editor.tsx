@@ -46,7 +46,7 @@ export default function EmailTemplateEditor({
       title={template.name}
       loading={state.isLoading}
       showModal={showModal}
-      className='w-full sm:max-w-4xl md:max-w-5xl lg:max-w-6xl xl:max-w-7xl'
+      size='full'
       buttonLabel='Save Template'
       close={closeModal}
       save={saveTemplate}

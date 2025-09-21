@@ -26,6 +26,7 @@ export interface IProps {
   vCode: string;
   discountType: DiscountType;
   showModal: boolean;
+  oncePerUser: boolean;
   closeModal: () => void;
 }
 
@@ -49,7 +50,6 @@ export default function ValidateVoucher(props: IProps) {
   async function onSubmit(values: z.infer<typeof validateVoucherPostSchema>) {
     const res = await validateVoucherService({
       ...values,
-      currencySymbol: user.organization.currency_symbol,
     });
     if (res?.code === 200) {
       // You can also set state for showing discount details
@@ -86,6 +86,7 @@ export default function ValidateVoucher(props: IProps) {
       title={'Validate Voucher'}
       loading={false}
       showModal={props.showModal}
+      size='xl'
       buttonLabel='Validate'
       close={onClose}
       save={form.handleSubmit(onSubmit)}
@@ -148,6 +149,23 @@ export default function ValidateVoucher(props: IProps) {
               </FormItem>
             )}
           />
+          {props.oncePerUser ? (
+            <FormField
+              control={form.control}
+              name='email'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className='flex shrink-0'>
+                    Recipient&apos;s Emails
+                  </FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder='e.g., example@example.com' />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          ) : null}
           {state.discount || state.error ? (
             <Alert
               variant={state.discount ? 'default' : 'destructive'}

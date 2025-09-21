@@ -21,21 +21,34 @@ interface IProps {
   disableBtn?: boolean;
   loading: boolean;
   showCloseBtn?: boolean;
+  showCrossCloseBtn?: boolean;
   showSaveBtn?: boolean;
   title: string;
   desc?: string;
   buttonLabel?: string;
   clearButtonLabel?: string;
   className?: string;
+  childrenClass?: string;
+  size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'full';
 }
 
 export function CustomModal(props: Readonly<IProps>) {
+  const sizeWidth: Record<NonNullable<IProps['size']>, string> = {
+    sm: 'sm:max-w-sm',
+    md: 'sm:max-w-md',
+    lg: 'sm:max-w-lg',
+    xl: 'sm:max-w-xl',
+    '2xl': 'sm:max-w-2xl',
+    full: 'sm:max-w-[90vw]',
+  };
+  const modalSize = props.size ? sizeWidth[props.size] : sizeWidth.md;
   return (
     <Dialog open={props.showModal}>
       <DialogContent
         className={cn(
-          props.className,
-          'w-full sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl'
+          'w-[95vw] sm:w-full', // responsive: almost full on mobile
+          modalSize, // apply size from prop on larger screens
+          props.className // allow manual overrides
         )}
       >
         <DialogHeader>
@@ -44,7 +57,7 @@ export function CustomModal(props: Readonly<IProps>) {
             <DialogTitle className='text-lg sm:text-xl md:text-2xl font-semibold'>
               {props.title}
             </DialogTitle>
-            {props.showCloseBtn !== false && !props.loading && (
+            {props.showCrossCloseBtn !== false && !props.loading && (
               <DialogClose
                 onClick={() => {
                   if (props.crossClose) {
@@ -67,11 +80,11 @@ export function CustomModal(props: Readonly<IProps>) {
           )}
         </DialogHeader>
 
-        <div className='my-2'>{props.children}</div>
+        <div className={cn(props.childrenClass, 'my-2')}>{props.children}</div>
 
         <DialogFooter
           className={`${
-            props.showCloseBtn !== false
+            props.showCloseBtn !== false && props.showSaveBtn !== false
               ? `grid grid-cols-${props.loading ? '1' : '2'} gap-2`
               : ''
           }`}

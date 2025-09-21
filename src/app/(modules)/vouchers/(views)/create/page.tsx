@@ -68,6 +68,7 @@ import ValidateVoucher from '../../components/validate-voucher';
 import SendEmailToRecipients from '@/app/(modules)/smtp/components/send-email-to-recipients';
 import { errorMessages } from '@/global/utils/error-message';
 import { cn } from '@/lib/utils';
+import RedeemedVoucherModal from '@/app/(modules)/redeem-vouchers/components/redeemed-voucher-modal';
 
 const VoucherCreate = ({ voucherData }: { voucherData: IVoucherGet }) => {
   const { user } = useAppSelector((state) => state.user);
@@ -78,6 +79,7 @@ const VoucherCreate = ({ voucherData }: { voucherData: IVoucherGet }) => {
     isLoading: false,
     showValidateVoucherModal: false,
     showSendEmailVoucherModal: false,
+    showRedeemedVoucherModal: false,
     isAutoGenerate: false,
     isVoucherActive: true,
     voucherFindLoading: false,
@@ -192,6 +194,7 @@ const VoucherCreate = ({ voucherData }: { voucherData: IVoucherGet }) => {
       ...prev,
       showValidateVoucherModal: false,
       showSendEmailVoucherModal: false,
+      showRedeemedVoucherModal: false,
     }));
   };
 
@@ -242,13 +245,20 @@ const VoucherCreate = ({ voucherData }: { voucherData: IVoucherGet }) => {
             </Button>
           ) : null}
           {voucherData?.code ? (
-            <Button variant={'secondary'}>
+            <Button
+              variant={'secondary'}
+              onClick={() => {
+                setState((prev) => ({
+                  ...prev,
+                  showRedeemedVoucherModal: true,
+                }));
+              }}
+            >
               <Ticket /> {voucherData?.redemption_count} Redeemed
             </Button>
           ) : null}
         </div>
       </div>
-
       {voucherData?.code && !state.isVoucherActive ? (
         <Alert variant='destructive'>
           <AlertCircleIcon className='h-4 w-4' />
@@ -269,7 +279,6 @@ const VoucherCreate = ({ voucherData }: { voucherData: IVoucherGet }) => {
           </AlertDescription>
         </Alert>
       ) : null}
-
       <div className='grid grid-cols-12 gap-4'>
         <div className='lg:col-span-8 col-span-12'>
           <Form {...form}>
@@ -850,16 +859,15 @@ const VoucherCreate = ({ voucherData }: { voucherData: IVoucherGet }) => {
           </Card>
         </div>
       </div>
-
       {voucherData?.code ? (
         <ValidateVoucher
+          oncePerUser={voucherData.redeem_limit_per_user === redeemPerUser[0]}
           vCode={voucherData?.code}
           discountType={voucherData.discount_type}
           showModal={state.showValidateVoucherModal}
           closeModal={onCloseModal}
         />
       ) : null}
-
       {voucherData?.code ? (
         <SendEmailToRecipients
           title='Mail Voucher'
@@ -867,6 +875,13 @@ const VoucherCreate = ({ voucherData }: { voucherData: IVoucherGet }) => {
           showModal={state.showSendEmailVoucherModal}
           closeModal={onCloseModal}
           onSave={sendMail}
+        />
+      ) : null}
+      {voucherData?.code ? (
+        <RedeemedVoucherModal
+          showModal={state.showRedeemedVoucherModal}
+          closeModal={onCloseModal}
+          voucher={voucherData}
         />
       ) : null}
     </div>

@@ -83,6 +83,7 @@ export default function CreateEmailTemplate(props: IProps) {
       title={props?.template?.id ? 'Edit Template' : 'Create Template'}
       loading={state.isLoading}
       showModal={props.showModal}
+      size='2xl'
       buttonLabel={props?.template?.id ? 'Edit' : 'Create'}
       close={onClose}
       save={form.handleSubmit(onSubmit)}

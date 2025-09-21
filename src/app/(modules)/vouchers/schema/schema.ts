@@ -70,6 +70,7 @@ export const validateVoucherPostSchema = z.object({
     .trim()
     .min(1, fieldValidation('Voucher Code')),
 
+  email: z.string().trim().optional(),
   orderAmount: z
     .number(fieldValidation('Amount'))
     .min(1, fieldValidation('Amount')),

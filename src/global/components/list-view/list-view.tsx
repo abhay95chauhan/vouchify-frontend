@@ -68,7 +68,7 @@ interface TableProps<T> {
     heading: string;
     desc: string;
     createButtonLabel: string;
-    createButtonFn: () => void;
+    createButtonFn?: () => void;
   };
 }
 
@@ -243,10 +243,12 @@ export default function VouchersTable<T>({
             <Search className='h-4 w-4' />
             Refresh
           </Button>
-          <Button className='gap-2' onClick={emptyStateMsg.createButtonFn}>
-            <Plus className='h-4 w-4' />
-            {emptyStateMsg.createButtonLabel}
-          </Button>
+          {emptyStateMsg.createButtonFn && (
+            <Button className='gap-2' onClick={emptyStateMsg.createButtonFn}>
+              <Plus className='h-4 w-4' />
+              {emptyStateMsg.createButtonLabel}
+            </Button>
+          )}
         </div>
       </div>
     );
