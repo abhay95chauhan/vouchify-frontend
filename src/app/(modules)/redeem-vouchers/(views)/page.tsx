@@ -16,6 +16,8 @@ import { ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 import { Typography } from '@/global/components/typography/typography';
 import { CopyButton } from '@/components/ui/shadcn-io/copy-button';
+import { voucherRedeemStatus } from '../helpers/config';
+import { cn } from '@/lib/utils';
 
 const RedeemedVouchersList = () => {
   const { user } = useAppSelector((state) => state.user);
@@ -119,6 +121,24 @@ const RedeemedVouchersList = () => {
           <div>
             {device}, {browser}
           </div>
+        );
+      },
+    },
+    {
+      accessorKey: 'status',
+      enableSorting: false,
+      header: 'Status',
+      cell: ({ row }) => {
+        return (
+          <Badge
+            className={cn(
+              voucherRedeemStatus.success === row.original.status
+                ? 'bg-success'
+                : 'bg-destructive'
+            )}
+          >
+            {row.getValue('status')}
+          </Badge>
         );
       },
     },
