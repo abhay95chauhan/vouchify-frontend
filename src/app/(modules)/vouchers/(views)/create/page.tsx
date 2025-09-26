@@ -106,7 +106,10 @@ const VoucherCreate = ({ voucherData }: { voucherData: IVoucherGet }) => {
         code: voucherData.code.includes('-')
           ? voucherData.code.split('-')[1]
           : voucherData.code,
-        max_redemptions: Number(voucherData?.max_redemptions) ?? null,
+        max_redemptions:
+          voucherData?.max_redemptions != null
+            ? Number(voucherData.max_redemptions)
+            : null,
         max_discount_amount: Number(voucherData?.max_discount_amount) ?? null,
       });
       const status = checkVoucherStatus(
@@ -623,6 +626,9 @@ const VoucherCreate = ({ voucherData }: { voucherData: IVoucherGet }) => {
                           <FormControl>
                             <Input
                               {...field}
+                              value={
+                                field.value == null ? '' : String(field.value)
+                              }
                               placeholder='e.g., 100 (leave empty for unlimited)'
                               type='number'
                               onKeyDown={(e) => {

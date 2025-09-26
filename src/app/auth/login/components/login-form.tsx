@@ -40,7 +40,7 @@ export default function LoginForm() {
   async function onSubmit(values: z.infer<typeof loginSchema>) {
     setState((prev) => ({ ...prev, isLoading: true }));
     const res = await loginService(values);
-
+    setState((prev) => ({ ...prev, isLoading: false }));
     if (res) {
       if (res?.error) {
         toast.error(res.error.message);
@@ -53,7 +53,6 @@ export default function LoginForm() {
         }
       }
     }
-    setState((prev) => ({ ...prev, isLoading: false }));
   }
 
   function onReset() {

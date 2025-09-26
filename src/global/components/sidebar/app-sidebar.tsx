@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Building2, Gift, LayoutDashboard, Ticket } from 'lucide-react';
+import { Building2, LayoutDashboard, Ticket, TicketMinus } from 'lucide-react';
 
 import {
   Sidebar,
@@ -30,10 +30,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         url: '/vouchers',
         icon: Ticket,
       },
+      // {
+      //   title: 'Gift Cards',
+      //   url: '/gift-cards',
+      //   icon: Gift,
+      // },
       {
-        title: 'Gift Cards',
-        url: '/gift-cards',
-        icon: Gift,
+        title: 'Redemptions',
+        url: '/redeem-vouchers',
+        icon: TicketMinus,
       },
       {
         title: user.organization?.name,

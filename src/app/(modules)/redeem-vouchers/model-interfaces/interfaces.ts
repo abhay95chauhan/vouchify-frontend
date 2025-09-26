@@ -1,6 +1,9 @@
+import { IVoucherGet } from '../../vouchers/interface-model/interfaces';
+
 export interface IVoucherRedemptionGet {
   id: string;
   voucher_id: string;
+  voucher: IVoucherGet;
   organization_id: string;
   user_name?: string;
   user_email?: string;

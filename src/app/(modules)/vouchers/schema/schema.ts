@@ -32,7 +32,7 @@ export const VoucherPostSchema = z
       .number(fieldValidation('Value'))
       .min(1, 'Value is required'),
 
-    max_redemptions: z.number().optional(),
+    max_redemptions: z.number().nullable().optional(),
     max_discount_amount: z.number().optional(),
 
     min_order_amount: z

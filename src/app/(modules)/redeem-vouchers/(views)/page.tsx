@@ -1,33 +1,59 @@
-import { CustomModal } from '@/global/components/modal/custom-modal';
+'use client';
+import CardComponent from '@/global/components/card/card-component';
+import { TableSkeleton } from '@/global/components/list-view/list-view-skeleton-loader';
+import { PageHeader } from '@/global/components/page-header/page-header';
 import React, { Suspense } from 'react';
-import { IVoucherRedemptionGet } from '../model-interfaces/interfaces';
-import { ColumnDef } from '@tanstack/react-table';
 import ListViewComponent from '@/global/components/list-view/list-view';
 import moment from 'moment';
-import { getUserAgentDeviceInfo } from '../../account/helpers/config';
+import { ColumnDef } from '@tanstack/react-table';
+import { IVoucherRedemptionGet } from '../model-interfaces/interfaces';
 import { Badge } from '@/components/ui/badge';
 import { discountSymbol, discountType } from '../../vouchers/helpers/config';
-import {
-  DiscountType,
-  IVoucherGet,
-} from '../../vouchers/interface-model/interfaces';
+import { DiscountType } from '../../vouchers/interface-model/interfaces';
 import { useAppSelector } from '@/redux/hook';
-import { TableSkeleton } from '@/global/components/list-view/list-view-skeleton-loader';
+import { getUserAgentDeviceInfo } from '../../account/helpers/config';
+import { ExternalLink } from 'lucide-react';
+import Link from 'next/link';
+import { Typography } from '@/global/components/typography/typography';
+import { CopyButton } from '@/components/ui/shadcn-io/copy-button';
 
-interface IProps {
-  voucher: IVoucherGet;
-  showModal: boolean;
-  closeModal: () => void;
-}
-
-const RedeemedVoucherModal = (props: IProps) => {
+const RedeemedVouchersList = () => {
   const { user } = useAppSelector((state) => state.user);
 
-  const onClose = () => {
-    props.closeModal();
-  };
-
   const columns: ColumnDef<IVoucherRedemptionGet>[] = [
+    {
+      accessorKey: 'voucher.name',
+      id: 'voucher.name',
+      header: 'Voucher',
+      cell: ({ row }) => (
+        <div className='flex items-center justify-between gap-2'>
+          {row.original.voucher?.name}
+          <Link
+            className='text-blue-600'
+            href={`/vouchers/${row.original.voucher.code}`}
+          >
+            <ExternalLink size={12} />
+          </Link>
+        </div>
+      ),
+    },
+    {
+      accessorKey: 'voucher.code',
+      id: 'voucher.code',
+      header: 'Code',
+      cell: ({ row }) => (
+        <div className='p-2 border-2 border-green-600 border-dashed  flex items-center gap-3 justify-between'>
+          <Typography.H5 className='cursor-pointer text-green-600'>
+            {row.original.voucher.code}
+          </Typography.H5>
+          <CopyButton
+            content={row.original.voucher.code}
+            className='bg-success hover:bg-success/70 no-row-click'
+            size='sm'
+          />
+        </div>
+      ),
+    },
     {
       accessorKey: 'user_name',
       header: 'Name',
@@ -105,33 +131,28 @@ const RedeemedVoucherModal = (props: IProps) => {
     },
   ];
   return (
-    <>
-      <CustomModal
-        title={`${props.voucher.name} Redeemed Voucher`}
-        loading={false}
-        showModal={props.showModal}
-        size='full'
-        showCloseBtn={false}
-        showSaveBtn={false}
-        childrenClass='overflow-auto'
-        close={onClose}
-        save={onClose}
-      >
+    <div className='space-y-6'>
+      <PageHeader
+        title={"Voucher's Redemptions"}
+        description="Manage and Track your Voucher's or Coupon's Redemptions"
+      />
+
+      <CardComponent>
         <Suspense fallback={<TableSkeleton />}>
           <ListViewComponent
             showDownloadButton={false}
-            url={`/voucher-redeem/${props.voucher.id}`}
+            url={`/voucher-redeem/list`}
             columns={columns}
             emptyStateMsg={{
               createButtonLabel: 'Create Voucher',
-              heading: 'No Redeemed Voucher found',
-              desc: 'There are no Redeemed vouchers available at the moment. Check back later.',
+              heading: 'No vouchers found',
+              desc: 'There are no vouchers available at the moment. Check back later or create a new voucher to get started.',
             }}
           />
         </Suspense>
-      </CustomModal>
-    </>
+      </CardComponent>
+    </div>
   );
 };
 
-export default RedeemedVoucherModal;
+export default RedeemedVouchersList;
