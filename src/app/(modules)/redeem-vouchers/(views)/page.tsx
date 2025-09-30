@@ -161,12 +161,12 @@ const RedeemedVouchersList = () => {
         <Suspense fallback={<TableSkeleton />}>
           <ListViewComponent
             showDownloadButton={false}
-            url={`/voucher-redeem/list`}
+            url={`/voucher-redeem/all/list`}
             columns={columns}
             emptyStateMsg={{
               createButtonLabel: 'Create Voucher',
-              heading: 'No vouchers found',
-              desc: 'There are no vouchers available at the moment. Check back later or create a new voucher to get started.',
+              heading: 'No Redemptions found',
+              desc: 'There are no redemptions available at the moment. Check back later or redeem a new voucher to get started.',
             }}
           />
         </Suspense>

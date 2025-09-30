@@ -1,8 +1,10 @@
+import { IVoucherGet } from '../../vouchers/interface-model/interfaces';
 import { IVoucherRedemptionGet } from './interfaces';
 
 export class VoucherRedemptionGetModel implements IVoucherRedemptionGet {
   id!: string;
   voucher_id!: string;
+  voucher!: IVoucherGet;
   organization_id!: string;
   order_amount!: number;
   discount_amount!: number;

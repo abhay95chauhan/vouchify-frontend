@@ -75,3 +75,38 @@ export const validateVoucherPostSchema = z.object({
     .number(fieldValidation('Amount'))
     .min(1, fieldValidation('Amount')),
 });
+
+// schema/filter-schema.ts
+
+export const vouchersFilterSchema = z.object({
+  discount_type: z.string().optional(),
+  redeem_limit_per_user: z.string().optional(),
+  min_order_amount: z.object({
+    op: z.string().optional(),
+    value: z.string().optional(),
+  }),
+  max_discount_amount: z.object({
+    op: z.string().optional(),
+    value: z.string().optional(),
+  }),
+  discount_value: z.object({
+    op: z.string().optional(),
+    value: z.string().optional(),
+  }),
+  redemption_count: z.object({
+    op: z.string().optional(),
+    value: z.string().optional(),
+  }),
+  max_redemptions: z.object({
+    op: z.string().optional(),
+    value: z.string().nullable().optional(), // null if unlimited
+  }),
+  date_range: z
+    .object({
+      from: z.date().optional(),
+      to: z.date().optional(),
+    })
+    .optional(),
+});
+
+export type VouchersFilterForm = z.infer<typeof vouchersFilterSchema>;

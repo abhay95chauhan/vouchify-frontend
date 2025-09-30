@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Building2, LayoutDashboard, Ticket, TicketMinus } from 'lucide-react';
+import { Building2, LayoutDashboard, Ticket, TicketCheck } from 'lucide-react';
 
 import {
   Sidebar,
@@ -38,7 +38,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       {
         title: 'Redemptions',
         url: '/redeem-vouchers',
-        icon: TicketMinus,
+        icon: TicketCheck,
       },
       {
         title: user.organization?.name,

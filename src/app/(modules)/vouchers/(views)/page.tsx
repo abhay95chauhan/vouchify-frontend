@@ -314,6 +314,7 @@ const VouchersList = () => {
               redirect(`/vouchers/${row.original.code}`);
             }}
             url='/voucher/list'
+            filterComponent='voucher'
             columns={columns}
             emptyStateMsg={{
               createButtonLabel: 'Create Voucher',

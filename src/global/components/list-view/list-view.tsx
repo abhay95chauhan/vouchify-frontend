@@ -25,6 +25,7 @@ import {
   Loader2,
   Plus,
   Search,
+  SlidersHorizontal,
 } from 'lucide-react';
 import { vouchifyApi } from '@/global/utils/api';
 import {
@@ -58,11 +59,14 @@ import { tableColumns } from './export-table';
 import { json2csv } from 'json-2-csv';
 import { toast } from 'sonner';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+import ListFilter from './list-filter';
+import { Badge } from '@/components/ui/badge';
 
 interface TableProps<T> {
   onRowClick?: (row: Row<T>, e: MouseEvent<HTMLTableRowElement>) => void;
   url: string;
   showDownloadButton?: boolean;
+  filterComponent?: string;
   columns: ColumnDef<T>[];
   emptyStateMsg: {
     heading: string;
@@ -88,11 +92,13 @@ export default function VouchersTable<T>({
   emptyStateMsg,
   onRowClick,
   showDownloadButton,
+  filterComponent,
 }: TableProps<T>) {
   const { hardRefresh } = useAppSelector((state) => state.common);
 
   const [state, setState] = useState({
     downloadLoader: false,
+    showFilterModal: false,
   });
 
   const [data, setData] = useState<T[]>([]);
@@ -105,6 +111,7 @@ export default function VouchersTable<T>({
   const [searchQuery, setSearchQuery] = useState('');
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
+  const [filters, setFilters] = useState({});
 
   const [debouncedSearch, setDebouncedSearch] = useState('');
 
@@ -124,7 +131,10 @@ export default function VouchersTable<T>({
       });
 
       const result = await vouchifyApi.request<T>(`${url}?${params}`, {
-        method: 'GET',
+        method: 'POST',
+        data: {
+          filters,
+        } as T,
       });
 
       return result as ApiResponse<T>;
@@ -162,7 +172,15 @@ export default function VouchersTable<T>({
       setLoading(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [url, currentPage, pageSize, debouncedSearch, orderBy, orderByField]);
+  }, [
+    url,
+    currentPage,
+    pageSize,
+    debouncedSearch,
+    orderBy,
+    orderByField,
+    filters,
+  ]);
 
   useEffect(() => {
     fetchData();
@@ -271,192 +289,236 @@ export default function VouchersTable<T>({
     }
   }
 
+  const handleCloseFilter = (isReset?: boolean) => {
+    if (isReset) {
+      setFilters({});
+    }
+    setState((prev) => ({ ...prev, showFilterModal: false }));
+  };
+
+  const handleApplyFilter = (filterData: Record<string, unknown>) => {
+    setFilters(filterData);
+    handleCloseFilter();
+  };
+
+  const howManyFilterAreApplied = Object.keys(filters).map((item) => item);
+
   return (
-    <div className='w-full'>
-      <div className='flex items-center pb-4'>
-        <div className='relative w-sm'>
-          <Search className='absolute left-2 top-2.5 h-4 w-4 text-muted-foreground' />
-          {searchQuery && (
-            <Plus
-              onClick={() => setSearchQuery('')}
-              className='cursor-pointer absolute rotate-45 right-4 top-2.5 h-4 w-4 text-muted-foreground'
+    <>
+      <div className='w-full'>
+        <div className='flex items-center justify-between pb-4 gap-2'>
+          <div className='relative w-sm'>
+            <Search className='absolute left-2 top-2.5 h-4 w-4 text-muted-foreground' />
+            {searchQuery && (
+              <Plus
+                onClick={() => setSearchQuery('')}
+                className='cursor-pointer absolute rotate-45 right-4 top-2.5 h-4 w-4 text-muted-foreground'
+              />
+            )}
+            <Input
+              placeholder='Search...'
+              value={searchQuery}
+              // type='search'
+              autoFocus
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className='pl-8'
             />
-          )}
-          <Input
-            placeholder='Search...'
-            value={searchQuery}
-            // type='search'
-            autoFocus
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className='pl-8'
-          />
+          </div>
+          {filterComponent ? (
+            <div className='relative'>
+              <Button
+                variant={'outline'}
+                onClick={() =>
+                  setState((prev) => ({ ...prev, showFilterModal: true }))
+                }
+              >
+                <SlidersHorizontal /> Filter
+              </Button>
+              {howManyFilterAreApplied?.length ? (
+                <Badge className='absolute -top-2 -right-2 h-4 w-4 rounded-full p-0 flex items-center justify-center text-[10px]'>
+                  {howManyFilterAreApplied?.length}
+                </Badge>
+              ) : null}
+            </div>
+          ) : null}
         </div>
-      </div>
 
-      <div className='border'>
-        <ScrollArea>
-          <Table>
-            <TableHeader className='bg-primary/10'>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
-                    <TableHead
-                      onClick={() => {
-                        if (header.column.columnDef.enableSorting !== false) {
-                          setOrderByField(header.column.id);
-                          setOrderBy((prev) => !prev);
-                        }
-                      }}
-                      key={header.id}
-                      className='text-left cursor-pointer space-x-2'
-                    >
-                      <div className='flex items-center gap-1'>
-                        <Label>
-                          {header.isPlaceholder
-                            ? null
-                            : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext()
-                              )}
-                        </Label>
-                        {orderByField === header.column.id ? (
-                          orderBy ? (
-                            <ArrowDown className='w-4 h-4 inline-block' />
+        <div className='border'>
+          <ScrollArea>
+            <Table>
+              <TableHeader className='bg-primary/10'>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => (
+                      <TableHead
+                        onClick={() => {
+                          if (header.column.columnDef.enableSorting !== false) {
+                            setOrderByField(header.column.id);
+                            setOrderBy((prev) => !prev);
+                          }
+                        }}
+                        key={header.id}
+                        className='text-left cursor-pointer space-x-2'
+                      >
+                        <div className='flex items-center gap-1'>
+                          <Label>
+                            {header.isPlaceholder
+                              ? null
+                              : flexRender(
+                                  header.column.columnDef.header,
+                                  header.getContext()
+                                )}
+                          </Label>
+                          {orderByField === header.column.id ? (
+                            orderBy ? (
+                              <ArrowDown className='w-4 h-4 inline-block' />
+                            ) : (
+                              <ArrowUp className='w-4 h-4 inline-block' />
+                            )
                           ) : (
-                            <ArrowUp className='w-4 h-4 inline-block' />
-                          )
-                        ) : (
-                          header.column.columnDef.enableSorting !== false && (
-                            <ArrowUpDown className='w-3 h-3 text-muted-foreground inline-block' />
-                          )
-                        )}
-                      </div>
-                    </TableHead>
-                  ))}
-                </TableRow>
-              ))}
-            </TableHeader>
-
-            <TableBody>
-              {data?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    onClick={(e) => onRowClick && onRowClick(row, e)}
-                    key={row.id}
-                    className='cursor-pointer'
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </TableCell>
+                            header.column.columnDef.enableSorting !== false && (
+                              <ArrowUpDown className='w-3 h-3 text-muted-foreground inline-block' />
+                            )
+                          )}
+                        </div>
+                      </TableHead>
                     ))}
                   </TableRow>
-                ))
-              ) : (
-                <TableRow className='w-full hover:bg-red'>
-                  <TableCell colSpan={columns.length} className='text-center'>
-                    {EmptyState()}
-                  </TableCell>
-                </TableRow>
+                ))}
+              </TableHeader>
+
+              <TableBody>
+                {data?.length ? (
+                  table.getRowModel().rows.map((row) => (
+                    <TableRow
+                      onClick={(e) => onRowClick && onRowClick(row, e)}
+                      key={row.id}
+                      className='cursor-pointer'
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow className='w-full hover:bg-red'>
+                    <TableCell colSpan={columns.length} className='text-center'>
+                      {EmptyState()}
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+            <ScrollBar orientation='horizontal' />
+          </ScrollArea>
+        </div>
+
+        {data?.length ? (
+          <div className='flex flex-col lg:flex-row items-center justify-between space-x-2 gap-2 py-4'>
+            <div className='flex items-center space-x-2'>
+              <p className='text-sm font-medium'>Rows</p>
+              <Select
+                onValueChange={(e) => {
+                  setPageSize(Number(e));
+                  setCurrentPage(1); // Reset to first page when changing page size
+                }}
+                defaultValue={String(pageSize)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder='Page' />
+                </SelectTrigger>
+                <SelectContent>
+                  {[10, 20, 30, 40, 50].map((size, index) => (
+                    <SelectItem key={index} value={String(size)}>
+                      {' '}
+                      {size}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Typography.Muted>
+                Showing {(currentPage - 1) * pageSize + 1} to{' '}
+                {Math.min(currentPage * pageSize, totalItems)} of {totalItems}{' '}
+                results
+              </Typography.Muted>
+              {showDownloadButton !== false && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant={'link'}>
+                      Export As
+                      {state.downloadLoader ? (
+                        <Loader2 className='ml-2 h-4 w-4 animate-spin' />
+                      ) : (
+                        <ChevronDownIcon className='ml-2 h-4 w-4' />
+                      )}
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuItem onClick={() => downloadTable()}>
+                      CSV
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               )}
-            </TableBody>
-          </Table>
-          <ScrollBar orientation='horizontal' />
-        </ScrollArea>
+            </div>
+
+            <div>
+              <Pagination>
+                <PaginationContent>
+                  {/* Previous */}
+                  <PaginationItem>
+                    <PaginationPrevious
+                      href='#'
+                      onClick={(e) => {
+                        e.preventDefault();
+                        goToPage(currentPage - 1);
+                      }}
+                      className={
+                        currentPage === 1
+                          ? 'pointer-events-none opacity-50'
+                          : ''
+                      }
+                    />
+                  </PaginationItem>
+
+                  {/* Page numbers */}
+                  {renderPageNumbers()}
+
+                  {/* Next */}
+                  <PaginationItem>
+                    <PaginationNext
+                      href='#'
+                      onClick={(e) => {
+                        e.preventDefault();
+                        goToPage(currentPage + 1);
+                      }}
+                      className={
+                        currentPage === totalPages
+                          ? 'pointer-events-none opacity-50'
+                          : ''
+                      }
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
+          </div>
+        ) : null}
       </div>
 
-      {data?.length ? (
-        <div className='flex flex-col lg:flex-row items-center justify-between space-x-2 gap-2 py-4'>
-          <div className='flex items-center space-x-2'>
-            <p className='text-sm font-medium'>Rows</p>
-            <Select
-              onValueChange={(e) => {
-                setPageSize(Number(e));
-                setCurrentPage(1); // Reset to first page when changing page size
-              }}
-              defaultValue={String(pageSize)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder='Page' />
-              </SelectTrigger>
-              <SelectContent>
-                {[10, 20, 30, 40, 50].map((size, index) => (
-                  <SelectItem key={index} value={String(size)}>
-                    {' '}
-                    {size}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Typography.Muted>
-              Showing {(currentPage - 1) * pageSize + 1} to{' '}
-              {Math.min(currentPage * pageSize, totalItems)} of {totalItems}{' '}
-              results
-            </Typography.Muted>
-            {showDownloadButton !== false && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant={'link'}>
-                    Export As
-                    {state.downloadLoader ? (
-                      <Loader2 className='ml-2 h-4 w-4 animate-spin' />
-                    ) : (
-                      <ChevronDownIcon className='ml-2 h-4 w-4' />
-                    )}
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuItem onClick={() => downloadTable()}>
-                    CSV
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
-          </div>
+      {/* Filter */}
 
-          <div>
-            <Pagination>
-              <PaginationContent>
-                {/* Previous */}
-                <PaginationItem>
-                  <PaginationPrevious
-                    href='#'
-                    onClick={(e) => {
-                      e.preventDefault();
-                      goToPage(currentPage - 1);
-                    }}
-                    className={
-                      currentPage === 1 ? 'pointer-events-none opacity-50' : ''
-                    }
-                  />
-                </PaginationItem>
-
-                {/* Page numbers */}
-                {renderPageNumbers()}
-
-                {/* Next */}
-                <PaginationItem>
-                  <PaginationNext
-                    href='#'
-                    onClick={(e) => {
-                      e.preventDefault();
-                      goToPage(currentPage + 1);
-                    }}
-                    className={
-                      currentPage === totalPages
-                        ? 'pointer-events-none opacity-50'
-                        : ''
-                    }
-                  />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
-          </div>
-        </div>
-      ) : null}
-    </div>
+      <ListFilter
+        compName={filterComponent as string}
+        showModal={state.showFilterModal}
+        onCloseFilter={(isReset) => handleCloseFilter(isReset)}
+        onApplyFilter={(filterData) => handleApplyFilter(filterData)}
+      />
+    </>
   );
 }
