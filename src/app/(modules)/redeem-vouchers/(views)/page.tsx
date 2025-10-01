@@ -161,7 +161,7 @@ const RedeemedVouchersList = () => {
         <Suspense fallback={<TableSkeleton />}>
           <ListViewComponent
             showDownloadButton={false}
-            url={`/voucher-redeem/all/list`}
+            url={`/voucher-redeem/organization/list`}
             columns={columns}
             emptyStateMsg={{
               createButtonLabel: 'Create Voucher',

@@ -40,6 +40,7 @@ import {
   type VouchersFilterForm,
   vouchersFilterSchema,
 } from '../schema/schema';
+import DateRangePicker from '@/global/components/date/date-range';
 
 let persistedValues: VouchersFilterForm | null = null;
 let persistedRange: DateRange | undefined;
@@ -298,35 +299,14 @@ export default function VouchersFilter(props: Props) {
           {/* Date Range */}
           <div className='space-y-2'>
             <Label>Validity Period</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant='outline'
-                  id='dates'
-                  className={cn(
-                    range?.from && range?.to
-                      ? 'text-black'
-                      : 'text-muted-foreground',
-                    'w-full justify-between font-normal'
-                  )}
-                >
-                  {range?.from && range?.to
-                    ? `${moment(range.from).format('ll')} - ${moment(
-                        range.to
-                      ).format('ll')}`
-                    : `e.g., ${moment().format('ll')} - ${moment()
-                        .add(1, 'months')
-                        .format('ll')}`}
-                  {range?.from && range?.to && <X />}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent
-                className='w-auto overflow-hidden p-0'
-                align='start'
-              >
-                <Calendar mode='range' selected={range} onSelect={setRange} />
-              </PopoverContent>
-            </Popover>
+            <DateRangePicker
+              value={range}
+              placeholder={`e.g., ${moment().format('ll')} - ${moment()
+                .add(1, 'months')
+                .format('ll')}`}
+              onChange={setRange}
+              weekStartsOn={1}
+            />
           </div>
         </form>
       </Form>

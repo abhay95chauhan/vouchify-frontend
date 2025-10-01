@@ -120,7 +120,7 @@ const RedeemedVoucherModal = (props: IProps) => {
         <Suspense fallback={<TableSkeleton />}>
           <ListViewComponent
             showDownloadButton={false}
-            url={`/voucher-redeem/list/${props.voucher.id}`}
+            url={`/voucher-redeem/organization/list/${props.voucher.id}`}
             columns={columns}
             emptyStateMsg={{
               createButtonLabel: 'Create Voucher',
