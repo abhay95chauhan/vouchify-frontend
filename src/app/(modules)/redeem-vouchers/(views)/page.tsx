@@ -163,6 +163,7 @@ const RedeemedVouchersList = () => {
             showDownloadButton={false}
             url={`/voucher-redeem/organization/list`}
             filterComponent='voucher-redeemed'
+            defaultOrderBy='DESC'
             columns={columns}
             emptyStateMsg={{
               createButtonLabel: 'Create Voucher',

@@ -67,6 +67,7 @@ interface TableProps<T> {
   url: string;
   showDownloadButton?: boolean;
   filterComponent?: string;
+  defaultOrderBy?: 'ASC' | 'DESC';
   columns: ColumnDef<T>[];
   emptyStateMsg: {
     heading: string;
@@ -93,6 +94,7 @@ export default function VouchersTable<T>({
   onRowClick,
   showDownloadButton,
   filterComponent,
+  defaultOrderBy,
 }: TableProps<T>) {
   const { hardRefresh } = useAppSelector((state) => state.common);
 
@@ -126,7 +128,8 @@ export default function VouchersTable<T>({
         page: page.toString(),
         limit: limit.toString(),
         orderByField: orderByField.toString(),
-        orderBy: !orderBy ? 'ASC' : 'DESC',
+        orderBy:
+          (!orderByField ? defaultOrderBy : !orderBy ? 'ASC' : 'DESC') || 'ASC',
         ...(search && { search }),
       });
 
@@ -178,6 +181,7 @@ export default function VouchersTable<T>({
     pageSize,
     debouncedSearch,
     orderBy,
+    defaultOrderBy,
     orderByField,
     filters,
   ]);

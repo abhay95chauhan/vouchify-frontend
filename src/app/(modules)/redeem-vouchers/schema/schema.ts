@@ -2,12 +2,15 @@ import z from 'zod';
 
 export const voucherRedeemedFilterSchema = z.object({
   voucher_id: z
-    .object({
-      label: z.string().optional(),
-      value: z.string().nullable().optional(),
-    })
-    .nullable() // ✅ allow null
-    .optional(),
+    .array(
+      z.object({
+        label: z.string().optional(),
+        value: z.string().nullable().optional(),
+      })
+    )
+    .nullable() // allow `null`
+    .optional(), // allow `undefined`
+
   status: z.string().optional(),
   order_amount: z.object({
     op: z.string().optional(),

@@ -42,10 +42,7 @@ export default function VoucherRedeemedFilter(props: Props) {
   const form = useForm<voucherRedeemedFilterForm>({
     resolver: zodResolver(voucherRedeemedFilterSchema),
     defaultValues: {
-      voucher_id: {
-        label: '',
-        value: '',
-      },
+      voucher_id: [],
       status: '',
       order_amount: { op: '', value: '' },
       discount_amount: { op: '', value: '' },
@@ -56,7 +53,10 @@ export default function VoucherRedeemedFilter(props: Props) {
   const onSubmit = (values: voucherRedeemedFilterForm) => {
     const filters: Record<string, unknown> = {};
 
-    if (values.voucher_id?.value) filters.voucher_id = values.voucher_id.value;
+    if (values.voucher_id?.length)
+      filters.voucher_id = {
+        in: values.voucher_id.map((item) => item.value),
+      };
     if (values.status) filters.status = values.status;
 
     ['order_amount', 'discount_amount', 'final_payable_amount'].forEach((f) => {
@@ -145,18 +145,15 @@ export default function VoucherRedeemedFilter(props: Props) {
                       method='POST'
                       placeholder='e.g., VOUCHER-1'
                       value={
-                        field.value?.value && field.value?.label
-                          ? {
-                              label: field.value?.label,
-                              value: field.value?.value,
-                            }
-                          : null
+                        field.value as {
+                          label: string;
+                          value: string;
+                        }[]
                       }
                       onChange={(data) => {
-                        const selected = Array.isArray(data) ? data[0] : data;
-
-                        field.onChange(selected);
+                        field.onChange(data);
                       }}
+                      isMulti
                     />
                   </FormControl>
                   <FormMessage />
