@@ -13,24 +13,8 @@ import { Input } from '@/components/ui/input';
 import ReactSelectComponent, {
   type OptionType,
 } from '@/global/components/select/react-select';
-import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-} from '@/components/ui/popover';
-import {
-  Select,
-  SelectTrigger,
-  SelectContent,
-  SelectItem,
-  SelectValue,
-} from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
-import { cn } from '@/lib/utils';
 import moment from 'moment';
-import { X } from 'lucide-react';
 import { discountType, redeemPerUser } from '../helpers/config';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -41,6 +25,7 @@ import {
   vouchersFilterSchema,
 } from '../schema/schema';
 import DateRangePicker from '@/global/components/date/date-range';
+import { useAppSelector } from '@/redux/hook';
 
 let persistedValues: VouchersFilterForm | null = null;
 let persistedRange: DateRange | undefined;
@@ -52,6 +37,8 @@ type Props = {
 };
 
 export default function VouchersFilter(props: Props) {
+  const { user } = useAppSelector((state) => state.user);
+
   const discountOptions: OptionType[] = useMemo(
     () => discountType.map((d) => ({ label: d, value: d })),
     []
@@ -99,8 +86,14 @@ export default function VouchersFilter(props: Props) {
       }
     });
 
-    if (range?.from) filters.start_date = { gte: range.from };
-    if (range?.to) filters.end_date = { lte: range.to };
+    if (range?.from)
+      filters.start_date = {
+        gte: moment(range.from).tz(user?.organization?.timezone).endOf('day'),
+      };
+    if (range?.to)
+      filters.end_date = {
+        lte: moment(range.to).tz(user?.organization?.timezone).endOf('day'),
+      };
 
     if (values.max_redemptions?.op === 'unlimited') {
       filters.max_redemptions = {
@@ -301,7 +294,10 @@ export default function VouchersFilter(props: Props) {
             <Label>Validity Period</Label>
             <DateRangePicker
               value={range}
-              placeholder={`e.g., ${moment().format('ll')} - ${moment()
+              placeholder={`e.g., ${moment()
+                .tz(user?.organization?.timezone)
+                .format('ll')} - ${moment()
+                .tz(user?.organization?.timezone)
                 .add(1, 'months')
                 .format('ll')}`}
               onChange={setRange}

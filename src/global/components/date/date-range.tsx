@@ -25,6 +25,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
+import { Label } from '@/components/ui/label';
 
 export type DateRangePreset = {
   label: string;
@@ -46,6 +47,7 @@ export type DateRangePickerProps = {
   side?: React.ComponentProps<typeof PopoverContent>['side'];
   showClear?: boolean;
   label?: string;
+  tz?: string;
 };
 
 function getDefaultPresets(): DateRangePreset[] {
@@ -145,6 +147,7 @@ export function DateRangePicker({
   side = 'bottom',
   showClear = true,
   label,
+  tz,
 }: DateRangePickerProps) {
   const [open, setOpen] = React.useState(false);
   const [internal, setInternal] = React.useState<DateRange | undefined>(
@@ -188,10 +191,8 @@ export function DateRangePicker({
     internal?.from && internal?.to ? formatRange(internal) : placeholder;
 
   return (
-    <div className={cn('w-full', className)}>
-      {label ? (
-        <div className='mb-2 text-sm font-medium text-foreground'>{label}</div>
-      ) : null}
+    <div className={cn('w-full space-y-2', className)}>
+      {label ? <Label>{label}</Label> : null}
 
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
@@ -257,6 +258,7 @@ export function DateRangePicker({
             <div className='flex-1'>
               <Calendar
                 mode='range'
+                timeZone={tz}
                 selected={internal}
                 onSelect={handleSelect}
                 // Keep selected start/end connected across months

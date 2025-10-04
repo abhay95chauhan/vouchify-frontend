@@ -162,6 +162,7 @@ const RedeemedVouchersList = () => {
           <ListViewComponent
             showDownloadButton={false}
             url={`/voucher-redeem/organization/list`}
+            filterComponent='voucher-redeemed'
             columns={columns}
             emptyStateMsg={{
               createButtonLabel: 'Create Voucher',

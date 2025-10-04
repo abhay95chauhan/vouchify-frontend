@@ -17,6 +17,7 @@ interface AsyncPaginateSelectProps {
   labelKey?: string; // 👈 which field to show as label
   valueKey?: string; // 👈 which field to use as value
   placeholder?: string;
+  method?: string;
   debounceTimeout?: number;
   isClearable?: boolean;
   isMulti?: boolean;
@@ -26,6 +27,7 @@ export default function AsyncPaginateSelect({
   value,
   onChange,
   url,
+  method,
   labelKey = 'name',
   valueKey = 'id',
   placeholder = 'Select...',
@@ -47,7 +49,7 @@ export default function AsyncPaginateSelect({
 
     try {
       const result = await vouchifyApi.request(`${url}?${params}`, {
-        method: 'GET',
+        method: method ?? 'GET',
       });
 
       const options: OptionType[] = result?.data?.map((item: any) => ({

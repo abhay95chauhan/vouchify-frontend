@@ -16,25 +16,16 @@ export function checkVoucherStatus(
   endDate: string,
   tz: string
 ) {
-  const today = moment.tz(tz)?.startOf('day'); // normalize to same day start
-  const start = moment(startDate, 'YYYY-MM-DD').tz(tz);
-  const end = moment(endDate, 'YYYY-MM-DD').tz(tz);
+  const today = moment.tz(tz)?.startOf('day'); // normalize
+  const start = moment.tz(startDate, tz)?.startOf('day');
+  const end = moment.tz(endDate, tz)?.endOf('day'); // include full end day
 
   if (today?.isBefore(start)) {
-    return {
-      isActive: 'Inactive',
-      status: false,
-    };
-  } else if (today.isAfter(end)) {
-    return {
-      isActive: 'Expired',
-      status: false,
-    };
-  } else if (today?.isBetween(start, end, undefined, '[)')) {
-    return {
-      isActive: 'Active',
-      status: true,
-    };
+    return { isActive: 'Inactive', status: false };
+  } else if (today?.isAfter(end)) {
+    return { isActive: 'Expired', status: false };
+  } else {
+    return { isActive: 'Active', status: true }; // ✅ fallback
   }
 }
 

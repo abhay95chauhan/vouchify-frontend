@@ -1,5 +1,6 @@
 'use client';
 
+import VoucherRedeemedFilter from '@/app/(modules)/redeem-vouchers/components/filter';
 import VouchersFilter from '@/app/(modules)/vouchers/components/filter';
 
 interface IProps {
@@ -14,6 +15,14 @@ const ListFilter = (props: IProps) => {
     case 'voucher':
       return (
         <VouchersFilter
+          showModal={props.showModal}
+          onCloseFilter={(isReset) => props.onCloseFilter(isReset)}
+          applyFilter={(filter) => props.onApplyFilter(filter)}
+        />
+      );
+    case 'voucher-redeemed':
+      return (
+        <VoucherRedeemedFilter
           showModal={props.showModal}
           onCloseFilter={(isReset) => props.onCloseFilter(isReset)}
           applyFilter={(filter) => props.onApplyFilter(filter)}
