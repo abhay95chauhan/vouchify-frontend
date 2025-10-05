@@ -11,13 +11,12 @@ import { Badge } from '@/components/ui/badge';
 import { discountSymbol, discountType } from '../../vouchers/helpers/config';
 import { DiscountType } from '../../vouchers/interface-model/interfaces';
 import { useAppSelector } from '@/redux/hook';
-import { getUserAgentDeviceInfo } from '../../account/helpers/config';
 import { ExternalLink } from 'lucide-react';
 import Link from 'next/link';
-import { Typography } from '@/global/components/typography/typography';
-import { CopyButton } from '@/components/ui/shadcn-io/copy-button';
 import { voucherRedeemStatus } from '../helpers/config';
 import { cn } from '@/lib/utils';
+import { redirect } from 'next/navigation';
+import VoucherCodeCopyComponent from '../../vouchers/components/voucher-code-copy';
 
 const RedeemedVouchersList = () => {
   const { user } = useAppSelector((state) => state.user);
@@ -34,7 +33,7 @@ const RedeemedVouchersList = () => {
             className='text-blue-600'
             href={`/vouchers/${row.original.voucher.code}`}
           >
-            <ExternalLink size={12} />
+            <ExternalLink role='menuitem' size={12} />
           </Link>
         </div>
       ),
@@ -44,16 +43,7 @@ const RedeemedVouchersList = () => {
       id: 'voucher.code',
       header: 'Code',
       cell: ({ row }) => (
-        <div className='p-2 border-2 border-green-600 border-dashed  flex items-center gap-3 justify-between'>
-          <Typography.H5 className='cursor-pointer text-green-600'>
-            {row.original.voucher.code}
-          </Typography.H5>
-          <CopyButton
-            content={row.original.voucher.code}
-            className='bg-success hover:bg-success/70 no-row-click'
-            size='sm'
-          />
-        </div>
+        <VoucherCodeCopyComponent code={row.original.voucher.code} />
       ),
     },
     {
@@ -103,27 +93,7 @@ const RedeemedVouchersList = () => {
         </Badge>
       ),
     },
-    {
-      accessorKey: 'ip_address',
-      enableSorting: false,
-      header: 'IP-Address',
-      cell: ({ row }) => <div>{row.getValue('ip_address')}</div>,
-    },
-    {
-      accessorKey: 'user_agent',
-      enableSorting: false,
-      header: 'Platform',
-      cell: ({ row }) => {
-        const { browser, device } = getUserAgentDeviceInfo(
-          row.getValue('user_agent')
-        );
-        return (
-          <div>
-            {device}, {browser}
-          </div>
-        );
-      },
-    },
+
     {
       accessorKey: 'status',
       enableSorting: false,
@@ -161,6 +131,17 @@ const RedeemedVouchersList = () => {
         <Suspense fallback={<TableSkeleton />}>
           <ListViewComponent
             showDownloadButton={false}
+            onRowClick={(row, event) => {
+              const targetElement = event.target as HTMLElement;
+              if (
+                targetElement.closest('.no-row-click') ||
+                targetElement.role === 'checkbox' ||
+                targetElement.role === 'menuitem'
+              ) {
+                return;
+              }
+              redirect(`/redeem-vouchers/${row.original.id}`);
+            }}
             url={`/voucher-redeem/organization/list`}
             filterComponent='voucher-redeemed'
             defaultOrderBy='DESC'

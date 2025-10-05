@@ -13,6 +13,7 @@ import {
 } from '../../vouchers/interface-model/interfaces';
 import { useAppSelector } from '@/redux/hook';
 import { TableSkeleton } from '@/global/components/list-view/list-view-skeleton-loader';
+import { redirect } from 'next/navigation';
 
 interface IProps {
   voucher: IVoucherGet;
@@ -76,27 +77,6 @@ const RedeemedVoucherModal = (props: IProps) => {
       ),
     },
     {
-      accessorKey: 'ip_address',
-      enableSorting: false,
-      header: 'IP-Address',
-      cell: ({ row }) => <div>{row.getValue('ip_address')}</div>,
-    },
-    {
-      accessorKey: 'user_agent',
-      enableSorting: false,
-      header: 'Platform',
-      cell: ({ row }) => {
-        const { browser, device } = getUserAgentDeviceInfo(
-          row.getValue('user_agent')
-        );
-        return (
-          <div>
-            {device}, {browser}
-          </div>
-        );
-      },
-    },
-    {
       accessorKey: 'created_at',
       header: 'Redeemed At',
       cell: ({ row }) => (
@@ -119,6 +99,17 @@ const RedeemedVoucherModal = (props: IProps) => {
       >
         <Suspense fallback={<TableSkeleton />}>
           <ListViewComponent
+            onRowClick={(row, event) => {
+              const targetElement = event.target as HTMLElement;
+              if (
+                targetElement.closest('.no-row-click') ||
+                targetElement.role === 'checkbox' ||
+                targetElement.role === 'menuitem'
+              ) {
+                return;
+              }
+              redirect(`/redeem-vouchers/${row.original.id}`);
+            }}
             showDownloadButton={false}
             url={`/voucher-redeem/organization/list/${props.voucher.id}`}
             columns={columns}

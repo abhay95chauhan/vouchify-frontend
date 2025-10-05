@@ -16,7 +16,6 @@ import {
 import { Badge } from '@/components/ui/badge';
 import moment from 'moment';
 import { useAppDispatch, useAppSelector } from '@/redux/hook';
-import { CopyButton } from '@/components/ui/shadcn-io/copy-button';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import CustomDropdown from '@/global/components/drop-down/custom-dropdown';
@@ -27,6 +26,7 @@ import { toast } from 'sonner';
 import { setHardRefresh } from '@/redux/common-reducers';
 import { PageHeader } from '@/global/components/page-header/page-header';
 import { Label } from '@/components/ui/label';
+import VoucherCodeCopyComponent from '../components/voucher-code-copy';
 
 const VouchersList = () => {
   const dispatch = useAppDispatch();
@@ -72,19 +72,7 @@ const VouchersList = () => {
     {
       accessorKey: 'code',
       header: 'Code',
-      cell: ({ row }) => (
-        <div className='p-2 border-2 border-green-600 border-dashed  flex items-center gap-3 justify-between'>
-          <Typography.H5 className='cursor-pointer text-green-600'>
-            {row.getValue('code')}
-          </Typography.H5>
-          <CopyButton
-            content={row.getValue('code')}
-            className='bg-success hover:bg-success/70 no-row-click'
-            // variant='outline'
-            size='sm'
-          />
-        </div>
-      ),
+      cell: ({ row }) => <VoucherCodeCopyComponent code={row.original.code} />,
     },
     {
       accessorKey: 'discount_type',

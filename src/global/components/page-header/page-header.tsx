@@ -5,7 +5,7 @@ import { Typography } from '../typography/typography';
 import { redirect } from 'next/navigation';
 
 interface PageHeaderProps {
-  title: string;
+  title: React.ReactNode | string;
   description?: string;
   showBackButton?: boolean;
   backRedirectUrl?: string;
