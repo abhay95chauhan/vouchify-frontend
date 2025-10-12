@@ -1,7 +1,61 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PageHeader } from '@/global/components/page-header/page-header';
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
+import { getDashboardDataService } from './actions/services';
+import CardComponent from '@/global/components/card/card-component';
+import { Typography } from '@/global/components/typography/typography';
+import { IDashboardGet } from './model-interfaces/interfaces';
+import { JSX, Suspense } from 'react';
+import CardSkeleton from './components/card-skeleton';
+import { Ticket, Activity, Clock, Calendar, Gift } from 'lucide-react'; // 👈 icons added
 
-export default function Dashboard() {
+export default async function Dashboard() {
+  const jwt = (await cookies()).get('jwt')?.value;
+
+  if (!jwt) {
+    redirect('/auth/login');
+  }
+
+  const res = await getDashboardDataService(jwt);
+
+  // Card metadata with icons
+  const cardMeta: Record<
+    string,
+    { title: string; subtitle: string; icon: JSX.Element }
+  > = {
+    total_vouchers: {
+      title: 'Total Vouchers',
+      subtitle: 'All issued vouchers',
+      icon: <Ticket className='w-6 h-6 text-blue-500' />,
+    },
+    active_vouchers: {
+      title: 'Active Vouchers',
+      subtitle: 'Currently valid',
+      icon: <Activity className='w-6 h-6 text-success' />,
+    },
+    upcoming_vouchers: {
+      title: 'Upcoming Vouchers',
+      subtitle: 'Vouchers to start soon',
+      icon: <Calendar className='w-6 h-6 text-yellow-500' />,
+    },
+    total_redeemed_vouchers: {
+      title: 'Redeemed',
+      subtitle: 'Used vouchers',
+      icon: <Gift className='w-6 h-6 text-primary' />,
+    },
+    nearingExpiry: {
+      title: 'Expiring Soon',
+      subtitle: 'Vouchers expiring within 7 days',
+      icon: <Clock className='w-6 h-6 text-amber-500' />,
+    },
+    expired_vouchers: {
+      title: 'Expired Vouchers',
+      subtitle: 'Vouchers that expired',
+      icon: <Clock className='w-6 h-6 text-destructive' />,
+    },
+  };
+
   return (
     <main className='space-y-6'>
       {/* Top bar */}
@@ -12,34 +66,31 @@ export default function Dashboard() {
       />
 
       {/* Stats */}
-      <div className='grid grid-cols-1 md:grid-cols-3 gap-6 mb-6'>
-        <Card>
-          <CardHeader>
-            <CardTitle>Total Vouchers</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className='text-3xl font-bold'>1,245</p>
-            <p className='text-sm text-gray-500'>All issued vouchers</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Active Vouchers</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className='text-3xl font-bold'>820</p>
-            <p className='text-sm text-gray-500'>Currently valid</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Redeemed</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className='text-3xl font-bold'>425</p>
-            <p className='text-sm text-gray-500'>Used vouchers</p>
-          </CardContent>
-        </Card>
+      <div className='grid grid-cols-2 lg:grid-cols-3 gap-6 mb-6'>
+        {Object.keys(res.data).map((key) => {
+          const k = key as keyof IDashboardGet;
+
+          return (
+            <Suspense key={k} fallback={<CardSkeleton />}>
+              <CardComponent
+                title={cardMeta[k]?.title ?? ''}
+                cardContentClass='space-y-2'
+              >
+                <div className='flex items-center justify-between'>
+                  <div>
+                    <Typography.H2>{res?.data[k] ?? 0}</Typography.H2>
+                    <Typography.Muted>
+                      {cardMeta[k]?.subtitle ?? ''}
+                    </Typography.Muted>
+                  </div>
+                  <div className='p-3 bg-muted rounded-full shadow-sm'>
+                    {cardMeta[k]?.icon ?? ''}
+                  </div>
+                </div>
+              </CardComponent>
+            </Suspense>
+          );
+        })}
       </div>
 
       {/* Recent Vouchers */}
