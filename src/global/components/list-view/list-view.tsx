@@ -65,6 +65,8 @@ import { Badge } from '@/components/ui/badge';
 interface TableProps<T> {
   onRowClick?: (row: Row<T>, e: MouseEvent<HTMLTableRowElement>) => void;
   url: string;
+  showFooter?: boolean;
+  showSearch?: boolean;
   showDownloadButton?: boolean;
   filterComponent?: string;
   defaultOrderBy?: 'ASC' | 'DESC';
@@ -95,6 +97,8 @@ export default function VouchersTable<T>({
   showDownloadButton,
   filterComponent,
   defaultOrderBy,
+  showFooter,
+  showSearch,
 }: TableProps<T>) {
   const { hardRefresh } = useAppSelector((state) => state.common);
 
@@ -311,23 +315,25 @@ export default function VouchersTable<T>({
     <>
       <div className='w-full'>
         <div className='flex items-center justify-between pb-4 gap-2'>
-          <div className='relative w-sm'>
-            <Search className='absolute left-2 top-2.5 h-4 w-4 text-muted-foreground' />
-            {searchQuery && (
-              <Plus
-                onClick={() => setSearchQuery('')}
-                className='cursor-pointer absolute rotate-45 right-4 top-2.5 h-4 w-4 text-muted-foreground'
+          {showSearch !== false ? (
+            <div className='relative w-sm'>
+              <Search className='absolute left-2 top-2.5 h-4 w-4 text-muted-foreground' />
+              {searchQuery && (
+                <Plus
+                  onClick={() => setSearchQuery('')}
+                  className='cursor-pointer absolute rotate-45 right-4 top-2.5 h-4 w-4 text-muted-foreground'
+                />
+              )}
+              <Input
+                placeholder='Search...'
+                value={searchQuery}
+                // type='search'
+                autoFocus
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className='pl-8'
               />
-            )}
-            <Input
-              placeholder='Search...'
-              value={searchQuery}
-              // type='search'
-              autoFocus
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className='pl-8'
-            />
-          </div>
+            </div>
+          ) : null}
           {filterComponent ? (
             <div className='relative'>
               <Button
@@ -422,7 +428,7 @@ export default function VouchersTable<T>({
           </ScrollArea>
         </div>
 
-        {data?.length ? (
+        {showFooter !== false && data?.length ? (
           <div className='flex flex-col lg:flex-row items-center justify-between space-x-2 gap-2 py-4'>
             <div className='flex items-center space-x-2'>
               <p className='text-sm font-medium'>Rows</p>

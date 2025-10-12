@@ -4,13 +4,12 @@ import { handleError } from '@/global/utils/error-handler';
 import { toast } from 'sonner';
 import { IDashboardGet } from '../model-interfaces/interfaces';
 
-export const getDashboardDataService = async (
-  token: string
-): Promise<IApi<IDashboardGet>> => {
+export const getDashboardDataService = async (): Promise<
+  IApi<IDashboardGet>
+> => {
   try {
     const res = await vouchifyApi.request(`/dashboard`, {
       method: 'GET',
-      jwt: token,
     });
     return res;
   } catch (error) {
