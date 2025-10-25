@@ -5,3 +5,11 @@ export function getInitials(name: string): string {
     .map((word) => word[0]?.toUpperCase()) // take first char and uppercase
     .join('');
 }
+
+export const truncateText = (text: string, wordLimit: number) => {
+  if (!text) return '';
+  const words = text.split('');
+  return words.length > wordLimit
+    ? words.slice(0, wordLimit).join('') + '…'
+    : text;
+};

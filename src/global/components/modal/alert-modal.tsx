@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { Typography } from '../typography/typography';
-import { CircleAlert } from 'lucide-react';
+import { CircleAlert, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -38,9 +38,9 @@ const AlertModal = (props: Readonly<IProps>) => {
             <Typography.H1 className='font-bold text-center'>
               Caution
             </Typography.H1>
-            <Typography.P className='font-medium text-center'>
+            <Typography.Muted className='font-medium text-center text-sm'>
               {props.subTitle}
-            </Typography.P>
+            </Typography.Muted>
 
             {props.showAlertIcon !== false && (
               <div className='flex justify-center'>
@@ -68,6 +68,7 @@ const AlertModal = (props: Readonly<IProps>) => {
             disabled={state.isLoading}
             onClick={deleteIt}
           >
+            {state.isLoading && <Loader2 className='animate-spin w-4 h-4' />}
             {props.btnTitle || 'Apply'}
           </Button>
         </DialogFooter>

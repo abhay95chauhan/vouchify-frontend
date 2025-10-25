@@ -256,7 +256,7 @@ export default function Dashboard() {
       />
 
       {/* Stats */}
-      <div className='grid grid-cols-2 lg:grid-cols-3 gap-6 mb-6'>
+      <div className='grid sm:grid-cols-2 grid-cols-1 lg:grid-cols-3 gap-6 mb-6'>
         {dashboardState &&
           Object.keys(dashboardState as IDashboardGet).map((key) => {
             const k = key as keyof IDashboardGet;

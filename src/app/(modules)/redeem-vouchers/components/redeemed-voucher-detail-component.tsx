@@ -28,6 +28,7 @@ import { DiscountType } from '../../vouchers/interface-model/interfaces';
 import { useAppSelector } from '@/redux/hook';
 import { CopyButton } from '@/components/ui/shadcn-io/copy-button';
 import { PageHeader } from '@/global/components/page-header/page-header';
+import { truncateText } from '@/global/utils/helper-fn';
 
 export function VoucherRedemptionDetailComponent({
   redemption,
@@ -45,17 +46,22 @@ export function VoucherRedemptionDetailComponent({
           backRedirectUrl='/redeem-vouchers'
           showBackButton
           title={
-            <div className='flex items-center gap-2'>
-              <Typography.H3>{voucherName}</Typography.H3>
-              <VoucherCodeCopyComponent code={voucherCode} />
-              <a
-                href={`/vouchers/${redemption.voucher.code}`}
-                target='_blank'
-                className='text-blue-600'
-                aria-label='Open voucher'
-              >
-                <ExternalLink className='h-3 w-3' />
-              </a>
+            <div className='space-y-2'>
+              <div className='flex items-center gap-2'>
+                <Typography.H3>{voucherName}</Typography.H3>
+                <VoucherCodeCopyComponent code={voucherCode} />
+                <a
+                  href={`/vouchers/${redemption.voucher.code}`}
+                  target='_blank'
+                  className='text-blue-600'
+                  aria-label='Open voucher'
+                >
+                  <ExternalLink className='h-3 w-3' />
+                </a>
+              </div>
+              <Typography.Muted>
+                {truncateText(redemption.voucher.description as string, 40)}
+              </Typography.Muted>
             </div>
           }
         />

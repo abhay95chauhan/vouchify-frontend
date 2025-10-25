@@ -5,7 +5,8 @@ export const errorMessages = {
       'Revoking all sessions will log out every user, including you. This action is permanent and cannot be reversed. Continue?',
   },
   voucher: {
-    delete: 'Deleting this voucher cannot be undone. Continue?',
+    delete:
+      'Deleting this voucher cannot be undone, and it will also deleting its redemptions. Continue?',
     voucherRedeemLimitReached:
       'This voucher has reached its maximum number of redemptions. To allow more redemptions, please increase the maximum redemption count.',
     sendVoucherMail: 'Mail This Voucher with Your User',

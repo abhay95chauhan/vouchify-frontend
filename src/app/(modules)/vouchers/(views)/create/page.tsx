@@ -69,6 +69,7 @@ import SendEmailToRecipients from '@/app/(modules)/smtp/components/send-email-to
 import { errorMessages } from '@/global/utils/error-message';
 import { cn } from '@/lib/utils';
 import RedeemedVoucherModal from '@/app/(modules)/redeem-vouchers/components/redeemed-voucher-modal';
+import VoucherCodeCopyComponent from '../../components/voucher-code-copy';
 
 const VoucherCreate = ({ voucherData }: { voucherData: IVoucherGet }) => {
   const { user } = useAppSelector((state) => state.user);
@@ -783,10 +784,11 @@ const VoucherCreate = ({ voucherData }: { voucherData: IVoucherGet }) => {
             <CardContent className='p-6 space-y-6'>
               {/* Coupon Code */}
               <div className='border-2 border-dashed border-vpro-purple-300 dark:border-vpro-purple-700 bg-vpro-purple-50/60 dark:bg-vpro-purple-950/40 rounded-xl p-6 text-center space-y-3 shadow-inner'>
-                <div className='w-full flex items-center justify-center gap-2'>
+                <VoucherCodeCopyComponent code={voucherCode} />
+                {/* <div className='w-full flex items-center justify-center gap-2'>
                   <Typography.H3>{voucherCode}</Typography.H3>
                   <CopyButton content={voucherCode} size='sm' />
-                </div>
+                </div> */}
                 <Typography.H2 className='font-black'>
                   {form.watch('discount_type')
                     ? discountSymbol[
