@@ -26,6 +26,7 @@ import {
   Plus,
   Search,
   SlidersHorizontal,
+  Upload,
 } from 'lucide-react';
 import { vouchifyApi } from '@/global/utils/api';
 import {
@@ -54,13 +55,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { saveAs } from 'file-saver';
-import { tableColumns } from './export-table';
-import { json2csv } from 'json-2-csv';
 import { toast } from 'sonner';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import ListFilter from './list-filter';
 import { Badge } from '@/components/ui/badge';
+import { CustomModal } from '../modal/custom-modal';
+import { FileUpload } from '../file-upload';
 
 interface TableProps<T> {
   onRowClick?: (row: Row<T>, e: MouseEvent<HTMLTableRowElement>) => void;
@@ -69,6 +69,7 @@ interface TableProps<T> {
   showSearch?: boolean;
   showDownloadButton?: boolean;
   filterComponent?: string;
+  importComponent?: boolean;
   defaultOrderBy?: 'ASC' | 'DESC';
   columns: ColumnDef<T>[];
   emptyStateMsg: {
@@ -96,6 +97,7 @@ export default function VouchersTable<T>({
   onRowClick,
   showDownloadButton,
   filterComponent,
+  importComponent,
   defaultOrderBy,
   showFooter,
   showSearch,
@@ -105,6 +107,9 @@ export default function VouchersTable<T>({
   const [state, setState] = useState({
     downloadLoader: false,
     showFilterModal: false,
+    showImportModal: false,
+    importLoading: false,
+    csvFile: null as File | null,
   });
 
   const [data, setData] = useState<T[]>([]);
@@ -280,22 +285,31 @@ export default function VouchersTable<T>({
     );
   };
 
-  async function downloadTable() {
+  const downloadTable = async () => {
     try {
-      setState((prev) => ({ ...prev, downloadLoader: true }));
-      const csv = json2csv(data as object[], {
-        keys: tableColumns(url).header,
+      const res = await vouchifyApi.request(`${url}/export`, {
+        method: 'POST',
+        responseType: 'blob', // ⬅️ IMPORTANT: tells axios to return file data
       });
 
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      saveAs(blob, `${url}-${Date.now()}.csv`);
-      setState((prev) => ({ ...prev, downloadLoader: false }));
-      toast.success(`${url.replace('/', ' ')} Downloaded`);
-    } catch (error) {
-      toast.error(`Failed to Download ${url.replace('/', ' ')}`);
-      console.error('CSV export failed:', error);
+      // Create a blob URL for the CSV file
+      const blob = new Blob([res], { type: 'text/csv' });
+      const urlObject = window.URL.createObjectURL(blob);
+
+      // Create a temporary link to trigger the download
+      const link = document.createElement('a');
+      link.href = urlObject;
+      link.download = 'export.csv'; // change as needed
+      link.click();
+
+      // Cleanup
+      window.URL.revokeObjectURL(urlObject);
+
+      toast.success('List exported successfully');
+    } catch (err: any) {
+      toast.error(err?.message || 'Failed to download');
     }
-  }
+  };
 
   const handleCloseFilter = (isReset?: boolean) => {
     if (isReset) {
@@ -310,6 +324,51 @@ export default function VouchersTable<T>({
   };
 
   const howManyFilterAreApplied = Object.keys(filters).map((item) => item);
+
+  const handleImportVouchers = async () => {
+    if (!state.csvFile) {
+      toast.error('Please select a CSV file');
+      return;
+    }
+
+    try {
+      setState((prev) => ({ ...prev, importLoading: true }));
+
+      const formData = new FormData();
+      formData.append('file', state.csvFile);
+
+      // Use fetch directly for FormData uploads (vouchifyApi sets Content-Type: application/json which breaks FormData)
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/voucher/bulk/import`,
+        {
+          method: 'POST',
+          body: formData,
+          credentials: 'include',
+        }
+      );
+
+      const result = await response.json();
+
+      if (response.ok) {
+        toast.success(result?.message || 'Vouchers imported successfully');
+        setState((prev) => ({
+          ...prev,
+          showImportModal: false,
+          csvFile: null,
+          importLoading: false,
+        }));
+        // Refresh the table data
+        fetchData();
+      } else {
+        toast.error(result?.error?.message || 'Failed to import vouchers');
+        setState((prev) => ({ ...prev, importLoading: false }));
+      }
+    } catch (error) {
+      console.error('Import error:', error);
+      toast.error('Failed to import vouchers');
+      setState((prev) => ({ ...prev, importLoading: false }));
+    }
+  };
 
   return (
     <>
@@ -334,23 +393,35 @@ export default function VouchersTable<T>({
               />
             </div>
           ) : null}
-          {filterComponent ? (
-            <div className='relative'>
+          <div className='flex items-center gap-2'>
+            {filterComponent ? (
+              <div className='relative'>
+                <Button
+                  variant={'outline'}
+                  onClick={() =>
+                    setState((prev) => ({ ...prev, showFilterModal: true }))
+                  }
+                >
+                  <SlidersHorizontal /> Filter
+                </Button>
+                {howManyFilterAreApplied?.length ? (
+                  <Badge className='absolute -top-2 -right-2 h-4 w-4 rounded-full p-0 flex items-center justify-center text-[10px]'>
+                    {howManyFilterAreApplied?.length}
+                  </Badge>
+                ) : null}
+              </div>
+            ) : null}
+            {importComponent ? (
               <Button
-                variant={'outline'}
+                variant={'secondary'}
                 onClick={() =>
-                  setState((prev) => ({ ...prev, showFilterModal: true }))
+                  setState((prev) => ({ ...prev, showImportModal: true }))
                 }
               >
-                <SlidersHorizontal /> Filter
+                <Upload /> Import
               </Button>
-              {howManyFilterAreApplied?.length ? (
-                <Badge className='absolute -top-2 -right-2 h-4 w-4 rounded-full p-0 flex items-center justify-center text-[10px]'>
-                  {howManyFilterAreApplied?.length}
-                </Badge>
-              ) : null}
-            </div>
-          ) : null}
+            ) : null}
+          </div>
         </div>
 
         <div className='border'>
@@ -529,6 +600,56 @@ export default function VouchersTable<T>({
         onCloseFilter={(isReset) => handleCloseFilter(isReset)}
         onApplyFilter={(filterData) => handleApplyFilter(filterData)}
       />
+
+      <CustomModal
+        title='Import Vouchers'
+        loading={state.importLoading}
+        showModal={state.showImportModal}
+        size='4xl'
+        buttonLabel='Import'
+        clearButtonLabel='Cancel'
+        crossClose={() =>
+          setState((prev) => ({
+            ...prev,
+            showImportModal: false,
+            csvFile: null,
+          }))
+        }
+        close={() =>
+          setState((prev) => ({
+            ...prev,
+            showImportModal: false,
+            csvFile: null,
+          }))
+        }
+        save={handleImportVouchers}
+        disableBtn={!state.csvFile}
+      >
+        <div className='space-y-4'>
+          <div className='bg-blue-50 border border-blue-200 rounded-lg p-4'>
+            <Typography.Muted className='text-sm'>
+              <strong>Note:</strong> Only a maximum of 1000 vouchers can be
+              imported at once. Please ensure your CSV file contains 1000 or
+              fewer vouchers.
+            </Typography.Muted>
+          </div>
+          <FileUpload
+            value={state.csvFile ?? undefined}
+            onChange={(file: File | File[] | null) => {
+              const fileValue = Array.isArray(file) ? file[0] : file;
+              setState((prev) => ({ ...prev, csvFile: fileValue }));
+            }}
+            onError={(error) => {
+              toast.error(error);
+            }}
+            // accept='.csv,text/csv,application/vnd.ms-excel'
+            maxSize={10 * 1024 * 1024} // 10MB
+            description='Upload CSV file containing vouchers. CSV files up to 10MB'
+            disabled={state.importLoading}
+            showPreview={true}
+          />
+        </div>
+      </CustomModal>
     </>
   );
 }

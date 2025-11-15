@@ -19,6 +19,7 @@ interface IProps {
   anotherData?: React.ReactNode;
   btnTitle?: string;
   showCloseBtn?: boolean;
+  disableDelete?: boolean;
 }
 const AlertModal = (props: Readonly<IProps>) => {
   const [state, setState] = useState({
@@ -65,7 +66,7 @@ const AlertModal = (props: Readonly<IProps>) => {
           )}
           <Button
             className='w-full rounded-[0.25rem] bg-destructive hover:bg-destructive/90'
-            disabled={state.isLoading}
+            disabled={state.isLoading || props.disableDelete}
             onClick={deleteIt}
           >
             {state.isLoading && <Loader2 className='animate-spin w-4 h-4' />}

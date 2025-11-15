@@ -290,6 +290,7 @@ const VouchersList = () => {
       <CardComponent>
         <Suspense fallback={<TableSkeleton />}>
           <ListViewComponent
+            importComponent={true}
             onRowClick={(row, event) => {
               const targetElement = event.target as HTMLElement;
               if (

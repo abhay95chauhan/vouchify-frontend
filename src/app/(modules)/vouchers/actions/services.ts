@@ -96,3 +96,15 @@ export const sendVoucherViaEmailService = async (mailData: {
     toast?.error(message);
   }
 };
+
+export const deleteAllVouchersService = async () => {
+  try {
+    const res = await vouchifyApi.request('/voucher', {
+      method: 'DELETE',
+    });
+    return res;
+  } catch (error) {
+    const { message } = handleError(error);
+    toast?.error(message);
+  }
+};

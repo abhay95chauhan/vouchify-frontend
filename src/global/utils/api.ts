@@ -3,16 +3,19 @@ interface ApiInterface<T> {
   method: string;
   data?: T;
   jwt?: string;
+  responseType?: 'json' | 'blob';
 }
 
 class Api {
   async request<T>(url: string, options: ApiInterface<T>) {
+    const isBlob = options.responseType === 'blob';
+
     const fetchOptions: RequestInit = {
       method: options?.method || 'GET',
       headers: {
         // Authorization: `Bearer ${localStorage.getItem('token')}`,
         Cookie: `jwt=${options.jwt}`, // forward the cookie
-        'Content-Type': 'application/json',
+        ...(isBlob ? {} : { 'Content-Type': 'application/json' }), // ⬅️ IMPORTANT
       },
       ...(options?.data ? { body: JSON.stringify(options.data) } : {}),
       credentials: 'include', // important for cookies
@@ -22,6 +25,13 @@ class Api {
       `${process.env.NEXT_PUBLIC_API_URL}${url}`,
       fetchOptions
     );
+
+    if (isBlob) {
+      if (!res.ok) {
+        return { error: await res.text() };
+      }
+      return res.blob();
+    }
 
     // If request is successful, return JSON
     if (res.ok) {
