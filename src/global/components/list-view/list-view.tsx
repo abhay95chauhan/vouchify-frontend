@@ -60,7 +60,7 @@ import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import ListFilter from './list-filter';
 import { Badge } from '@/components/ui/badge';
 import { CustomModal } from '../modal/custom-modal';
-import { FileUpload } from '../file-upload';
+import { FileUploader } from '../file-upload/file-upload';
 
 interface TableProps<T> {
   onRowClick?: (row: Row<T>, e: MouseEvent<HTMLTableRowElement>) => void;
@@ -90,7 +90,7 @@ interface ApiResponse<T> {
   };
 }
 
-export default function VouchersTable<T>({
+export default function ListViewTable<T>({
   url,
   columns,
   emptyStateMsg,
@@ -337,30 +337,30 @@ export default function VouchersTable<T>({
       const formData = new FormData();
       formData.append('file', state.csvFile);
 
-      // Use fetch directly for FormData uploads (vouchifyApi sets Content-Type: application/json which breaks FormData)
+      // Use fetch directly for FormData (vouchifyApi stringifies data as JSON which breaks FormData)
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/voucher/bulk/import`,
+        `${process.env.NEXT_PUBLIC_API_URL}${url}/import`,
         {
           method: 'POST',
           body: formData,
-          credentials: 'include',
+          credentials: 'include', // Important for cookies
+          // Don't set Content-Type header - browser will set it with boundary for FormData
         }
       );
 
       const result = await response.json();
 
-      if (response.ok) {
-        toast.success(result?.message || 'Vouchers imported successfully');
+      if (response.ok && result && !result.error) {
+        toast.success(result.message || 'Vouchers imported successfully');
         setState((prev) => ({
           ...prev,
           showImportModal: false,
           csvFile: null,
           importLoading: false,
         }));
-        // Refresh the table data
         fetchData();
       } else {
-        toast.error(result?.error?.message || 'Failed to import vouchers');
+        toast.error(result?.message || 'Failed to import vouchers');
         setState((prev) => ({ ...prev, importLoading: false }));
       }
     } catch (error) {
@@ -633,20 +633,17 @@ export default function VouchersTable<T>({
               fewer vouchers.
             </Typography.Muted>
           </div>
-          <FileUpload
-            value={state.csvFile ?? undefined}
-            onChange={(file: File | File[] | null) => {
+          <FileUploader
+            // initialFileUrl={[state.csvFile ]?? undefined}
+            fileChange={(file: File | File[] | null) => {
               const fileValue = Array.isArray(file) ? file[0] : file;
+              console.log(fileValue, 'fileValue');
               setState((prev) => ({ ...prev, csvFile: fileValue }));
             }}
-            onError={(error) => {
-              toast.error(error);
-            }}
-            // accept='.csv,text/csv,application/vnd.ms-excel'
+            multiple={false}
+            accept='.csv,text/csv,application/vnd.ms-excel'
             maxSize={10 * 1024 * 1024} // 10MB
             description='Upload CSV file containing vouchers. CSV files up to 10MB'
-            disabled={state.importLoading}
-            showPreview={true}
           />
         </div>
       </CustomModal>
